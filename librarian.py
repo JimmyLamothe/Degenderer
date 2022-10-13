@@ -28,26 +28,42 @@ def create_soup(book):
     book_items = get_book_items(book)
     return [item_to_soup(item) for item in book_items]
 
+def get_paragraphs(soup):
+    return soup.find_all('p')
+
 def get_paragraph_list(book_soup):
     paragraph_list = []
     for soup in book_soup:
-        paragraph_list.extend(soup.find_all('p'))
+        paragraph_list.extend(get_paragraphs(soup))
     return paragraph_list
 
-def add_foo(paragraph):
-    paragraph.append(': FOO!')
+def get_paragraph_text(paragraph):
+    return paragraph.get_text()
+
+def set_paragraph_text(paragraph, text, verbose=False):
+    if verbose:
+        print('Paragraph pre-text:')
+        print(paragraph.text)
+        print('Changing to:')
+        print(text)
+    paragraph.clear()
+    paragraph.append(text)
+    if verbose:
+        print('Paragraph post-text:')
+        print(paragraph.text)
+        pause()
 
 def soup_to_book(book_soup, book):
     book_items = get_book_items(book)
     for soup, item in zip(book_soup, book_items):
         #print('soup:\n', str(soup))
         if soup.find('p'):
-            print('pre-item:\n', item.get_content())
-            pause
+            #print('pre-item:\n', item.get_content())
+            #pause()
             #item.set_content(''.join([str(paragraph) for paragraph in soup.find_all('p')]))
             item.set_content(str(soup.body))
-            print('post-item:\n', item.get_content())
-            pause
+            #print('post-item:\n', item.get_content())
+            #pause()
     
 def create_epub(book, filename):
     epub.write_epub(BOOK_PATH + filename, book)
