@@ -44,4 +44,3 @@ for paragraph in paragraph_list:
 soup_to_book(book_soup, book)
     
 create_epub(book, 'test.epub')
-B
