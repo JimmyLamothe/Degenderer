@@ -1,7 +1,33 @@
-GENDERED_NAME_LIBRARY = []
+import json
 
-GENDERLESS_NAME_LIBRARY = []
+with open('reference/nb_names.json', 'r') as filename:
+    NB_NAMES = json.load(filename) #List
 
+with open('reference/nb_names_by_decade.json', 'r') as filename:
+    NB_NAMES_BY_DECADE = json.load(filename) #Dict
+
+with open('reference/gendered_names.json', 'r') as filename:
+    GENDERED_NAMES = json.load(filename) #List
+
+with open('reference/gendered_names_by_decade.json', 'r') as filename:
+    GENDERED_NAMES_BY_DECADE = json.load(filename) #Dict
+
+with open('reference/boy_names.json', 'r') as filename:
+    BOY_NAMES = json.load(filename) #List
+
+with open('reference/boy_names_by_decade.json', 'r') as filename:
+    BOY_NAMES_BY_DECADE = json.load(filename) #Dict
+
+with open('reference/girl_names.json', 'r') as filename:
+    GIRL_NAMES = json.load(filename) #List
+
+with open('reference/girl_names_by_decade.json', 'r') as filename:
+    GIRL_NAMES_BY_DECADE = json.load(filename) #Dict    
+    
+with open('reference/nb_names_modern.json', 'r') as filename:
+    invalid = NB_NAMES + ['Infant', 'Baby', 'Unknown','Lorenza','Elisha','Kalani']
+    NB_NAMES_MODERN = [name for name in json.load(filename) if not name in invalid]
+    
 PRONOUN_DICTIONARY = {
     'He' : 'They',
     'he' : 'they',
@@ -324,6 +350,14 @@ PRONOUN_DICTIONARY = {
     'groomsmen' : 'spousefriends',
     'Schoolmistress' : 'Schoolteacher',
     'schoolmistress' : 'schoolteachers',
+    'Schoolgirl': 'Schoolchild',
+    'Schoolgirls' : 'Schoolchildren',
+    'schoolgirl' : 'schoolchild',
+    'schoolgirls' : 'schoolchildren',
+    'Schoolboy': 'Schoolchild',
+    'Schoolboys' : 'Schoolchildren',
+    'schoolboy' : 'schoolchild',
+    'schoolboys' : 'schoolchildren',
     'Mailman' : 'Mail carrier',
     'Mailmen' : 'Mail carriers',
     'mailman' : 'mail carrier',
