@@ -2,7 +2,7 @@ import sys
 
 from librarian import check_out, create_epub, create_soup, get_book_items
 from librarian import get_paragraph_list, get_paragraph_text, item_to_soup, pause
-from librarian import soup_to_book
+from librarian import soup_to_book, get_book_text
 from degenderer import degender_book
 
 if len(sys.argv) > 1:
@@ -20,8 +20,11 @@ soup_to_book(book_soup, book)
     
 create_epub(book, 'test.epub')
 
+print(get_book_text(book_soup))
+
 sys.exit(0)
 
+"""
 paragraph_list = get_paragraph_list(book_soup)
 
 for paragraph in paragraph_list:
@@ -44,3 +47,4 @@ for paragraph in paragraph_list:
 soup_to_book(book_soup, book)
     
 create_epub(book, 'test.epub')
+"""

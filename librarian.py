@@ -53,6 +53,13 @@ def set_paragraph_text(paragraph, text, verbose=False):
         print(paragraph.text)
         pause()
 
+def get_book_text(book_soup):
+    paragraph_list = get_paragraph_list(book_soup)
+    book_text = ''
+    for paragraph in paragraph_list:
+        book_text += get_paragraph_text(paragraph)
+    return book_text
+
 def soup_to_book(book_soup, book):
     book_items = get_book_items(book)
     for soup, item in zip(book_soup, book_items):

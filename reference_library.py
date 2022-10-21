@@ -1,8 +1,9 @@
 import json
+from collections import OrderedDict
 
 with open('reference/nb_names.json', 'r') as filename:
     NB_NAMES = json.load(filename) #List
-
+    
 with open('reference/nb_names_by_decade.json', 'r') as filename:
     NB_NAMES_BY_DECADE = json.load(filename) #Dict
 
@@ -27,8 +28,10 @@ with open('reference/girl_names_by_decade.json', 'r') as filename:
 with open('reference/nb_names_modern.json', 'r') as filename:
     invalid = NB_NAMES + ['Infant', 'Baby', 'Unknown','Lorenza','Elisha','Kalani']
     NB_NAMES_MODERN = [name for name in json.load(filename) if not name in invalid]
+
+AMBIGUOUS_NAMES = ['Jesus','King','Princess','Summer','Rose','April','May','June']
     
-PRONOUN_DICTIONARY = {
+PRONOUN_DICTIONARY = OrderedDict({
     'He' : 'They',
     'he' : 'they',
     'She' : 'They',
@@ -89,15 +92,20 @@ PRONOUN_DICTIONARY = {
     'Mr' : 'Mx',
     'Mrs' : 'Mx',
     'Miss' : 'Mx',
-    'Mistress' : "Sir'ram",
-    'Mister' : "Sir'ram",
-    'Missus' : "Sir'ram",
-    'Missis' : "Sir'ram",
-    'Madame' : "Sir'ram",
-    'Madam' : "Sir'ram",
-    'Sir' : "Sir'ram",
-    "Ma'am" : "Sir'ram",
-    "ma'am" : "sir'ram",
+    'Mistress' : 'Mx',
+    'Sir' : "Sir’ram",
+    'sir' : "Sir’ram",
+    'Sirs' : "Sir’rams",
+    'sirs' : "sir’rams",
+    'Mister' : "Sir’ram",
+    'Missus' : "Sir’ram",
+    'Missis' : "Sir’ram",
+    'Madame' : "Sir’ram",
+    'Madam' : "Sir’ram",
+    "Ma'am" : "Sir’ram",
+    "Ma’am" : "Sir’ram",
+    "ma'am" : "sir’ram",
+    "ma’am" : "sir’ram",
     'Boy' : 'Youth',
     'Boys' : 'Youths',
     'boy' : 'youth',
@@ -372,4 +380,4 @@ PRONOUN_DICTIONARY = {
     'salesmen' : 'salespeople',
     'Men and women' : 'People',
     'men and women' : 'people'
-}
+})
