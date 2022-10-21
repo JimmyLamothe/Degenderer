@@ -1,7 +1,7 @@
 """A
 This is where the degendering takes place.
 """
-import re
+import regex
 
 from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_text
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE
@@ -13,10 +13,10 @@ from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle
 def degender_pronoun(pronoun, text, verbose=False):
     if verbose:
         print('Matching for : ' + pronoun)
-        if re.search(r'\b' + pronoun + r'\b', text):
+        if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
             print(pronoun + ' will be changed to ' + PRONOUN_DICTIONARY[pronoun])
-    text = re.sub(r'\b' + pronoun + r'\b', PRONOUN_DICTIONARY[pronoun], text)
+    text = regex.sub(r'\b' + pronoun + r'\b', PRONOUN_DICTIONARY[pronoun], text)
     return text
 
 def degender_pronouns(text, verbose=False):
@@ -29,7 +29,7 @@ def degender_pronouns(text, verbose=False):
 
 def get_name_dict(book_soup, verbose=False):
     book_text = get_book_text(book_soup)
-    word_list = re.sub(r'[^A-Za-z]+',' ',book_text).split()
+    word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
     name_list = [word for word in word_list if (word in GENDERED_NAMES
                                                 and word not in AMBIGUOUS_NAMES)]
     name_dict = {}
@@ -52,10 +52,10 @@ def get_period_nb_names(year, verbose=False):
 def degender_name(name, match, text, verbose=False):
     if verbose:
         print('Matching for : ' + name)
-        if re.search(r'\b' + name + r'\b', text):
+        if regex.search(r"(?<![a-zA-Z'’-])" + name + r"(?![a-zA-Z'’-])", text):
             print('Name found!')
             print(name + ' will be changed to ' + match)
-    text = re.sub(r'\b' + name + r'\b', match, text)
+    text = regex.sub(r"(?<![a-zA-Z'’-])" + name + r"(?![a-zA-Z'’-])", match, text)
     return text
 
 def degender_names(text, name_matches, year=1960, verbose=False):
