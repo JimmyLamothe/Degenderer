@@ -14,13 +14,15 @@ book = check_out('Jane Eyre')
 
 book_soup = create_soup(book)
 
-degender_book(book_soup, verbose=verbose)
+parameters = {'verbose':verbose, 'year':1847}
+
+degender_book(book_soup, parameters)
 
 soup_to_book(book_soup, book)
     
 create_epub(book, 'test.epub')
 
-print(get_book_text(book_soup))
+#print(get_book_text(book_soup))
 
 sys.exit(0)
 

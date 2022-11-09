@@ -1,4 +1,4 @@
-"""A
+"""
 This is where the degendering takes place.
 """
 import regex
@@ -10,13 +10,27 @@ from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_N
 from reference_library import PRONOUN_DICTIONARY
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
+DEFAULT_PARAMETERS = {
+    'gender' : 'nb',
+    'verbose' : False,
+    'year' : 1960,
+    'name matches' : {},
+    'name choices' : 10
+    }
+
+def fill_defaults(parameters):
+    for key in DEFAULT_PARAMETERS:
+        if key not in parameters:
+            parameters[key] = DEFAULT_PARAMETERS[key]
+    return parameters
+
 def degender_pronoun(pronoun, text, verbose=False):
     if verbose:
         print('Matching for : ' + pronoun)
         if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
-            print(pronoun + ' will be changed to ' + PRONOUN_DICTIONARY[pronoun])
-    text = regex.sub(r'\b' + pronoun + r'\b', PRONOUN_DICTIONARY[pronoun], text)
+            print(pronoun + ' will be changed to ' + PRONOUN_DICTIONARY[pronoun][0])
+    text = regex.sub(r'\b' + pronoun + r'\b', PRONOUN_DICTIONARY[pronoun][0], text)
     return text
 
 def degender_pronouns(text, verbose=False):
@@ -43,11 +57,13 @@ def get_name_dict(book_soup, verbose=False):
 def get_sorted_name_list(name_dict, verbose=False):
     return lazy_shuffle_keys(name_dict, reverse=True)
     
-def get_period_nb_names(year, verbose=False):
+def get_period_names(year, gender, verbose=False): #NOTE: Only NB implemented for now, gender ignored
     target_decade = year + 30
-    nb_name_diff_dict = {item : get_min_diff(year, value)
-                         for (item, value)in NB_NAMES_BY_DECADE.items()} 
-    return lazy_shuffle_keys(nb_name_diff_dict, reverse=False)
+    name_diff_dict = {item : get_min_diff(year, value)
+                         for (item, value)in NB_NAMES_BY_DECADE.items()}
+    period_names = lazy_shuffle_keys(name_diff_dict, reverse=False)
+    period_names.extend(NB_NAMES_MODERN)
+    return period_names
 
 def degender_name(name, match, text, verbose=False):
     if verbose:
@@ -58,59 +74,76 @@ def degender_name(name, match, text, verbose=False):
     text = regex.sub(r"(?<![a-zA-Z'’-])" + name + r"(?![a-zA-Z'’-])", match, text)
     return text
 
-def degender_names(text, name_matches, year=1960, verbose=False):
-    if verbose:
+def degender_names(text, parameters):
+    name_matches = parameters['name matches']
+    if parameters['verbose']:
         for name in name_matches:
             text = degender_name(name, name_matches[name], text, verbose=True)
     for name in name_matches:
         text = degender_name(name, name_matches[name], text)
     return text
         
-def degender_text(text, name_matches, year=1960, verbose=False):
+def degender_text(text, parameters):
     original_text = text
-    if verbose:
+    if parameters['verbose']:
         text = degender_pronouns(text, verbose=True)
     else:
         text = degender_pronouns(text)
-    if verbose:
-        text = degender_names(text, name_matches, year=year, verbose=True)
+    if parameters['verbose']:
+        text = degender_names(text, parameters)
     else:
-        text = degender_names(text, name_matches, year=year)
-    if verbose:
+        text = degender_names(text, parameters)
+    if parameters['verbose']:
         if text != original_text:
             print('Changed pronouns and/or names')
             print('New text:')
             print(text)
     return text
 
-def degender_paragraph(paragraph, name_matches, year=1960, verbose=False):
+def degender_paragraph(paragraph, parameters):
     text = get_paragraph_text(paragraph)
-    if verbose:
+    if parameters['verbose']:
         print('Pre-text:')
         print(text)
-        text = degender_text(text, name_matches, year=year, verbose=True)
+        text = degender_text(text, parameters)
     else:
-        text = degender_text(text, name_matches, year=year)
-    if verbose:
+        text = degender_text(text, parameters)
+    if parameters['verbose']:
         set_paragraph_text(paragraph, text, verbose=True)
     else:
         set_paragraph_text(paragraph, text)
               
-def degender_soup(soup, name_matches, year=1960, verbose=False):
-    if verbose:
+def degender_soup(soup, parameters):
+    if parameters['verbose']:
         for paragraph in soup.find_all('p'):
-            degender_paragraph(paragraph, name_matches, year=year, verbose=True)
+            degender_paragraph(paragraph, parameters)
     for paragraph in soup.find_all('p'):
-        degender_paragraph(paragraph, name_matches, year=year)
-        
-def degender_book(book_soup, year=1960, verbose=False):
+        degender_paragraph(paragraph, parameters)
+
+def get_all_name_matches(name_list, parameters):
+    period_names = get_period_names(parameters['year'], parameters['gender'])
+    return list(zip(name_list, period_names))
+    
+def get_name_matches(name_list, parameters):
+    name_matches = {}
+    name_match_list = get_all_name_matches(name_list, parameters)
+    import sys
+    print('Enter a name for each main character or press ENTER to accept suggestion')
+    for name, suggestion in name_match_list[0:parameters['name choices']]:
+        new_name = input(f'Name (suggestion: {suggestion}): ')
+        if not new_name:
+            name_matches[name] = suggestion
+        else:
+            name_matches[name] = new_name
+    return name_matches
+    
+def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
+    parameters = fill_defaults(parameters)
     name_dict = get_name_dict(book_soup)
     name_list = get_sorted_name_list(drop_low(name_dict)) #Removing names with few occurrences
-    nb_name_list = get_period_nb_names(year)
-    nb_name_list.extend(NB_NAMES_MODERN)
-    name_matches = {item : value for (item, value) in zip(name_list, nb_name_list)}
-    if verbose:
+    parameters['name matches'] = get_name_matches(name_list, parameters)
+    if parameters['verbose']:
         for soup in book_soup:
-            degender_soup(soup, name_matches, year=year, verbose=True)
+            degender_soup(soup, parameters)
     for soup in book_soup:
-        degender_soup(soup, name_matches, year=year)
+        degender_soup(soup, parameters)

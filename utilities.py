@@ -1,7 +1,7 @@
 import random
 
-def drop_low(dictionary):
-    return {key : value for (key, value) in dictionary.items() if value > 2}  
+def drop_low(dictionary, floor = 10):
+    return {key : value for (key, value) in dictionary.items() if value > floor}  
 
 def sorted_by_values(dictionary, reverse=False):
     return [item[0] for item in sorted(dictionary.items(), key=lambda x:x[1], reverse=reverse)]

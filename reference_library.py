@@ -28,10 +28,12 @@ with open('reference/girl_names_by_decade.json', 'r') as filename:
 with open('reference/nb_names_modern.json', 'r') as filename:
     invalid = NB_NAMES + ['Infant', 'Baby', 'Unknown','Lorenza','Elisha','Kalani']
     NB_NAMES_MODERN = [name for name in json.load(filename) if not name in invalid]
-
-AMBIGUOUS_NAMES = ['Jesus','King','Princess','Summer','Rose','April','May','June']
+with open('reference/PRONOUN_DICTIONARY.json', 'r') as filename:
+    PRONOUN_DICTIONARY = OrderedDict(json.load(filename))
     
-PRONOUN_DICTIONARY = OrderedDict({
+AMBIGUOUS_NAMES = ['Jesus','King','Princess','Summer','Rose','April','May','June']
+
+OLD_PRONOUN_DICTIONARY = OrderedDict({
     'He' : 'They',
     'he' : 'they',
     'She' : 'They',
@@ -56,7 +58,7 @@ PRONOUN_DICTIONARY = OrderedDict({
     'woman' : 'person',
     'women' : 'people',
     'Mother' : 'Parent',
-    'Mothers' : 'parents',
+    'Mothers' : 'Parents',
     'mother' : 'parent',
     'mothers' : 'parents',
     'Father' : 'Parent',
@@ -69,22 +71,25 @@ PRONOUN_DICTIONARY = OrderedDict({
     'mama' : 'mapa',
     'mommy' : 'mapa',
     'mamma' : 'mapa',
+    'Daddy' : 'Mapa',
+    'daddy' : 'mapa',
     'Papa' : 'Mapa',
     'Poppa': 'Mapa',
+    'poppa' : 'mapa',
     'Poppy' : 'Mapa',
     'papa' : 'mapa',
     'poppa' : 'mapa',
     'Brother' : 'Sibling',
     'Brothers' : 'Siblings',
     'brother' : 'sibling',
-    'brothers' : 'brothers',
+    'brothers' : 'siblings',
     'Bro' : 'Sib',
     'Bros' : 'Sibs',
     'bro' : 'sib',
     'bros' : 'sibs',
     'Sister' : 'Sibling',
     'Sisters' : 'Siblings',
-    'Sis' : 'sis',
+    'Sis' : 'Sib',
     'sister' : 'sibling',
     'sisters' : 'siblings',
     'Brothers and sisters' : 'siblings',
@@ -94,7 +99,7 @@ PRONOUN_DICTIONARY = OrderedDict({
     'Miss' : 'Mx',
     'Mistress' : 'Mx',
     'Sir' : "Sir’ram",
-    'sir' : "Sir’ram",
+    'sir' : "sir’ram",
     'Sirs' : "Sir’rams",
     'sirs' : "sir’rams",
     'Mister' : "Sir’ram",
@@ -117,7 +122,7 @@ PRONOUN_DICTIONARY = OrderedDict({
     'Boyhood' : 'Childhood',
     'boyhood' : 'childhood',
     'Boyhoods' : 'Childhoods',
-    'boyhoods' : 'boyhoods',
+    'boyhoods' : 'childhoods',
     'Girlhood' : 'Childhood',
     'girlhood' : 'childhood',
     'Girlhoods' : 'Childhoods',
@@ -180,9 +185,9 @@ PRONOUN_DICTIONARY = OrderedDict({
     'grandfather' : 'grandparent',
     'grandfathers' : 'grandparents',
     'Grandmother' : 'Grandparent',
-    'Grandmothers' : 'Grandmothers',
-    'grandmother' : 'grandmother',
-    'grandmothers' : 'grandmothers',
+    'Grandmothers' : 'Grandparents',
+    'grandmother' : 'grandparent',
+    'grandmothers' : 'grandparents',
     'Grandpa' : 'Gran',
     'Grandpas' : 'Grans',
     'grandpa' : 'gran',
@@ -215,7 +220,7 @@ PRONOUN_DICTIONARY = OrderedDict({
     'Godfather' : 'Godparent',
     'Godfathers' : 'Godfathers',
     'godfather' : 'godparent',
-    'godfather' : 'godfathers',
+    'godfathers' : 'godparents',
     'Godmother' : 'Godparent',
     'Godmothers' : 'Godparents',
     'godmother' : 'godparent',

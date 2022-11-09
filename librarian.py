@@ -7,7 +7,8 @@ from bs4 import BeautifulSoup
 BOOK_PATH = 'books/'
 
 BOOK_LIBRARY = {
-    'Jane Eyre' : 'pg1260.epub'
+    'Jane Eyre' : 'pg1260.epub',
+    'Segreti' : 'Harry Potter e la Camera dei Segreti.epub'
     }
 
 def pause():
