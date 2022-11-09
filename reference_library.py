@@ -1,6 +1,12 @@
 import json
 from collections import OrderedDict
 
+with open('reference/all_names.json', 'r') as filename:
+    ALL_NAMES = json.load(filename) #List
+    
+with open('reference/all_names_by_decade.json', 'r') as filename:
+    ALL_NAMES_BY_DECADE = json.load(filename) #Dict
+
 with open('reference/nb_names.json', 'r') as filename:
     NB_NAMES = json.load(filename) #List
     

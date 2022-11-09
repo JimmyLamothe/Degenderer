@@ -4,10 +4,10 @@ This is where the degendering takes place.
 import regex
 
 from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_text
-from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE
+from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
 from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_NAMES_BY_DECADE
-from reference_library import PRONOUN_DICTIONARY
+from reference_library import PRONOUN_DICTIONARY, ALL_NAMES_BY_DECADE
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
 DEFAULT_PARAMETERS = {
@@ -44,7 +44,7 @@ def degender_pronouns(text, verbose=False):
 def get_name_dict(book_soup, verbose=False):
     book_text = get_book_text(book_soup)
     word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
-    name_list = [word for word in word_list if (word in GENDERED_NAMES
+    name_list = [word for word in word_list if (word in ALL_NAMES
                                                 and word not in AMBIGUOUS_NAMES)]
     name_dict = {}
     for name in name_list:
@@ -58,11 +58,24 @@ def get_sorted_name_list(name_dict, verbose=False):
     return lazy_shuffle_keys(name_dict, reverse=True)
     
 def get_period_names(year, gender, verbose=False): #NOTE: Only NB implemented for now, gender ignored
+    if gender == 'm':
+        print('m')
+        name_list = BOY_NAMES_BY_DECADE
+    elif gender == 'f':
+        print('f')
+        name_list = GIRL_NAMES_BY_DECADE
+    else:
+        if not gender == 'nb':
+            print('WARNING: Unknown gender in parameters, defaulting to non-binary')
+        else:
+            print('nb')
+        name_list = NB_NAMES_BY_DECADE
     target_decade = year + 30
     name_diff_dict = {item : get_min_diff(year, value)
-                         for (item, value)in NB_NAMES_BY_DECADE.items()}
+                         for (item, value)in name_list.items()}
     period_names = lazy_shuffle_keys(name_diff_dict, reverse=False)
-    period_names.extend(NB_NAMES_MODERN)
+    if gender == 'nb':
+        period_names.extend(NB_NAMES_MODERN)
     return period_names
 
 def degender_name(name, match, text, verbose=False):

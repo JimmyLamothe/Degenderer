@@ -14,7 +14,7 @@ book = check_out('Jane Eyre')
 
 book_soup = create_soup(book)
 
-parameters = {'verbose':verbose, 'year':1847}
+parameters = {'verbose':verbose, 'year':1847, 'gender':'m'}
 
 degender_book(book_soup, parameters)
 
