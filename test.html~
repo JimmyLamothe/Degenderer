@@ -1,0 +1,5 @@
+<h2>Example One <i class="material-icons toggle-button">chevron_right</i></h2>
+<div class="placeholder-text inactive">
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam viverra tellus a lobortis cursus. Sed ac feugiat elit. Integer molestie elit at gravida faucibus. Fusce sed lectus vel ante vulputate eleifend.</p>
+  <a href="#" download>Download Example One</a>
+</div>

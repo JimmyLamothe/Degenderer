@@ -14,13 +14,6 @@ BOOK_LIBRARY = {
 def pause():
     input('Press enter to continue')
 
-def read_epub(filepath):
-    book = epub.read_epub(filepath)
-    return book
-
-def write_epub(book, filepath):
-    epub.write_epub(filepath, book)
-    
 def get_book_items(book):
     book_items = list(book.get_items_of_type(ebooklib.ITEM_DOCUMENT))
     return book_items

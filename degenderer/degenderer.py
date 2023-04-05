@@ -1,4 +1,4 @@
-"""
+"""AA
 This is where the degendering takes place.
 """
 import regex
@@ -156,7 +156,7 @@ def get_name_matches(name_list, parameters):
     import sys
     print('Enter a name for each main character or press ENTER to accept suggestion')
     for name, suggestion in name_match_list[0:parameters['name choices']]:
-        new_name = '' #input(f'Name (suggestion: {suggestion}): ')
+        new_name = input(f'Name (suggestion: {suggestion}): ')
         if not new_name:
             name_matches[name] = suggestion
         else:

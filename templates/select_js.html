@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header>
+      <h1>The Degenderer / Regenderer</h1>
+    </header>
+    <main>
+      <h2>Upload a Book</h2>
+      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+      </form>
+    </main>
+    <footer>
+      <p>&copy; 2023 The Degenderer / Regenderer</p>
+    </footer>
+    <script>
+      const form = document.querySelector('form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch('/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.blob();
+          }
+          throw new Error('Network response was not ok.');
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'book_mod.epub';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.location.href = '/';
+        })
+        .catch(error => console.error('Error:', error));
+      });
+    </script>
+  </body>
+</html>

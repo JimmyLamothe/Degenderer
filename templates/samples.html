@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Examples - The Degenderer / Regenderer</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo_dark_transparent.png') }}" alt="The Degenderer / Regenderer logo">
+    </div>
+    <nav>
+      <ul class="menu">
+	<li><a href="{{ url_for('home') }}"></a></li>
+	<li><a href="{{ url_for('home') }}">Home</a></li>
+	<li><a href="{{ url_for('samples') }}">Samples</a></li>
+	<li><a href="{{ url_for('select_book') }}">Upload</a></li>
+	<li><a href="https://www.gutenberg.org/">Project Gutenberg</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Examples</h1>
+    <div class="example">
+      <div class="example-header">
+	<h2>Example One</h2>
+	<button class="toggle">
+	  <i class="material-icons">chevron_right</i>
+	</button>
+      </div>
+      <div class="example-content" hidden>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
+	<a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example One</a>
+      </div>
+    </div>
+    
+    <div class="example">
+      <div class="example-header">
+	<h2>Example Two</h2>
+	<button class="toggle">
+	  <i class="material-icons">chevron_right</i>
+	</button>
+      </div>
+      <div class="example-content" hidden>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
+	<a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example Two</a>
+      </div>
+    </div>
+    
+    <div class="example">
+      <div class="example-header">
+	<h2>Example Three</h2>
+	<button class="toggle">
+	  <i class="material-icons">chevron_right</i>
+	</button>
+      </div>
+      <div class="example-content" hidden>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
+	<a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example Three</a>
+      </div>
+    </div>
+  </main>
+  <script src="{{ url_for('static', filename='samples.js') }}"></script>
+</body>
+</html>

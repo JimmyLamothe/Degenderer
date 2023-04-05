@@ -1,0 +1,97 @@
+.logo {
+    background-color: #
+    display: flex;
+    margin-right: 20px;
+    justify-content: center;
+}
+.logo img {
+    max-height: 80px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #ECE0F8;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: #2A0A29;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #E3CEF6;
+}
+
+body {
+    background-color: #ECE0F8;
+    color: #3B0B39;
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+form {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ECE0F8;
+    border-radius: 10px;
+}
+
+input[type=file] {
+    border: none;
+    background-color: #E3CEF6;
+    padding: 10px;
+    border-radius: 5px;
+    color: #3B0B39;
+    width: 100%;
+}
+
+input[type=submit] {
+    border: none;
+    background-color: #E3CEF6;
+    color: #3B0B39;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #666;
+}
+/* Styles for the toggle button */
+.toggle {
+  background-color: transparent;
+  border: none;
+  color: #3B0B39;
+  cursor: pointer;
+  outline: none;
+  height: 20px;
+  padding: 0;
+  transition: all 0.3s ease-in-out;
+  margin-right: 10px;
+  margin-left: 20px;
+}
+
+
+/* Styles for the active toggle button */
+.toggle.active i {
+    transform: rotate(90deg);
+}
+
+.example-header {
+    display: flex;
+    align-items: left;
+    align-items: center;
+}
