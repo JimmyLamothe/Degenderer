@@ -2,7 +2,7 @@
 This is where the degendering takes place.
 """
 import regex
-
+import sys
 from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_text
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
@@ -12,7 +12,8 @@ from reference_library import NB_PRONOUN_DICT, MALE_PRONOUN_DICT, FEMALE_PRONOUN
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
 DEFAULT_PARAMETERS = {
-    'gender' : 'nb',
+    'male' : 'nb',
+    'female' : 'nb',
     'verbose' : False,
     'year' : 1960,
     'name matches' : {},
@@ -25,34 +26,42 @@ def fill_defaults(parameters):
             parameters[key] = DEFAULT_PARAMETERS[key]
     return parameters
 
-def change_pronoun(pronoun, pronoun_dict, text, gender, verbose=False):
-    if gender == 'nb':
-        replacement = pronoun_dict[pronoun][0]
-    else:
-        replacement = pronoun_dict[pronoun][1]
+def change_pronoun(pronoun, replacement, text, verbose=False):
     if verbose:
         print('Matching for : ' + pronoun)
         if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
-            print(pronoun + ' will be changed to ' + replacement)
-    text = regex.sub(r'\b' + pronoun + r'\b', replacement, text)
+            print(pronoun + ' will be changed to ' + replacement+'àéà')
+    text = regex.sub(r'\b' + pronoun + r'\b', replacement+'àéà', text)
     return text
 
-def change_pronouns(text, gender, verbose=False):
-    if gender == 'nb':
-        pronoun_dict = NB_PRONOUN_DICT
-    elif gender == 'f':
-        pronoun_dict = MALE_PRONOUN_DICT
-    elif gender == 'm':
-        pronoun_dict = FEMALE_PRONOUN_DICT
-    else:
-        print('Unexepected gender input in change_pronouns function, defaulting to non-binary')
-    if verbose:
-        for pronoun in pronoun_dict:
-            text = change_pronoun(pronoun, pronoun_dict, text, gender, verbose=True)
-    for pronoun in pronoun_dict:
-        text = change_pronoun(pronoun, pronoun_dict, text, gender)
+def fix_text(text):
+    text = regex.sub(r'àéà', '', text)
+    text = regex.sub(r'His/Him/Hers', 'Her/Hers', text)
+    text = regex.sub(r'Their/Them/Hers', 'Her/Hers', text)
+    text = regex.sub(r'Their/Hers', 'Her/Hers', text)
+    text = regex.sub(r'their/hers', 'her/hers', text)
+    text = regex.sub(r'his/him/hers', 'her/hers', text)
+    text = regex.sub(r'their/them/hers', 'her/hers', text)
     return text
+
+def change_pronouns(text, male, female, verbose=False):
+    pronoun_dict = {}
+    if male == 'nb':
+        pronoun_dict.update({item:value[0] for (item,value)
+                             in MALE_PRONOUN_DICT.items()})
+    elif male == 'f':
+        pronoun_dict.update({item:value[1] for (item,value)
+                             in MALE_PRONOUN_DICT.items()})
+    if female == 'nb':
+        pronoun_dict.update({item:value[0] for (item,value)
+                             in FEMALE_PRONOUN_DICT.items()})
+    elif female == 'm':
+        pronoun_dict.update({item:value[1] for (item,value)
+                             in FEMALE_PRONOUN_DICT.items()})
+    for pronoun in pronoun_dict:
+        text = change_pronoun(pronoun, pronoun_dict[pronoun], text, verbose=verbose)    
+    return fix_text(text)
 
 def get_name_dict(book_soup, verbose=False):
     book_text = get_book_text(book_soup)
@@ -70,7 +79,8 @@ def get_name_dict(book_soup, verbose=False):
 def get_sorted_name_list(name_dict, verbose=False):
     return lazy_shuffle_keys(name_dict, reverse=True)
     
-def get_period_names(year, gender, verbose=False): #NOTE: Only NB implemented for now, gender ignored
+def get_period_names(year, verbose=False):
+    """
     if gender == 'm':
         print('m')
         name_list = BOY_NAMES_BY_DECADE
@@ -82,13 +92,14 @@ def get_period_names(year, gender, verbose=False): #NOTE: Only NB implemented fo
             print('WARNING: Unknown gender in parameters, defaulting to non-binary')
         else:
             print('nb')
-        name_list = NB_NAMES_BY_DECADE
+            name_list = NB_NAMES_BY_DECADE
+    """
+    name_list = NB_NAMES_BY_DECADE
     target_decade = year + 30
     name_diff_dict = {item : get_min_diff(year, value)
                          for (item, value)in name_list.items()}
     period_names = lazy_shuffle_keys(name_diff_dict, reverse=False)
-    if gender == 'nb':
-        period_names.extend(NB_NAMES_MODERN)
+    period_names.extend(NB_NAMES_MODERN)
     return period_names
 
 def change_name(name, match, text, verbose=False):
@@ -102,24 +113,16 @@ def change_name(name, match, text, verbose=False):
 
 def change_names(text, parameters):
     name_matches = parameters['name matches']
-    if parameters['verbose']:
-        for name in name_matches:
-            text = change_name(name, name_matches[name], text, verbose=True)
     for name in name_matches:
-        text = change_name(name, name_matches[name], text)
+        text = change_name(name, name_matches[name], text, verbose=parameters['verbose'])
     return text
         
 def degender_text(text, parameters):
+    verbose = parameters['verbose']
     original_text = text
-    if parameters['verbose']:
-        text = change_pronouns(text, parameters['gender'], verbose=True)
-    else:
-        text = change_pronouns(text, parameters['gender'])
-    if parameters['verbose']:
-        text = change_names(text, parameters)
-    else:
-        text = change_names(text, parameters)
-    if parameters['verbose']:
+    text = change_pronouns(text, parameters['male'], parameters['female'], verbose=verbose)
+    text = change_names(text, parameters)
+    if verbose:
         if text != original_text:
             print('Changed pronouns and/or names')
             print('New text:')
@@ -131,23 +134,15 @@ def degender_paragraph(paragraph, parameters):
     if parameters['verbose']:
         print('Pre-text:')
         print(text)
-        text = degender_text(text, parameters)
-    else:
-        text = degender_text(text, parameters)
-    if parameters['verbose']:
-        set_paragraph_text(paragraph, text, verbose=True)
-    else:
-        set_paragraph_text(paragraph, text)
+    text = degender_text(text, parameters)
+    set_paragraph_text(paragraph, text, verbose=parameters['verbose'])
               
 def degender_soup(soup, parameters):
-    if parameters['verbose']:
-        for paragraph in soup.find_all('p'):
-            degender_paragraph(paragraph, parameters)
     for paragraph in soup.find_all('p'):
         degender_paragraph(paragraph, parameters)
 
 def get_all_name_matches(name_list, parameters):
-    period_names = get_period_names(parameters['year'], parameters['gender'])
+    period_names = get_period_names(parameters['year'])
     return list(zip(name_list, period_names))
     
 def get_name_matches(name_list, parameters):
@@ -156,7 +151,8 @@ def get_name_matches(name_list, parameters):
     import sys
     print('Enter a name for each main character or press ENTER to accept suggestion')
     for name, suggestion in name_match_list[0:parameters['name choices']]:
-        new_name = '' #input(f'Name (suggestion: {suggestion}): ')
+        #NOTE: functionality removed for web compatibility
+        new_name = '' #input(f'Name (suggestion: {suggestion}): ') 
         if not new_name:
             name_matches[name] = suggestion
         else:
@@ -168,8 +164,5 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     name_dict = get_name_dict(book_soup)
     name_list = get_sorted_name_list(drop_low(name_dict)) #Removing names with few occurrences
     parameters['name matches'] = get_name_matches(name_list, parameters)
-    if parameters['verbose']:
-        for soup in book_soup:
-            degender_soup(soup, parameters)
     for soup in book_soup:
         degender_soup(soup, parameters)

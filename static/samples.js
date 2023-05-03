@@ -18,18 +18,27 @@ toggleButtons.forEach(button => {
 */
 
 document.querySelectorAll(".toggle").forEach(function(btn) {
-  btn.addEventListener("click", function() {
-    var example = this.closest(".example");
-    var content = example.querySelector(".example-content");
-    if (content.style.display === 'block') {
+    btn.addEventListener("click", function(e) {
+	e.stopPropagation();
+	var example = this.closest(".example");
+	var content = example.querySelector(".example-content");
+	if (content.style.display === 'block') {
 	    content.style.display = 'none';
 	} else {
 	    content.style.display = 'block';
 	}
-    btn.classList.toggle("active");
-  });
+	btn.classList.toggle("active");
+    });
 });
 
+const exampleDescriptions = document.querySelectorAll('.example-header');
+exampleDescriptions.forEach((description) => {
+    description.addEventListener('click', (e) => {
+	const example = e.target.closest('.example');
+	const toggleBtn = example.querySelector('.toggle');
+	toggleBtn.click();
+    });
+});
 
 // Add download links to example download buttons
 const exampleDownloadButtons = document.querySelectorAll('.example-download');
@@ -39,3 +48,4 @@ exampleDownloadButtons.forEach((button, index) => {
   button.href = exampleName + '.epub';
   button.download = exampleName + '.epub';
 });
+
