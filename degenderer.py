@@ -7,7 +7,7 @@ from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_te
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
 from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_NAMES_BY_DECADE
-from reference_library import PRONOUN_DICTIONARY, ALL_NAMES_BY_DECADE
+from reference_library import PRONOUN_DICTIONARY, ALL_NAMES_BY_DECADE, COMMON_WORDS
 from reference_library import NB_PRONOUN_DICT, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
@@ -27,11 +27,14 @@ def fill_defaults(parameters):
     return parameters
 
 def change_pronoun(pronoun, replacement, text, verbose=False):
+    """Since the regex substitution is done for each pronoun in the whole text,
+    we need to add a mark ('àéà') to avoid the pronouns we've just changed being
+    changed back later. This mark will be removed in fix_text"""
     if verbose:
         print('Matching for : ' + pronoun)
         if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
-            print(pronoun + ' will be changed to ' + replacement+'àéà')
+            print(pronoun + ' will be changed to ' + replacement)
     text = regex.sub(r'\b' + pronoun + r'\b', replacement+'àéà', text)
     return text
 
@@ -63,7 +66,25 @@ def change_pronouns(text, male, female, verbose=False):
         text = change_pronoun(pronoun, pronoun_dict[pronoun], text, verbose=verbose)    
     return fix_text(text)
 
+def get_book_names(book_soup, verbose=False):
+    #This gets all proper names used in the book
+    book_text = get_book_text(book_soup)
+    pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
+    matches = regex.findall(pattern, book_text)
+    names = []
+    for match in matches:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
+            names += [match]
+    name_dict = {}
+    for name in names:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
+
 def get_name_dict(book_soup, verbose=False):
+    #This gets the best known first names used in the book
     book_text = get_book_text(book_soup)
     word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
     name_list = [word for word in word_list if (word in ALL_NAMES

@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>File Upload</title>
+    <title>Gender Conversion Preferences</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+  </head>
   <body>
     <header>
       <div class="logo">
@@ -21,14 +21,17 @@
 	</ul>
       </nav>
     </header>
-    <main>
-      <h1>File Upload Page</h1>
-      <p>Please select a file to upload:</p>
-      <form method="POST" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <br><br>
-        <input type="submit" value="Upload">
-      </form>
-    </main>
+    <form method="POST">
+      <h3>Female Pronouns:</h3>
+      <label><input type="radio" name="female" value="non-binary" checked>Non-binary</label><br>
+      <label><input type="radio" name="female" value="female">Female</label><br>
+      <label><input type="radio" name="female" value="male">Male</label><br>
+      <h3>Male Pronouns:</h3>
+      <label><input type="radio" name="male" value="non-binary" checked>Non-binary</label><br>
+      <label><input type="radio" name="male" value="female">Female</label><br>
+      <label><input type="radio" name="male" value="male">Male</label><br>
+      <br>
+      <input type="submit" value="Submit">
+    </form>
   </body>
 </html>
