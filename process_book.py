@@ -9,7 +9,7 @@ from degenderer import degender_book, get_book_names
 
 WORKING_DIR = Path('temp')
 
-def get_book_info(book_file):
+def get_names(book_file):
     filepath = WORKING_DIR.joinpath(str(uuid.uuid4()) + '.epub')
     book = read_epub(book_file)
     book_soup = create_soup(book)

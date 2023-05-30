@@ -37,7 +37,9 @@ def create_soup(book):
     return [item_to_soup(item) for item in book_items]
 
 def get_paragraphs(soup):
-    return soup.find_all('p')
+    paragraphs = soup.find_all('p')
+    divs = soup.find_all('div')
+    return paragraphs + divs
 
 def get_paragraph_list(book_soup):
     paragraph_list = []
