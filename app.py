@@ -46,9 +46,18 @@ def upload():
 
 @app.route('/pronouns', methods=['GET', 'POST'])
 def pronouns():
+    def abbreviate(pronoun):
+        if pronoun.lower() == 'non-binary':
+            return 'nb'
+        elif pronoun.lower() == 'female':
+            return 'f'
+        elif pronoun.lower() == 'male':
+            return 'm'
+        else:
+            raise ValueError
     if request.method == 'POST':
-        session['male_pronoun'] = request.form['male']
-        session['female_pronoun'] = request.form['female']
+        session['male_pronoun'] = abbreviate(request.form['male'])
+        session['female_pronoun'] = abbreviate(request.form['female'])
         return redirect('/names')
     else:
         try:
@@ -62,8 +71,18 @@ def pronouns():
 @app.route('/names', methods=['GET', 'POST'])
 def names():
     if request.method == 'POST':
-        session['new_names_list'] = request.form.getlist('new_names[]')
-        return redirect('/submit_names')
+        session['new_name_list'] = request.form.getlist('new_names[]')
+        session['name_matches'] = {}
+        for item in zip(session['name_list'], session['new_name_list']):
+            if item[1]:
+                session['name_matches'][item[0]] = item[1]
+        parameters = {
+            'male' : session['male_pronoun'],
+            'female': session['female_pronoun'],
+            'name matches': session['name_matches']
+            }
+        epub_filepath = process_epub(session['filepath'], parameters)        
+        return send_file(epub_filepath)
     else:
         try:
             if session['male_pronoun'] and session['female_pronoun']:
@@ -73,19 +92,4 @@ def names():
         except KeyError:
             return redirect('/')
 
-@app.route('/submit_names')
-def submit_names():
-    return render_template('submit_names.html')
-        
-@app.route('/send', methods=['GET','POST'])
-def send():
-    if request.method == 'POST':
-        file = request.files['file']
-        filepath = UPLOAD_DIR.joinpath(file.filename)
-        file.save(filepath)
-        epub_filepath = process_epub(filepath, EMPTY_PARAMETERS)
-        return send_file(epub_filepath)
-    else:
-        return redirect('/')
-    
 app.run(host='0.0.0.0', port=5001)

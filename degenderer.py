@@ -17,7 +17,7 @@ DEFAULT_PARAMETERS = {
     'verbose' : False,
     'year' : 1960,
     'name matches' : {},
-    'name choices' : 10
+    'name choices' : 20
     }
 
 def fill_defaults(parameters):
@@ -182,8 +182,10 @@ def get_name_matches(name_list, parameters):
     
 def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     parameters = fill_defaults(parameters)
-    name_dict = get_name_dict(book_soup)
-    name_list = get_sorted_name_list(drop_low(name_dict)) #Removing names with few occurrences
-    parameters['name matches'] = get_name_matches(name_list, parameters)
+    print(parameters)
+    #name_dict = get_name_dict(book_soup)
+    #name_list = get_sorted_name_list(drop_low(name_dict)) #Removing names with few occurrences
+    #parameters['name matches'] = get_name_matches(name_list, parameters)
+    #REMOVED PREVIOUS 2 LINES FOR WEB VERSION
     for soup in book_soup:
         degender_soup(soup, parameters)
