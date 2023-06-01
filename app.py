@@ -1,8 +1,9 @@
 # -*- coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 import sys
 from pathlib import Path
-from flask import Flask, request, redirect, render_template, send_file, session
-import config 
+from flask import Flask, jsonify, request, redirect, render_template, send_file, session
+import config
+from degenderer import suggest_name
 from process_book import process_epub, get_names
 
 app = Flask(__name__)
@@ -91,5 +92,17 @@ def names():
                 return redirect('/')
         except KeyError:
             return redirect('/')
+
+@app.route('/suggest-nb', methods=['POST'])
+def suggest_nb():
+    return jsonify({'suggested_name': suggest_name('nb')})
+
+@app.route('/suggest-female', methods=['POST'])
+def suggest_female():
+    return jsonify({'suggested_name': suggest_name('f')})
+
+@app.route('/suggest-male', methods=['POST'])
+def suggest_male():
+    return jsonify({'suggested_name': suggest_name('m')})
 
 app.run(host='0.0.0.0', port=5001)

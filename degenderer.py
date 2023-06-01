@@ -3,6 +3,7 @@ This is where the degendering takes place.
 """
 import regex
 import sys
+import random
 from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_text
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
@@ -20,6 +21,16 @@ DEFAULT_PARAMETERS = {
     'name choices' : 20
     }
 
+def suggest_name(gender):
+    if gender == 'nb':
+        return random.choice(NB_NAMES)
+    elif gender == 'f':
+        return random.choice(GIRL_NAMES)
+    elif gender == 'm':
+        return random.choice(BOY_NAMES)
+    else:
+        raise ValueError
+    
 def fill_defaults(parameters):
     for key in DEFAULT_PARAMETERS:
         if key not in parameters:
