@@ -1,10 +1,10 @@
-"""
+"""A
 This is where the degendering takes place.
 """
 import regex
 import sys
 import random
-from librarian import get_paragraph_text, pause, set_paragraph_text, get_book_text
+from librarian import get_paragraphs, get_paragraph_text, pause, set_paragraph_text, get_book_text
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
 from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_NAMES_BY_DECADE
@@ -169,7 +169,7 @@ def degender_paragraph(paragraph, parameters):
     set_paragraph_text(paragraph, text, verbose=parameters['verbose'])
               
 def degender_soup(soup, parameters):
-    for paragraph in soup.find_all('p'):
+    for paragraph in get_paragraphs(soup):
         degender_paragraph(paragraph, parameters)
 
 def get_all_name_matches(name_list, parameters):

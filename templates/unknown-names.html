@@ -28,34 +28,34 @@
     <table>
       <thead>
         <tr>
-          <th>Existing Name</th>
-          <th>New Name</th>
+          <th>Existing Word</th>
+          <th>New Word</th>
 	  <th></th>
 	  <th></th>
           <th></th> <!-- New column for the suggestion button -->
         </tr>
       </thead>
       <tbody>
-        {% for name in session['potential_name_list'] %}
-          <tr>
-            <td class="existing-name">{{ name }}</td>
-            <td><input type="text" name="new_names[]" /></td>
-            <td>
-              <button type="button" onclick="suggest_nb(this.parentNode.parentNode)">
-                NB
-              </button>
-            </td>
-	    <td>
-              <button type="button" onclick="suggest_female(this.parentNode.parentNode)">
-                F
-              </button>
-            </td>
-	    <td>
-              <button type="button" onclick="suggest_male(this.parentNode.parentNode)">
-                M
-              </button>
-            </td>
-          </tr>
+	{% for _ in range(10) %}
+        <tr>
+	  <td><input type="text" name="existing_words[]" /></td>
+          <td><input type="text" name="new_words[]" /></td>
+          <td>
+            <button type="button" onclick="suggest_nb(this.parentNode.parentNode)">
+              NB
+            </button>
+          </td>
+	  <td>
+            <button type="button" onclick="suggest_female(this.parentNode.parentNode)">
+              F
+            </button>
+          </td>
+	  <td>
+            <button type="button" onclick="suggest_male(this.parentNode.parentNode)">
+              M
+            </button>
+          </td>
+        </tr>
         {% endfor %}
         <tr>
           <td colspan="3"><button type="submit">Submit</button></td>

@@ -44,9 +44,9 @@ def upload():
       print('known_names:', known_names)
       potential_names = get_potential_names(filepath)
       potential_names = [name for name in potential_names if not name in known_names]
-      session['known_name_list'] = known_names[:20]
+      session['known_name_list'] = known_names
       print(session['known_name_list'])
-      session['potential_name_list'] = potential_names[:20]
+      session['potential_name_list'] = potential_names[:30]
       print(session['potential_name_list'])
       session['name_matches'] = {}
       return redirect('/pronouns')
@@ -79,13 +79,18 @@ def pronouns():
 @app.route('/known-names', methods=['GET', 'POST'])
 def known_names():
     if request.method == 'POST':
+        print('known names POST - session name matches:', session['name_matches'])
         new_name_list = request.form.getlist('new_names[]')
+        print('known names - new names:', new_name_list)
         for item in zip(session['known_name_list'], new_name_list):
             if item[1]:
                 session['name_matches'][item[0]] = item[1]
+        session.modified = True
+        print('known names - name matches', session['name_matches'])
         return redirect('/potential-names')
     else:
         try:
+            print('known names GET - session name matches:', session['name_matches'])
             if session['male_pronoun'] and session['female_pronoun']:
                 return render_template('known-names.html')
             else:
@@ -96,20 +101,16 @@ def known_names():
 @app.route('/potential-names', methods=['GET', 'POST'])
 def potential_names():
     if request.method == 'POST':
-        session['new_name_list'] = request.form.getlist('new_names[]')
-        session['name_matches'] = {}
-        for item in zip(session['potential_name_list'], session['new_name_list']):
+        print('potential names POST - session name matches:', session['name_matches'])
+        new_name_list = request.form.getlist('new_names[]')
+        for item in zip(session['potential_name_list'], new_name_list):
             if item[1]:
                 session['name_matches'][item[0]] = item[1]
-        parameters = {
-            'male' : session['male_pronoun'],
-            'female': session['female_pronoun'],
-            'name matches': session['name_matches']
-            }
-        epub_filepath = process_epub(session['filepath'], parameters)        
-        return send_file(epub_filepath)
+        session.modified = True
+        return redirect('/unknown-names')
     else:
         try:
+            print('potential names GET - session name matches:', session['name_matches'])
             if session['male_pronoun'] and session['female_pronoun']:
                 return render_template('potential-names.html')
             else:
@@ -117,6 +118,35 @@ def potential_names():
         except KeyError:
             return redirect('/')
 
+@app.route('/unknown-names', methods=['GET', 'POST'])
+def unknown_names():
+    if request.method == 'POST':
+        print('unknown names POST - session name matches:', session['name_matches'])
+        unknown_name_list = request.form.getlist('existing_words[]')
+        new_name_list = request.form.getlist('new_words[]')
+        for item in zip(unknown_name_list, new_name_list):
+            if item[0] and item[1]:
+                session['name_matches'][item[0]] = item[1]
+        session.modified = True
+        parameters = {
+            'male' : session['male_pronoun'],
+            'female': session['female_pronoun'],
+            'name matches': session['name_matches'],
+            'verbose': False
+            }
+        epub_filepath = process_epub(session['filepath'], parameters)        
+        return send_file(epub_filepath)
+    else:
+        try:
+            print('unknown names GET - session name matches:', session['name_matches'])
+            if session['male_pronoun'] and session['female_pronoun']:
+                return render_template('unknown-names.html')
+            else:
+                return redirect('/')
+        except KeyError:
+            return redirect('/')
+
+        
 @app.route('/suggest-nb', methods=['POST'])
 def suggest_nb():
     return jsonify({'suggested_name': suggest_name('nb')})
