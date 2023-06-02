@@ -78,7 +78,7 @@ def change_pronouns(text, male, female, verbose=False):
     return fix_text(text)
 
 def get_book_names(book_soup, verbose=False):
-    #This gets all proper names used in the book
+    #Tries to get all proper names used in the book
     book_text = get_book_text(book_soup)
     pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
     matches = regex.findall(pattern, book_text)
@@ -95,11 +95,10 @@ def get_book_names(book_soup, verbose=False):
     return name_dict
 
 def get_name_dict(book_soup, verbose=False):
-    #This gets the best known first names used in the book
+    #ets the best known first names used in the book
     book_text = get_book_text(book_soup)
     word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
-    name_list = [word for word in word_list if (word in ALL_NAMES
-                                                and word not in AMBIGUOUS_NAMES)]
+    name_list = [word for word in word_list if word in ALL_NAMES]
     name_dict = {}
     for name in name_list:
         if name in name_dict:
