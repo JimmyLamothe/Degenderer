@@ -4,4 +4,9 @@ JULIET --> MARION
 Add terms for genitals - cock, pussy, etc.
 Don't suggest names that have been suggested
 Fix the <div> in addition to <p> issue that messed up R & J formatting
-Add a All F - All NB - ALL M at the top
+
+
+
+
+
+DONE - Add a All F - All NB - ALL M at the top

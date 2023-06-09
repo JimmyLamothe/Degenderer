@@ -149,14 +149,17 @@ def unknown_names():
         
 @app.route('/suggest-nb', methods=['POST'])
 def suggest_nb():
-    return jsonify({'suggested_name': suggest_name('nb')})
+    suggestion = suggest_name('nb')
+    return jsonify({'suggested_name': suggestion})
 
 @app.route('/suggest-female', methods=['POST'])
 def suggest_female():
-    return jsonify({'suggested_name': suggest_name('f')})
+    suggestion = suggest_name('f')
+    return jsonify({'suggested_name': suggestion})
 
 @app.route('/suggest-male', methods=['POST'])
 def suggest_male():
-    return jsonify({'suggested_name': suggest_name('m')})
+    suggestion = suggest_name('m')
+    return jsonify({'suggested_name': suggestion})
 
 app.run(host='0.0.0.0', port=5001)
