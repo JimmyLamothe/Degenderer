@@ -38,8 +38,14 @@ def create_soup(book):
 
 def get_paragraphs(soup):
     paragraphs = soup.find_all('p')
-    divs = soup.find_all('div')
-    return paragraphs + divs
+    for div in soup.find_all('div'):
+        if not div.find('p'):
+            if div.get_text():
+                print('No p and text found' + div.get_text())
+                paragraphs.append(div)
+            else:
+                print('No p and text not found' + div.get_text())
+    return paragraphs
 
 def get_paragraph_list(book_soup):
     paragraph_list = []

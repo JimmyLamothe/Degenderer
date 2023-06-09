@@ -48,8 +48,8 @@ def process_epub(filepath, parameters):
             parameters = json.load(file)
     book = read_epub(input_filepath)
     book_soup = create_soup(book)
-    name_dict = get_book_names(book_soup)
     """
+    name_dict = get_book_names(book_soup)
     name_list = []
     for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
         name_list.append(key)
