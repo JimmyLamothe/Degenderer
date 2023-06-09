@@ -1,4 +1,4 @@
-"""A
+"""
 This is where the degendering takes place.
 """
 import regex
@@ -165,8 +165,9 @@ def degender_paragraph(paragraph, parameters):
     if parameters['verbose']:
         print('Pre-text:')
         print(text)
-    text = degender_text(text, parameters)
-    set_paragraph_text(paragraph, text, verbose=parameters['verbose'])
+    new_text = degender_text(text, parameters)
+    if new_text != text:
+        set_paragraph_text(paragraph, new_text, verbose=parameters['verbose'])
               
 def degender_soup(soup, parameters):
     for paragraph in get_paragraphs(soup):

@@ -122,8 +122,8 @@ def potential_names():
 def unknown_names():
     if request.method == 'POST':
         print('unknown names POST - session name matches:', session['name_matches'])
-        unknown_name_list = request.form.getlist('existing_words[]')
-        new_name_list = request.form.getlist('new_words[]')
+        unknown_name_list = request.form.getlist('existing_names[]')
+        new_name_list = request.form.getlist('new_names[]')
         for item in zip(unknown_name_list, new_name_list):
             if item[0] and item[1]:
                 session['name_matches'][item[0]] = item[1]

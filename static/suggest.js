@@ -1,7 +1,6 @@
 var suggestedNames = []; // Initialize an empty array to store suggested names
 
 function suggest_male(row) {
-    var existingName = row.querySelector('.existing-name').textContent;
     var recursionCalls = 0
     // Define the recursive function for suggesting a name
     function suggestName() {
@@ -9,7 +8,6 @@ function suggest_male(row) {
         $.ajax({
             type: 'POST',
             url: '/suggest-male',
-            data: JSON.stringify({'existing_name': existingName}),
             contentType: 'application/json',
             success: function(response) {
                 var suggestedName = response.suggested_name;
@@ -38,28 +36,7 @@ function suggest_male(row) {
     suggestName();
 }
 
-function suggest_male_backup(row) {
-    // Old version that doesn't check for duplicates
-    var existingName = row.querySelector('.existing-name').textContent;
-
-    $.ajax({
-        type: 'POST',
-        url: '/suggest-male',
-        data: JSON.stringify({'existing_name': existingName}),
-        contentType: 'application/json',
-        success: function(response) {
-            var suggestedName = response.suggested_name;
-            var inputField = row.querySelector('input[name="new_names[]"]');
-            inputField.value = suggestedName;
-        },
-        error: function() {
-            console.error('Failed to suggest name.');
-        }
-    });
-}
-
 function suggest_female(row) {
-    var existingName = row.querySelector('.existing-name').textContent;
     var recursionCalls = 0
     // Define the recursive function for suggesting a name
     function suggestName() {
@@ -67,7 +44,6 @@ function suggest_female(row) {
         $.ajax({
             type: 'POST',
             url: '/suggest-female',
-            data: JSON.stringify({'existing_name': existingName}),
             contentType: 'application/json',
             success: function(response) {
                 var suggestedName = response.suggested_name;
@@ -96,27 +72,7 @@ function suggest_female(row) {
     suggestName();
 }
 
-function suggest_female_backup(row) {
-    // Old version that doesn't check for duplicates
-    var existingName = row.querySelector('.existing-name').textContent;
-    $.ajax({
-        type: 'POST',
-        url: '/suggest-female',
-        data: JSON.stringify({'existing_name': existingName}),
-        contentType: 'application/json',
-        success: function(response) {
-            var suggestedName = response.suggested_name;
-            var inputField = row.querySelector('input[name="new_names[]"]');
-            inputField.value = suggestedName;
-        },
-        error: function() {
-            console.error('Failed to suggest name.');
-        }
-    });
-}
-
 function suggest_nb(row) {
-    var existingName = row.querySelector('.existing-name').textContent;
     var recursionCalls = 0
     // Define the recursive function for suggesting a name
     function suggestName() {
@@ -124,7 +80,6 @@ function suggest_nb(row) {
         $.ajax({
             type: 'POST',
             url: '/suggest-nb',
-            data: JSON.stringify({'existing_name': existingName}),
             contentType: 'application/json',
             success: function(response) {
                 var suggestedName = response.suggested_name;
@@ -151,26 +106,6 @@ function suggest_nb(row) {
 
     // Start the recursive suggestion process
     suggestName();
-}
-
-function suggest_nb_backup(row) {
-    // Old version that doesn't check for duplicates
-    var existingName = row.querySelector('.existing-name').textContent;
-
-    $.ajax({
-        type: 'POST',
-        url: '/suggest-nb',
-        data: JSON.stringify({'existing_name': existingName}),
-        contentType: 'application/json',
-        success: function(response) {
-            var suggestedName = response.suggested_name;
-            var inputField = row.querySelector('input[name="new_names[]"]');
-            inputField.value = suggestedName;
-        },
-        error: function() {
-            console.error('Failed to suggest name.');
-        }
-    });
 }
     
 function suggestAll(type) {

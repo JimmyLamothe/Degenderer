@@ -1,4 +1,4 @@
-"""AA
+"""
 This is where the degendering takes place.
 """
 import regex
