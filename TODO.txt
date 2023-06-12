@@ -2,12 +2,24 @@ pip install epubcheck
 Commander's --> Commanderessa's
 JULIET --> MARION
 Add terms for genitals - cock, pussy, etc.
-Check if get_paragraph_text and set_paragraph_text should work differently for <p> and <div>
-      This implies keeping both separate in degender_soup
 Make sure the names in potential names aren't already taken care of by the pronoun list
 Fix the messed up formatting in Romeo and Juliet that loses the line return after the capital
 name
+Good names for Brokeback: Myrtle & Mandy
+Check if using p.contents (and d.contents?) can fix the formatting issues
+
+
 
 
 DONE - Don't suggest names that have been suggested
 DONE - Add a All F - All NB - ALL M at the top
+DONE - Check if get_paragraph_text and set_paragraph_text should work differently for <p> and <div>
+       Wasn't necessary to fix the bug but they are now still separate
+Names to non-binarize:
+
+Mistress - Master
+Guys - Guy
+Dad
+Maid
+Friar
+daddy

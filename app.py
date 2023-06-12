@@ -132,7 +132,7 @@ def unknown_names():
             'male' : session['male_pronoun'],
             'female': session['female_pronoun'],
             'name matches': session['name_matches'],
-            'verbose': False
+            'verbose': True
             }
         epub_filepath = process_epub(session['filepath'], parameters)        
         return send_file(epub_filepath)

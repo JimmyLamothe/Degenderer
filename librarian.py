@@ -36,25 +36,49 @@ def create_soup(book):
     book_items = get_book_items(book)
     return [item_to_soup(item) for item in book_items]
 
+def is_string(soup_item):
+    return type(soup_item) == bs4.element.NavigableString
+
+def set_text(navigable_string, text, verbose=False):
+    if verbose:
+        print('Paragraph pre-text:')
+        print(paragraph.text)
+        print('Changing to:')
+        print(text)
+    navigable_string.replace_with(text)
+    if verbose:
+        print('Paragraph post-text:')
+        print(paragraph.text)
+        pause()
+
 def get_paragraphs(soup):
     paragraphs = soup.find_all('p')
-    for div in soup.find_all('div'):
-        if not div.find('p'):
-            if div.get_text():
-                print('No p and text found' + div.get_text())
-                paragraphs.append(div)
-            else:
-                print('No p and text not found' + div.get_text())
     return paragraphs
+
+def get_divs(soup):
+    divs = []
+    for div in soup.find_all('div'):
+        if not div.find('p') and not div.find('div'):
+            if div.get_text():
+                divs.append(div)
+    return divs
+
+def get_paragraphs_and_divs(soup):
+    paragraphs = get_paragraphs(soup)
+    divs = get_divs(soup)
+    return paragraphs + divs
 
 def get_paragraph_list(book_soup):
     paragraph_list = []
     for soup in book_soup:
-        paragraph_list.extend(get_paragraphs(soup))
+        paragraph_list.extend(get_paragraphs_and_divs(soup))
     return paragraph_list
 
 def get_paragraph_text(paragraph):
     return paragraph.get_text()
+
+def get_div_text(div):
+    return div.get_text()
 
 def set_paragraph_text(paragraph, text, verbose=False):
     if verbose:
@@ -69,6 +93,19 @@ def set_paragraph_text(paragraph, text, verbose=False):
         print(paragraph.text)
         pause()
 
+def set_div_text(div, text, verbose=False):
+    if verbose:
+        print('Div pre-text:')
+        print(div.text)
+        print('Changing to:')
+        print(text)
+    div.clear()
+    div.append(text)
+    if verbose:
+        print('Div post-text:')
+        print(div.text)
+        pause()
+        
 def get_book_names(book_soup, verbose=False):
     book_text = get_book_text(book_soup)
     name_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
@@ -91,7 +128,7 @@ def soup_to_book(book_soup, book):
     book_items = get_book_items(book)
     for soup, item in zip(book_soup, book_items):
         #print('soup:\n', str(soup))
-        if soup.find('p'):
+        if soup.find('p') or soup.find('div'):
             #print('pre-item:\n', item.get_content())
             #pause()
             #item.set_content(''.join([str(paragraph) for paragraph in soup.find_all('p')]))

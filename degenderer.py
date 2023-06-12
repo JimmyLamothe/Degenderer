@@ -5,6 +5,7 @@ import regex
 import sys
 import random
 from librarian import get_paragraphs, get_paragraph_text, pause, set_paragraph_text, get_book_text
+from librarian import get_divs, get_div_text, set_div_text, is_string
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
 from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
 from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_NAMES_BY_DECADE
@@ -41,7 +42,7 @@ def change_pronoun(pronoun, replacement, text, verbose=False):
     """Since the regex substitution is done for each pronoun in the whole text,
     we need to add a mark ('àéà') to avoid the pronouns we've just changed being
     changed back later. This mark will be removed in fix_text"""
-    if verbose:
+    if False:#verbose:
         print('Matching for : ' + pronoun)
         if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
@@ -134,7 +135,7 @@ def get_period_names(year, verbose=False):
     return period_names
 
 def change_name(name, match, text, verbose=False):
-    if verbose:
+    if False:#verbose:
         print('Matching for : ' + name)
         if regex.search(r"(?<![a-zA-Z'’-])" + name + r"(?![a-zA-Z'’-])", text):
             print('Name found!')
@@ -168,11 +169,84 @@ def degender_paragraph(paragraph, parameters):
     new_text = degender_text(text, parameters)
     if new_text != text:
         set_paragraph_text(paragraph, new_text, verbose=parameters['verbose'])
-              
-def degender_soup(soup, parameters):
-    for paragraph in get_paragraphs(soup):
-        degender_paragraph(paragraph, parameters)
 
+def degender_div(div, parameters):
+    text = get_div_text(div)
+    if parameters['verbose']:
+        print('Pre-text:')
+        print(text)
+    new_text = degender_text(text, parameters)
+    if new_text != text:
+        set_div_text(div, new_text, verbose=parameters['verbose'])
+
+def degender_string(string, parameters):
+    if parameters['verbose']:
+        print('Pre-text:')
+        print(string)
+    new_text = degender_text(string, parameters)
+    if parameters['verbose']:
+        print('Post-text:')
+        print(new_text)
+    if new_text != string:
+        print('returning new text')
+        return new_text
+    else:
+        return False
+
+def degender_tag(tag, tag_type, parameters):
+    print(f'pre {tag_type}')
+    print(tag)
+    new_contents = []
+    for (number, child) in enumerate(tag.contents):
+        print(number)
+        print(child)
+        if is_string(child):
+            new_string = degender_string(child, parameters)
+            if new_string:
+                child.replace_with(new_string)
+        print(f'post {tag_type}')
+        print(tag)
+        #pause()
+
+"""                            
+            new_string = degender_string(child, parameters)
+            print(f'new string = {new_string}')
+            if new_string:
+                print('appending new string')
+                print(f'old string: {child.replace_with(new_string)}')
+                new_contents.append(child)
+                print(f'new_contents: {new_contents}')
+            else:
+                print('appending original child')
+                new_contents.append(child)
+                print(f'new_contents: {new_contents}')
+        else:
+            print('appending original child')
+            new_contents.append(child)
+        tag.contents = new_contents
+"""
+    
+def degender_soup(soup, parameters):
+    for div in get_divs(soup):
+        degender_tag(div, 'div', parameters)
+    for p in get_paragraphs(soup):
+        degender_tag(p, 'paragraph', parameters)
+    """
+    for paragraph in get_paragraphs(soup):
+        #print('pre paragraph')
+        #print(paragraph)
+        degender_paragraph(paragraph, parameters)
+        #print('post_paragraph')
+        #print(paragraph)
+        #pause()
+    for div in get_divs(soup):
+        #print('pre div')
+        #print(div)
+        degender_div(div, parameters)
+        #print('post div')
+        #print(div)
+        #pause()
+    """ 
 def get_all_name_matches(name_list, parameters):
     period_names = get_period_names(parameters['year'])
     return list(zip(name_list, period_names))
