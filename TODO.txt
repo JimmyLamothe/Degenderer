@@ -3,18 +3,29 @@ Commander's --> Commanderessa's
 JULIET --> MARION
 Add terms for genitals - cock, pussy, etc.
 Make sure the names in potential names aren't already taken care of by the pronoun list
-Fix the messed up formatting in Romeo and Juliet that loses the line return after the capital
-name
 Good names for Brokeback: Myrtle & Mandy
-Check if using p.contents (and d.contents?) can fix the formatting issues
+Add <text> tag to conversion - possibly inside <navLabel>
+Add <td> tag to conversion
+Add <i> tag to conversion
+Validate the process_epub function - replace first part with epub validationx
 
-
-
+IN PROGRESS - Add text box
+   DONE - Web logic implemented
+   TODO - Degender text logic with process_text function
+   TODO - Conform text-upload and text-display look and functionality (HTML + CSS)
+   TODO - Add text-upload to top menu
 
 DONE - Don't suggest names that have been suggested
 DONE - Add a All F - All NB - ALL M at the top
 DONE - Check if get_paragraph_text and set_paragraph_text should work differently for <p> and <div>
        Wasn't necessary to fix the bug but they are now still separate
+DONE - Check if using p.contents (and d.contents?) can fix the formatting issues
+DONE - Fix the messed up formatting in Romeo and Juliet that loses the line return
+       after the capital name
+
+CANCELLED - Add PDF - Too complicated to do correctly
+
+
 Names to non-binarize:
 
 Mistress - Master

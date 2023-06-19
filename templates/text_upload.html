@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text Upload</title>
+</head>
+<body>
+  <h1>Paste some text here to get a degendered version</h1>
+  <form method="post" onsubmit="return validateForm()">
+    <textarea name="text" id="text" rows="10" cols="50"></textarea>
+    <br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    function validateForm() {
+      var textArea = document.getElementById("text");
+      var textValue = textArea.value.trim(); // Remove leading/trailing whitespace
+      if (textValue === "") {
+        alert("Please enter some text.");
+        return false; // Prevent form submission
+      }
+      var fileSizeInBytes = new Blob([textValue]).size;
+      var fileSizeInKB = fileSizeInBytes / 1024;
+
+      if (fileSizeInKB > 1024) {
+        alert("Text size exceeds the maximum limit of 1024KB.");
+        return false; // Prevent form submission
+      }
+      return true; // Allow form submission
+    }
+  </script>
+</body>
+</html>

@@ -2,9 +2,10 @@
 import sys
 from pathlib import Path
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
+from markupsafe import escape
 import config
 from degenderer import suggest_name
-from process_book import process_epub, get_known_names, get_potential_names
+from process_book import process_epub, process_text, get_known_names, get_potential_names
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.SECRET_KEY
@@ -36,22 +37,32 @@ def select_book():
 @app.route('/upload', methods=['GET','POST'])
 def upload():
     if request.method == 'POST':
-      file = request.files['file']
-      filepath = UPLOAD_DIR.joinpath(file.filename)
-      file.save(filepath)
-      session['filepath'] = str(filepath)
-      known_names = get_known_names(filepath)
-      print('known_names:', known_names)
-      potential_names = get_potential_names(filepath)
-      potential_names = [name for name in potential_names if not name in known_names]
-      session['known_name_list'] = known_names
-      print(session['known_name_list'])
-      session['potential_name_list'] = potential_names[:30]
-      print(session['potential_name_list'])
-      session['name_matches'] = {}
-      return redirect('/pronouns')
+        session['text'] = '' #Clear any text in memory from text box
+        file = request.files['file']
+        filepath = UPLOAD_DIR.joinpath(file.filename)
+        file.save(filepath)
+        session['filepath'] = str(filepath)
+        known_names = get_known_names(filepath)
+        print('known_names:', known_names)
+        potential_names = get_potential_names(filepath)
+        potential_names = [name for name in potential_names if not name in known_names]
+        session['known_name_list'] = known_names
+        print(session['known_name_list'])
+        session['potential_name_list'] = potential_names[:30]
+        print(session['potential_name_list'])
+        session['name_matches'] = {}
+        return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
 
+@app.route('/text-upload', methods=['GET', 'POST'])
+def text_upload():
+    if request.method == 'POST':
+        session['text'] = escape(request.form.get('text'))
+        print(f'session text in text_upload: {session["text"]}')
+        return redirect('/pronouns')
+    return render_template('text-upload.html')
+        
+            
 @app.route('/pronouns', methods=['GET', 'POST'])
 def pronouns():
     def abbreviate(pronoun):
@@ -66,10 +77,16 @@ def pronouns():
     if request.method == 'POST':
         session['male_pronoun'] = abbreviate(request.form['male'])
         session['female_pronoun'] = abbreviate(request.form['female'])
-        return redirect('/known-names')
+        try:
+            if session['text']: #If we got here via text box input
+                print(f'session text in pronouns: {session["text"]}')
+                return redirect('/unknown-names')
+        except KeyError:
+            pass
+        return redirect('/known-names') #If we got here via file upload
     else:
         try:
-            if session['filepath']:
+            if session['filepath'] or session['text']:
                 return render_template('pronouns.html')
             else:
                 return redirect('/')
@@ -134,6 +151,13 @@ def unknown_names():
             'name matches': session['name_matches'],
             'verbose': True
             }
+        try:
+            if session['text']: #If we got here via text box input
+                session['text'] = process_text(escape(session['text']))
+                #We escape a second time in case the session cookie was hacked
+                return redirect('/text-display')
+        except KeyError: #If we got here via file upload
+            pass
         epub_filepath = process_epub(session['filepath'], parameters)        
         return send_file(epub_filepath)
     else:
@@ -146,6 +170,14 @@ def unknown_names():
         except KeyError:
             return redirect('/')
 
+@app.route('/text-display', methods=['GET'])
+def text_display():
+    try:
+        if session['text']:
+            return render_template('text-display.html')
+    except KeyError:
+        pass
+    return redirect('/') #If we don't have text to display, go to home page
         
 @app.route('/suggest-nb', methods=['POST'])
 def suggest_nb():

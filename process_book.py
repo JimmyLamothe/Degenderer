@@ -34,7 +34,7 @@ def get_known_names(book_file):
 
 def process_epub(filepath, parameters):
     input_filepath = Path(filepath)
-    if not input_filepath.suffix == '.epub':
+    if not input_filepath.suffix == '.epub': #Validate this part - why?
         output_filepath = WORKING_DIR.joinpath(str(uuid.uuid4()) + '.epub')
     else:
         output_filename = input_filepath.stem
@@ -60,3 +60,6 @@ def process_epub(filepath, parameters):
     write_epub(book, output_filepath)
     print(output_filepath)
     return output_filepath
+
+def process_text(text):
+    return text #Temp function to test webpage
