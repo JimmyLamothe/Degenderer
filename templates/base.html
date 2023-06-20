@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_stylesheets %}{% endblock %}
+    {% block head_scripts %}{% endblock %}
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+	<img src="{{ url_for('static', filename='logo_dark_transparent.png') }}" alt="The Degenderer / Regenderer logo">
+      </div>
+      <nav>
+	<ul class="menu">
+	  <li><a href="{{ url_for('home') }}"></a></li>
+	  <li><a href="{{ url_for('home') }}">Home</a></li>
+	  <li><a href="{{ url_for('samples') }}">Samples</a></li>
+	  <li><a href="{{ url_for('text_upload') }}">Copy Text</a></li>
+	  <li><a href="{{ url_for('upload_book') }}">Upload Book</a></li>
+	  <li><a href="https://www.gutenberg.org/" target="_blank">Project Gutenberg</a></li>
+	</ul>
+      </nav>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    {% block body_scripts %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+	<img src="{{ url_for('static', filename='logo_dark_transparent.png') }}" alt="The Degenderer / Regenderer logo">
+      </div>
+      <nav>
+	<ul class="menu">
+	  <li><a href="{{ url_for('home') }}"></a></li>
+	  <li><a href="{{ url_for('home') }}">Home</a></li>
+	  <li><a href="{{ url_for('samples') }}">Samples</a></li>
+	  <li><a href="{{ url_for('pronouns') }}">Make your own</a></li>
+	  <li><a href="{{ url_for('select_book') }}">Upload</a></li>
+	  <li><a href="https://www.gutenberg.org/" target="_blank">Project Gutenberg</a></li>
+	</ul>
+      </nav>
+    </header>
+    <main>
+      <h2>Upload a Book</h2>
+      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+      </form>
+    </main>
+    <script src="static/select.js"></script>
+  </body>
+</html>
