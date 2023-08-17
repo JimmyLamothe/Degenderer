@@ -30,9 +30,9 @@ def download(filename):
     filename = filename + '.epub'
     return send_file(SAMPLE_DIR.joinpath(filename), as_attachment=True)
 
-@app.route('/select')
-def select_book():
-    return render_template('select_js.html')
+@app.route('/upload-book')
+def upload_book():
+    return render_template('upload-book.html')
 
 @app.route('/upload', methods=['GET','POST'])
 def upload():
@@ -61,8 +61,18 @@ def text_upload():
         print(f'session text in text_upload: {session["text"]}')
         return redirect('/pronouns')
     return render_template('text-upload.html')
-        
-            
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        modified_query = query.replace(' ', '+')
+        start_url = 'https://www.gutenberg.org/ebooks/search/?query=>'
+        end_url = '&submit_search=Go%21'
+        search_url = start_url + modified_query + end_url
+        return redirect(search_url)
+    return render_template('search.html')
+
 @app.route('/pronouns', methods=['GET', 'POST'])
 def pronouns():
     def abbreviate(pronoun):

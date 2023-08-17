@@ -1,3 +1,4 @@
+Add search box to go directly to Gutenberg Project search results.
 pip install epubcheck
 Commander's --> Commanderessa's
 JULIET --> MARION
