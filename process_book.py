@@ -1,4 +1,3 @@
-import sys
 import json
 import uuid
 from pathlib import Path
@@ -18,8 +17,7 @@ def get_potential_names(book_file):
     short_name_dict = {key: value for key, value in name_dict.items() if value >= 5}
     name_list = []
     for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
-        name_list.append(key)
-    
+        name_list.append(key)    
     return name_list
 
 def get_known_names(book_file):

@@ -274,3 +274,30 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     #REMOVED PREVIOUS 2 LINES FOR WEB VERSION
     for soup in book_soup:
         degender_soup(soup, parameters)
+
+def get_text_dict(text):
+    word_list = regex.sub(r'[^\p{Latin}]',' ',text).split()
+    name_list = [word for word in word_list if (word in ALL_NAMES
+                                                and word not in AMBIGUOUS_NAMES)]
+    name_dict = {}
+    for name in name_list:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
+
+def get_text_names(text):
+    pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
+    matches = regex.findall(pattern, text)
+    names = []
+    for match in matches:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
+            names += [match]
+    name_dict = {}
+    for name in names:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
