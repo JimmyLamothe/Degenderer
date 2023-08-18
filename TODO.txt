@@ -1,15 +1,17 @@
 If name is already in the list of NB - M - F names, leave it as is the first time.
 Warn for common names in potential name list
 Make sure the names in potential names aren't already taken care of by the pronoun list
-Commander's --> Commanderessa's
-JULIET --> MARION
-Replacement of lower case - title case - upper case at once
 Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
-Validate the process_epub function - replace first part with epub validationx
+Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
-Make sure 's possessives are degendered/regendered - hard code if necessary
+Add a download page to tell the user they can keep browsing until their book is ready
 
+IN PROGRESS - Check ways to make conversion faster
+   	      Title + Upper case pronouns added a lot of time
+
+DONE - Make sure 's possessives are degendered/regendered - hard code if necessary
+DONE - Commander's --> Commanderessa's
 DONE - Add text box
    DONE - Web logic implemented
    DONE - Degender text logic with process_text function
@@ -25,6 +27,9 @@ DONE - Check if get_paragraph_text and set_paragraph_text should work differentl
 DONE - Check if using p.contents (and d.contents?) can fix the formatting issues
 DONE - Fix the messed up formatting in Romeo and Juliet that loses the line return
        after the capital name
+DONE - JULIET --> MARION
+DONE - Replacement of lower case - title case - upper case at once
+
 
 BETTER SOLUTION FOUND - Add <text> tag to conversion - possibly inside <navLabel>
 BETTER SOLUTION FOUND - Add <td> tag to conversion
@@ -43,6 +48,11 @@ Friar
 daddy
 master - mistress
 girl/boy to kid instead of youth
+madman/madwoman
 
 Names to add to common words:
 Will
+All months
+All seasons
+All flowers
+
