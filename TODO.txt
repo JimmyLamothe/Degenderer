@@ -1,14 +1,13 @@
 If name is already in the list of NB - M - F names, leave it as is the first time.
-pip install epubcheck
+Warn for common names in potential name list
+Make sure the names in potential names aren't already taken care of by the pronoun list
 Commander's --> Commanderessa's
 JULIET --> MARION
+Replacement of lower case - title case - upper case at once
 Add terms for genitals - cock, pussy, etc.
-Make sure the names in potential names aren't already taken care of by the pronoun list
 Good names for Brokeback: Myrtle & Mandy
-Add <text> tag to conversion - possibly inside <navLabel>
-Add <td> tag to conversion
-Add <i> tag to conversion
 Validate the process_epub function - replace first part with epub validationx
+pip install epubcheck
 Make sure 's possessives are degendered/regendered - hard code if necessary
 
 DONE - Add text box
@@ -26,6 +25,10 @@ DONE - Check if get_paragraph_text and set_paragraph_text should work differentl
 DONE - Check if using p.contents (and d.contents?) can fix the formatting issues
 DONE - Fix the messed up formatting in Romeo and Juliet that loses the line return
        after the capital name
+
+BETTER SOLUTION FOUND - Add <text> tag to conversion - possibly inside <navLabel>
+BETTER SOLUTION FOUND - Add <td> tag to conversion
+BETTER SOLUTION FOUND - Add <i> tag to conversion
 
 CANCELLED - Add PDF - Too complicated to do correctly
 
