@@ -7,10 +7,9 @@ import random
 from librarian import get_paragraphs, get_paragraph_text, pause, set_paragraph_text, get_book_text
 from librarian import get_divs, get_div_text, set_div_text, is_string
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
-from reference_library import GENDERED_NAMES, GENDERED_NAMES_BY_DECADE, AMBIGUOUS_NAMES
-from reference_library import BOY_NAMES, BOY_NAMES_BY_DECADE, GIRL_NAMES, GIRL_NAMES_BY_DECADE
-from reference_library import PRONOUN_DICTIONARY, ALL_NAMES_BY_DECADE, COMMON_WORDS
-from reference_library import NB_PRONOUN_DICT, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
+from reference_library import AMBIGUOUS_NAMES
+from reference_library import BOY_NAMES, GIRL_NAMES
+from reference_library import COMMON_WORDS, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
 DEFAULT_PARAMETERS = {
@@ -42,7 +41,7 @@ def change_pronoun(pronoun, replacement, text, verbose=False):
     """Since the regex substitution is done for each pronoun in the whole text,
     we need to add a mark ('àéà') to avoid the pronouns we've just changed being
     changed back later. This mark will be removed in fix_text"""
-    if False:#verbose:
+    if False:#verbose: #this is usually too verbose so is always skipped 
         print('Matching for : ' + pronoun)
         if regex.search(r'\b' + pronoun + r'\b', text):
             print('Pronoun found!')
@@ -51,6 +50,8 @@ def change_pronoun(pronoun, replacement, text, verbose=False):
     return text
 
 def fix_text(text):
+    """ Various substitutions to fix problems created by the fact
+    we check pronouns one at a time """
     text = regex.sub(r'àéà', '', text)
     text = regex.sub(r'His/Him/Hers', 'Her/Hers', text)
     text = regex.sub(r'Their/Them/Hers', 'Her/Hers', text)
@@ -112,7 +113,7 @@ def get_sorted_name_list(name_dict, verbose=False):
     return lazy_shuffle_keys(name_dict, reverse=True)
     
 def get_period_names(year, verbose=False):
-    """
+    """ NOT CURRENTLY USED """
     if gender == 'm':
         print('m')
         name_list = BOY_NAMES_BY_DECADE
@@ -125,8 +126,6 @@ def get_period_names(year, verbose=False):
         else:
             print('nb')
             name_list = NB_NAMES_BY_DECADE
-    """
-    name_list = NB_NAMES_BY_DECADE
     target_decade = year + 30
     name_diff_dict = {item : get_min_diff(year, value)
                          for (item, value)in name_list.items()}
@@ -161,24 +160,6 @@ def degender_text(text, parameters):
             print(text)
     return text
 
-def degender_paragraph(paragraph, parameters):
-    text = get_paragraph_text(paragraph)
-    if parameters['verbose']:
-        print('Pre-text:')
-        print(text)
-    new_text = degender_text(text, parameters)
-    if new_text != text:
-        set_paragraph_text(paragraph, new_text, verbose=parameters['verbose'])
-
-def degender_div(div, parameters):
-    text = get_div_text(div)
-    if parameters['verbose']:
-        print('Pre-text:')
-        print(text)
-    new_text = degender_text(text, parameters)
-    if new_text != text:
-        set_div_text(div, new_text, verbose=parameters['verbose'])
-
 def degender_string(string, parameters):
     if parameters['verbose']:
         print('Pre-text:')
@@ -207,51 +188,33 @@ def degender_tag(tag, tag_type, parameters):
         print(f'post {tag_type}')
         print(tag)
         #pause()
-
-"""                            
-            new_string = degender_string(child, parameters)
-            print(f'new string = {new_string}')
-            if new_string:
-                print('appending new string')
-                print(f'old string: {child.replace_with(new_string)}')
-                new_contents.append(child)
-                print(f'new_contents: {new_contents}')
-            else:
-                print('appending original child')
-                new_contents.append(child)
-                print(f'new_contents: {new_contents}')
-        else:
-            print('appending original child')
-            new_contents.append(child)
-        tag.contents = new_contents
-"""
     
 def degender_soup(soup, parameters):
     for div in get_divs(soup):
         degender_tag(div, 'div', parameters)
     for p in get_paragraphs(soup):
         degender_tag(p, 'paragraph', parameters)
-    """
-    for paragraph in get_paragraphs(soup):
-        #print('pre paragraph')
-        #print(paragraph)
-        degender_paragraph(paragraph, parameters)
-        #print('post_paragraph')
-        #print(paragraph)
-        #pause()
-    for div in get_divs(soup):
-        #print('pre div')
-        #print(div)
-        degender_div(div, parameters)
-        #print('post div')
-        #print(div)
-        #pause()
-    """ 
+
+def degender_all(item, parameters):
+    """ Test function to replace degender_soup """
+    if is_string(item):
+        new_string = degender_string(item, parameters)
+        if new_string:
+            item.replace_with(new_string)
+    try:
+        if item.contents:
+            for child in item.contents:
+                degender_all(child, parameters)    
+    except AttributeError:
+        pass
+    
 def get_all_name_matches(name_list, parameters):
+    """ NOT CURRENTLY USED """
     period_names = get_period_names(parameters['year'])
     return list(zip(name_list, period_names))
     
 def get_name_matches(name_list, parameters):
+    """ NOT CURRENTLY USED """
     name_matches = {}
     name_match_list = get_all_name_matches(name_list, parameters)
     import sys
@@ -273,7 +236,8 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     #parameters['name matches'] = get_name_matches(name_list, parameters)
     #REMOVED PREVIOUS 2 LINES FOR WEB VERSION
     for soup in book_soup:
-        degender_soup(soup, parameters)
+        #degender_soup(soup, parameters)
+        degender_all(soup, parameters)
 
 def get_text_dict(text):
     word_list = regex.sub(r'[^\p{Latin}]',' ',text).split()

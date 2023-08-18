@@ -10,12 +10,11 @@ Add <td> tag to conversion
 Add <i> tag to conversion
 Validate the process_epub function - replace first part with epub validationx
 Make sure 's possessives are degendered/regendered - hard code if necessary
-Sir'ram'ram issue - possibly related to fixing possessives
 
-IN PROGRESS - Add text box
+DONE - Add text box
    DONE - Web logic implemented
-   TODO - Degender text logic with process_text function
-   TODO - Conform text-upload and text-display look and functionality (HTML + CSS)
+   DONE - Degender text logic with process_text function
+   DONE - Conform text-upload and text-display look and functionality (HTML + CSS)
    DONE - Add text-upload to top menu
 
 DONE - Add search box to go directly to Gutenberg Project search results.
@@ -40,3 +39,7 @@ Maid
 Friar
 daddy
 master - mistress
+girl/boy to kid instead of youth
+
+Names to add to common words:
+Will
