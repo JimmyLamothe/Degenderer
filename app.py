@@ -165,7 +165,6 @@ def unknown_names():
             'male' : session['male_pronoun'],
             'female': session['female_pronoun'],
             'name matches': session['name_matches'],
-            'verbose': False
             }
         try:
             if session['text']: #If we got here via text box input

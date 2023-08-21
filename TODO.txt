@@ -6,6 +6,10 @@ Good names for Brokeback: Myrtle & Mandy
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 Add a download page to tell the user they can keep browsing until their book is ready
+Add a clear button to the suggestions
+Change sir'ram to siram
+Add progress bar using soups degendered percentage
+Add a page for common names with a warning
 
 IN PROGRESS - Check ways to make conversion faster
    	      Title + Upper case pronouns added a lot of time
@@ -49,10 +53,16 @@ daddy
 master - mistress
 girl/boy to kid instead of youth
 madman/madwoman
+kinsman/kinsmen
+nobleman/noblemen
+allmother/allfather
+
 
 Names to add to common words:
 Will
 All months
 All seasons
 All flowers
-
+Joy
+Pearl
+Christian

@@ -4,6 +4,7 @@ This is where the degendering takes place.
 import regex
 import sys
 import random
+import json
 from timeit import default_timer as timer
 from librarian import get_book_text, is_string
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
@@ -14,19 +15,14 @@ from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle
 DEFAULT_PARAMETERS = {
     'male' : 'nb',
     'female' : 'nb',
-    'verbose' : False,
     'year' : 1960,
     'name matches' : {},
     'name choices' : 20
     }
 
 #Temporary values used to debug an optimization issue
-lowercase_timer = 0
-titlecase_timer = 0
-uppercase_timer = 0
-soup_lowercase_timer = 0
-soup_titlecase_timer = 0
-soup_uppercase_timer = 0
+book_timer = 0
+soup_timer = 0
 
 def suggest_name(gender):
     if gender == 'nb':
@@ -44,13 +40,6 @@ def fill_defaults(parameters):
             parameters[key] = DEFAULT_PARAMETERS[key]
     return parameters
 
-def change_pronoun(pronoun, replacement, text, verbose=False):
-    """Since the regex substitution is done for each pronoun in the whole text,
-    we need to add a mark ('àéà') to avoid the pronouns we've just changed being
-    changed back later. This mark will be removed in fix_text"""
-    text = regex.sub(r'\b' + pronoun + r'\b', replacement + 'àéà', text)
-    return text
-
 def fix_text(text):
     """ Various substitutions to fix problems created by the fact
     we check pronouns one at a time """
@@ -62,141 +51,97 @@ def fix_text(text):
     text = regex.sub(r'his/him/hers', 'her/hers', text)
     text = regex.sub(r'their/them/hers', 'her/hers', text)
     return text
-
-def change_pronouns(text, pronoun_dict, verbose=False):
-    start = timer()
-    for pronoun in pronoun_dict:
-        text = change_pronoun(pronoun, pronoun_dict[pronoun], text, verbose=verbose)
-    end = timer()
-    global lowercase_timer
-    lowercase_timer += (end-start)
-    global soup_lowercase_timer
-    soup_lowercase_timer += (end-start)
-    start = timer()
-    for pronoun in pronoun_dict:
-        text = change_pronoun(pronoun.title(), pronoun_dict[pronoun].title(),
-                              text, verbose=verbose)
-    end = timer()
-    global titlecase_timer
-    titlecase_timer += (end-start)
-    global soup_titlecase_timer
-    soup_titlecase_timer += (end-start)
-    start = timer()
-    for pronoun in pronoun_dict:
-        text = change_pronoun(pronoun.upper(), pronoun_dict[pronoun].upper(),
-                              text, verbose=verbose)
-    end = timer()
-    global uppercase_timer
-    uppercase_timer += (end-start)
-    global soup_uppercase_timer
-    soup_uppercase_timer += (end-start)
-    return fix_text(text)
-
-def create_pronoun_dict(text, male, female):
-    pronoun_dict = {}
-    if male == 'nb':
-        pronoun_dict.update({item:value[0] for (item,value)
-                             in MALE_PRONOUN_DICT.items()})
-    elif male == 'f':
-        pronoun_dict.update({item:value[1] for (item,value)
-                             in MALE_PRONOUN_DICT.items()})
-    if female == 'nb':
-        pronoun_dict.update({item:value[0] for (item,value)
-                             in FEMALE_PRONOUN_DICT.items()})
-    elif female == 'm':
-        pronoun_dict.update({item:value[1] for (item,value)
-                             in FEMALE_PRONOUN_DICT.items()})
-    return pronoun_dict
-
-def get_book_names(book_soup, verbose=False):
-    #Tries to get all proper names used in the book
-    book_text = get_book_text(book_soup)
-    pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
-    matches = regex.findall(pattern, book_text)
-    names = []
-    for match in matches:
-        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
-            names += [match]
-    name_dict = {}
-    for name in names:
-        if name in name_dict:
-            name_dict[name] += 1
-        else:
-            name_dict[name] = 1
-    return name_dict
-
-def get_name_dict(book_soup, verbose=False):
-    #ets the best known first names used in the book
-    book_text = get_book_text(book_soup)
-    word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
-    name_list = [word for word in word_list if word in ALL_NAMES]
-    name_dict = {}
-    for name in name_list:
-        if name in name_dict:
-            name_dict[name] += 1
-        else:
-            name_dict[name] = 1
-    return name_dict
-
-def get_sorted_name_list(name_dict, verbose=False):
-    return lazy_shuffle_keys(name_dict, reverse=True)
-    
-def change_name(name, match, text, verbose=False):
-    text = regex.sub(rf"\b{regex.escape(name)}\b", match, text)
-    return text
-
-def change_names(text, parameters):
-    name_matches = parameters['name matches']
-    for name in name_matches:
-        text = change_name(name, name_matches[name], text, verbose=parameters['verbose'])
-        text = change_name(name.upper(), name_matches[name].upper(),
-                           text, verbose=parameters['verbose'])
-    return text
         
 def degender_text(text, parameters):
-    verbose = parameters['verbose']
+    start = timer()
     original_text = text
-    pronoun_dict = create_pronoun_dict(text, parameters['male'], parameters['female'])
-    text = change_pronouns(text, pronoun_dict, verbose=verbose)
-    text = change_names(text, parameters)
-    if verbose:
-        if text != original_text:
-            print('Changed pronouns and/or names')
-            print('New text:')
-            print(text)
-    return text
+    match_dict = parameters['match dict']
+    for key in match_dict:
+        key_dict = match_dict[key]
+        text = regex.sub(key_dict['pattern'], key_dict['replacement'], text)
+    end = timer()
+    global book_timer
+    book_timer += (end-start)
+    global soup_timer
+    soup_timer += (end-start)
+    return fix_text(text)
 
 def degender_all(item, parameters):
     if is_string(item):
         new_string = degender_text(item, parameters)
         if new_string:
             item.replace_with(new_string)
-    try:
-        if item.contents:
+    else:        
+        try:
             for child in item.contents:
-                degender_all(child, parameters)    
-    except AttributeError:
-        pass
+                degender_all(child, parameters)
+        except AttributeError:
+            pass
+
+def create_pronoun_dict(parameters):
+    pronoun_dict = {}
+    if parameters['male'] == 'nb':
+        male_index = 0
+    elif parameters['male'] == 'f':
+        male_index = 1
+    else:
+        male_index = -1
+    if parameters['female'] == 'nb':
+        female_index = 0
+    elif parameters['female'] == 'm':
+        female_index = 1
+    else:
+        female_index = -1
+    for tup in [(MALE_PRONOUN_DICT,male_index),(FEMALE_PRONOUN_DICT,female_index)]:
+      index = tup[1]
+      reference_dict = tup[0]
+      if index >= 0:
+        for pronoun in reference_dict:
+            match = reference_dict[pronoun][index]
+            pronoun_dict[pronoun] = {'match':match,
+                                  'pattern':regex.compile(r'\b' + pronoun + r'\b'),
+                                  'replacement': match + 'àéà'}
+            pronoun_dict[pronoun.title()] = {'match':match.title(),
+                                             'pattern':regex.compile(r'\b' + pronoun.title()
+                                                                     + r'\b'),
+                                             'replacement': match.title() + 'àéà'}
+            pronoun_dict[pronoun.upper()] = {'match':match.upper(),
+                                          'pattern':regex.compile(r'\b' + pronoun.upper()
+                                                                  + r'\b'),
+                                          'replacement': match.upper() + 'àéà'}
+    return pronoun_dict
+
+def create_name_dict(parameters):
+    name_matches = parameters['name matches']
+    name_dict = {}
+    for name in name_matches:
+        match = name_matches[name]
+        name_dict[name] = {'match':match,
+                           'pattern':regex.compile(r'\b' + name + r'\b'),
+                           'replacement': match + 'àéà'}
+        name_dict[name.upper()] = {'match':match.upper(),
+                                   'pattern':regex.compile(r'\b' + name.upper() + r'\b'),
+                                   'replacement': match.upper() + 'àéà'}
+    return name_dict
         
 def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     parameters = fill_defaults(parameters)
-    print(parameters)
+    pronoun_dict = create_pronoun_dict(parameters)
+    name_dict = create_name_dict(parameters)
+    match_dict = {**pronoun_dict, **name_dict}
+    print(f'match_dict: {match_dict}')
+    parameters['match dict'] = match_dict
+    with open('reference/test_match_dict.json', 'w') as json_file:
+        json_dict = {}
+        for key in match_dict:
+            json_dict[key] = match_dict[key]['match']
+        json.dump(json_dict, json_file)
     for soup in book_soup:
-        global soup_lowercase_timer
-        global soup_titlecase_timer
-        global soup_uppercase_timer
+        global soup_timer
         degender_all(soup, parameters)
-        print('Degendering times for soup:')
-        print(f'Lowercase: {soup_lowercase_timer} seconds')
-        print(f'Titlecase: {soup_titlecase_timer} seconds')
-        print(f'Uppercase: {soup_uppercase_timer} seconds')
-        soup_lowercase_timer = 0
-        soup_titlecase_timer = 0
-        soup_uppercase_timer = 0
-    print('Degendering times for book:')
-    print(f'Lowercase: {lowercase_timer} seconds')
-    print(f'Titlecase: {titlecase_timer} seconds')
-    print(f'Uppercase: {uppercase_timer} seconds')
+        print(f'Degendering times for soup: {soup_timer} seconds')
+        soup_timer = 0
+    print(f'Degendering times for book {book_timer} seconds:')
         
 def get_text_dict(text):
     word_list = regex.sub(r'[^\p{Latin}]',' ',text).split()
@@ -224,3 +169,34 @@ def get_text_names(text):
         else:
             name_dict[name] = 1
     return name_dict
+
+def get_potential_names_dict(book_soup):
+    #Tries to get all proper names used in the book
+    book_text = get_book_text(book_soup)
+    pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
+    matches = regex.findall(pattern, book_text)
+    names = []
+    for match in matches:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
+            names += [match]
+    name_dict = {}
+    for name in names:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
+
+def get_known_names_dict(book_soup):
+    #Gets the best known first names used in the book
+    book_text = get_book_text(book_soup)
+    word_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
+    name_list = [word for word in word_list if word in ALL_NAMES]
+    name_dict = {}
+    for name in name_list:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
+

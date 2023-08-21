@@ -4,7 +4,7 @@ from pathlib import Path
 
 from librarian import check_out, create_soup, read_epub, soup_to_book, write_epub
 
-from degenderer import degender_book, get_book_names, get_name_dict
+from degenderer import degender_book, get_potential_names_dict, get_known_names_dict
 
 WORKING_DIR = Path('temp')
 UPLOAD_DIR = Path('uploads')
@@ -13,7 +13,7 @@ def get_potential_names(book_file):
     """ Get the most used capitalized words (could be names) | filepath --> list """
     book = read_epub(book_file)
     book_soup = create_soup(book)
-    name_dict = get_book_names(book_soup)
+    name_dict = get_potential_names_dict(book_soup)
     short_name_dict = {key: value for key, value in name_dict.items() if value >= 5}
     name_list = []
     for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
@@ -24,7 +24,7 @@ def get_known_names(book_file):
     """ Get all the words that are known to be first names | filepath --> list """
     book = read_epub(book_file)
     book_soup = create_soup(book)
-    name_dict = get_name_dict(book_soup)
+    name_dict = get_known_names_dict(book_soup)
     name_list = []
     for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
         name_list.append(key)
