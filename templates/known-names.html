@@ -38,24 +38,41 @@
               M
             </button>
 	  </td>
+	  <td>
+            <button type="button" onclick="clearAll()">
+              Clear
+            </button>
+	  </td>
+
 	</tr>
         {% for name in session['known_name_list'] %}
           <tr>
             <td class="existing-name">{{ name }}</td>
             <td><input type="text" name="new_names[]" /></td>
             <td>
-              <button type="button" onclick="suggest_nb(this.parentNode.parentNode)">
+              <button
+		type="button"
+		onclick="suggestRow(suggestNb, this.parentNode.parentNode)">
                 NB
               </button>
             </td>
 	    <td>
-              <button type="button" onclick="suggest_female(this.parentNode.parentNode)">
+              <button
+		type="button"
+		onclick="suggestRow(suggestFemale, this.parentNode.parentNode)">
                 F
               </button>
             </td>
 	    <td>
-              <button type="button" onclick="suggest_male(this.parentNode.parentNode)">
+              <button
+		type="button"
+		onclick="suggestRow(suggestMale, this.parentNode.parentNode)">
                 M
+              </button>
+            </td>
+	    <td>
+              <button type="button" onclick="clearRow(this.parentNode.parentNode)">
+                Clear
               </button>
             </td>
           </tr>

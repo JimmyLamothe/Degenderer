@@ -1,19 +1,45 @@
+BUGS
+
+
+
+DEGENDERING FEATURES
+
+Improve tracking of names that have already been used
 If name is already in the list of NB - M - F names, leave it as is the first time.
-Warn for common names in potential name list
 Make sure the names in potential names aren't already taken care of by the pronoun list
+Warn for common names in potential name list
+Add a page for common names with a warning
+Add a submit page
+
+
+OTHER FEATURES
+
+Add a download page to tell the user they can keep browsing until their book is ready
+Add progress bar using soups degendered percentage
+
+DEGENDERING HTML CONTENT
+
+Add text to explain limitations
+Add text to explain where to change pronouns
+
+DEGENDERING IMPROVEMENTS
+
+Add more non-binary names
 Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
+
+EXTRAS
+
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
-Add a download page to tell the user they can keep browsing until their book is ready
-Add a clear button to the suggestions
-Change sir'ram to siram
-Add progress bar using soups degendered percentage
-Add a page for common names with a warning
+
+
 
 IN PROGRESS - Check ways to make conversion faster
    	      Title + Upper case pronouns added a lot of time
 
+DONE - Pressing upload button with no file selected should do nothing
+DONE - Add a clear button to the suggestions
 DONE - Make sure 's possessives are degendered/regendered - hard code if necessary
 DONE - Commander's --> Commanderessa's
 DONE - Add text box
