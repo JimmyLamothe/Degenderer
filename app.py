@@ -195,20 +195,25 @@ def text_display():
     except KeyError:
         pass
     return redirect('/') #If we don't have text to display, go to home page
-        
+
+def get_suggestion(gender):
+    print(f'Working on row {request.json.get("row")}')
+    page_suggestions = request.json.get('pageSuggestions')
+    saved_suggestions = list(session['name_matches'].values())
+    names_used = list(set(page_suggestions + saved_suggestions))
+    suggestion = suggest_name(gender, names_used)
+    return jsonify({'suggested_name': suggestion})
+
 @app.route('/suggest-nb', methods=['POST'])
 def suggest_nb():
-    suggestion = suggest_name('nb')
-    return jsonify({'suggested_name': suggestion})
+    return get_suggestion('nb')
 
 @app.route('/suggest-female', methods=['POST'])
 def suggest_female():
-    suggestion = suggest_name('f')
-    return jsonify({'suggested_name': suggestion})
+    return get_suggestion('f')
 
 @app.route('/suggest-male', methods=['POST'])
 def suggest_male():
-    suggestion = suggest_name('m')
-    return jsonify({'suggested_name': suggestion})
+    return get_suggestion('m')
 
 app.run(host='0.0.0.0', port=5001)

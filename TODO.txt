@@ -4,8 +4,6 @@ BUGS
 
 DEGENDERING FEATURES
 
-Improve tracking of names that have already been used
-If name is already in the list of NB - M - F names, leave it as is the first time.
 Make sure the names in potential names aren't already taken care of by the pronoun list
 Warn for common names in potential name list
 Add a page for common names with a warning
@@ -35,8 +33,12 @@ pip install epubcheck
 
 
 
-IN PROGRESS - Check ways to make conversion faster
-   	      Title + Upper case pronouns added a lot of time
+DONE - Check ways to make conversion faster
+       	     Title + Upper case pronouns added a lot of time
+
+DONE - Improve tracking of names that have already been used
+   DONE - Fixed dupes for known names
+   DONE - Potential names should know about known names
 
 DONE - Pressing upload button with no file selected should do nothing
 DONE - Add a clear button to the suggestions

@@ -11,30 +11,19 @@ function getCurrentSuggestions() {
     return currentSuggestions
 }
 
-function uniqueValue(arr, value) {
-    console.log(arr);
-    console.log(value);
-    let count = 0;
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] === value) {
-            count++;
-            if (count > 1) {
-                return false; // Value not found more than once
-            }
-        }
-    }
-    return true; // Value found more than once
-}
-
-function suggestMale(row) {
+function suggestMale(row, index) {
     return new Promise((resolve) => {
 	$.ajax({
             type: 'POST',
             url: '/suggest-male',
             contentType: 'application/json',
+	    data: JSON.stringify({
+		row : index,
+		pageSuggestions: getCurrentSuggestions()
+	    }),
             success: function(response) {
 		var suggestedName = response.suggested_name;
-		var inputField = row.querySelector('input[name="new_names[]"]');
+	    var inputField = row.querySelector('input[name="new_names[]"]');
 		inputField.value = suggestedName;
 		resolve(suggestedName);
             }
@@ -42,11 +31,15 @@ function suggestMale(row) {
     });
 }
 
-function suggestFemale(row) {
+function suggestFemale(row, index) {
     return new Promise((resolve) => {
 	$.ajax({
             type: 'POST',
             url: '/suggest-female',
+	    data: JSON.stringify({
+		row : index,
+		pageSuggestions: getCurrentSuggestions()
+	    }),
             contentType: 'application/json',
             success: function(response) {
 		var suggestedName = response.suggested_name;
@@ -58,11 +51,15 @@ function suggestFemale(row) {
     });
 }
 
-function suggestNb(row) {
+function suggestNb(row, index) {
     return new Promise((resolve) => {
 	$.ajax({
             type: 'POST',
             url: '/suggest-nb',
+	    data: JSON.stringify({
+		row : index,
+		pageSuggestions: getCurrentSuggestions()
+	    }),
             contentType: 'application/json',
             success: function(response) {
 		var suggestedName = response.suggested_name;
@@ -75,43 +72,29 @@ function suggestNb(row) {
 }
 		     	      
 
-async function suggestRow(suggestFunction, row) {
+async function suggestRow(suggestFunction, row, index) {
     return new Promise((resolve) => {
-	(async () => {
-	    success = false
-	    for(var i = 1; i < 20; i++) {
-		console.log(i);
-		i += 1;
-		const response = await suggestFunction(row);
-		console.log(response);
-		if (uniqueValue(getCurrentSuggestions(), response)) {
-		    success = true;
-		    resolve(response)
-		    break;
-		}
-	    }
-	    if (!success) {
-		console.log('Failed to find unique name')
-		resolve('Failed to find unique name')
-	    }
-	})()
+       (async () => {
+           const response = await suggestFunction(row);
+	   resolve(response);
+       })()
     });
 }
-		      
-async function suggestAll(type) {
+		      		      
+async function suggestAll(type, index) {
     var rows = document.querySelectorAll('tbody tr');
     for (var i = 1; i < rows.length - 1; i++) {
         var row = rows[i];
 	console.log('Working on row ' + i)
         switch (type) {
             case 'nb':
-                await suggestRow(suggestNb, row);
+                await suggestRow(suggestNb, row, i);
                 break;
             case 'female':
-                await suggestRow(suggestFemale, row);
+                await suggestRow(suggestFemale, row, i);
                 break;
             case 'male':
-                await suggestRow(suggestMale, row);
+                await suggestRow(suggestMale, row, i);
                 break;
             default:
                 break;

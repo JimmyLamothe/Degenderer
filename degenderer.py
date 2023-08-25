@@ -24,15 +24,28 @@ DEFAULT_PARAMETERS = {
 book_timer = 0
 soup_timer = 0
 
-def suggest_name(gender):
-    if gender == 'nb':
-        return random.choice(NB_NAMES)
-    elif gender == 'f':
-        return random.choice(GIRL_NAMES)
-    elif gender == 'm':
-        return random.choice(BOY_NAMES)
+def get_suggestion(name_list, names_used):
+    print(f'Used names: {names_used}')
+    available_names = [name for name in name_list if not name in names_used]
+    print(f'Available names: {available_names}')
+    if available_names:
+        selection = random.choice(available_names)
+        print(f'Selected name: {selection}')
+        return selection
     else:
-        raise ValueError
+        selection = random.choice(name_list)
+        print(f'Selected name: {selection}')
+        return selection
+    
+def suggest_name(gender, names_used):
+    if gender == 'nb':
+        return get_suggestion(NB_NAMES, names_used)
+    elif gender == 'f':
+        return get_suggestion(GIRL_NAMES, names_used)
+    elif gender == 'm':
+        return get_suggestion(BOY_NAMES, names_used)
+    else:
+        return ''
     
 def fill_defaults(parameters):
     for key in DEFAULT_PARAMETERS:
