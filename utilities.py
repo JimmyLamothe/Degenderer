@@ -25,3 +25,12 @@ def get_min_diff(integer, lst):
         if minimum == 0:
             return 0
     return minimum
+
+def remove_dupes(lst):
+    new_list = []
+    for value in lst:
+        if value in new_list:
+            pass
+        else:
+            new_list.append(value)
+    return new_list

@@ -8,8 +8,8 @@ import json
 from timeit import default_timer as timer
 from librarian import get_book_text, is_string
 from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
-from reference_library import AMBIGUOUS_NAMES, BOY_NAMES, GIRL_NAMES
-from reference_library import COMMON_WORDS, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
+from reference_library import BOY_NAMES, GIRL_NAMES, ALL_PRONOUNS
+from reference_library import COMMON_WORDS, WARNING_WORDS, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
 DEFAULT_PARAMETERS = {
@@ -161,11 +161,10 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
         print(f'Degendering times for soup: {soup_timer} seconds')
         soup_timer = 0
     print(f'Degendering times for book {book_timer} seconds:')
-        
+    
 def get_text_dict(text):
     word_list = regex.sub(r'[^\p{Latin}]',' ',text).split()
-    name_list = [word for word in word_list if (word in ALL_NAMES
-                                                and word not in AMBIGUOUS_NAMES)]
+    name_list = [word for word in word_list if word in ALL_NAMES]
     name_dict = {}
     for name in name_list:
         if name in name_dict:
@@ -179,7 +178,7 @@ def get_text_names(text):
     matches = regex.findall(pattern, text)
     names = []
     for match in matches:
-        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS + ALL_PRONOUNS]:
             names += [match]
     name_dict = {}
     for name in names:
@@ -196,7 +195,7 @@ def get_potential_names_dict(book_soup):
     matches = regex.findall(pattern, book_text)
     names = []
     for match in matches:
-        if not match.lower() in [word.lower() for word in COMMON_WORDS]:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS + ALL_PRONOUNS]:
             names += [match]
     name_dict = {}
     for name in names:
@@ -219,3 +218,12 @@ def get_known_names_dict(book_soup):
             name_dict[name] = 1
     return name_dict
 
+def split_clean_warning(name_list):
+    warning_list = []
+    clean_list = []
+    for name in name_list:
+        if name in WARNING_WORDS:
+            warning_list.append(name)
+        else:
+            clean_list.append(name)
+    return (clean_list, warning_list)

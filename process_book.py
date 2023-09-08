@@ -17,7 +17,7 @@ def get_potential_names(book_file):
     short_name_dict = {key: value for key, value in name_dict.items() if value >= 5}
     name_list = []
     for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
-        name_list.append(key)    
+        name_list.append(key)
     return name_list
 
 def get_known_names(book_file):
@@ -46,18 +46,8 @@ def process_epub(filepath, parameters):
             parameters = json.load(file)
     book = read_epub(input_filepath)
     book_soup = create_soup(book)
-    """
-    name_dict = get_book_names(book_soup)
-    name_list = []
-    for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
-        name_list.append(key)
-    print(name_list)
-    """
     degender_book(book_soup, parameters)
     soup_to_book(book_soup, book)
     write_epub(book, output_filepath)
     print(output_filepath)
     return output_filepath
-
-def process_text(text):
-    return text #Temp function to test webpage

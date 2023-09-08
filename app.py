@@ -4,7 +4,8 @@ from pathlib import Path
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
 from markupsafe import escape
 import config
-from degenderer import suggest_name, get_pronoun_list
+from degenderer import suggest_name, split_clean_warning
+from utilities import remove_dupes
 import process_book
 import process_text
 
@@ -22,6 +23,7 @@ def clear_session():
     session['filepath'] = ''
     session['known_name_list'] = []
     session['potential_name_list'] = []
+    session['warning_list'] = []
     session['name_matches'] = {}
     session['male_pronoun'] = ''
     session['female_pronoun'] = ''
@@ -54,14 +56,25 @@ def upload():
         filepath = UPLOAD_DIR.joinpath(file.filename)
         file.save(filepath)
         session['filepath'] = str(filepath)
-        known_names = process_book.get_known_names(filepath)
+        book_known = process_book.get_known_names(filepath)
+        temp_tuple = split_clean_warning(book_known) #(clean_list, warning_list)
+        known_names = temp_tuple[0]
+        warning_names = temp_tuple[1]
         #print('known_names:', known_names)
-        potential_names = process_book.get_potential_names(filepath)
-        potential_names = [name for name in potential_names if not name in known_names]
+        book_potential = process_book.get_potential_names(filepath)
+        print(f'book_potential: {book_potential}')
+        temp_tuple = split_clean_warning(book_potential) #(clean_list, warning_list)
+        print(f'temp_tuple[0]: {temp_tuple[0]}')
+        warning_names = remove_dupes(warning_names + temp_tuple[1])
+        print(f'warning_names: {warning_names}')
+        potential_names = [name for name in temp_tuple[0] if not (name in known_names)]
+        print(f'potential_names: {potential_names}')
+        potential_names = remove_dupes(warning_names + potential_names)
+        print(f'potential_names: {potential_names}')
         session['known_name_list'] = known_names
         #print(session['known_name_list'])
-        session['potential_name_list'] = potential_names[:30]
-        #print(session['potential_name_list'])
+        session['potential_name_list'] = potential_names[:50] #Top 50 potential names
+        print(session['potential_name_list'])
         return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
 
