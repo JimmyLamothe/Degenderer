@@ -24,17 +24,23 @@ DEFAULT_PARAMETERS = {
 book_timer = 0
 soup_timer = 0
 
+def get_pronoun_list():
+    male_pronouns = [key for key in MALE_PRONOUN_DICT]
+    female_pronouns = [key for key in FEMALE_PRONOUN_DICT]
+    pronoun_list = male_pronouns + female_pronouns
+    return pronoun_list
+
 def get_suggestion(name_list, names_used):
-    print(f'Used names: {names_used}')
+    #print(f'Used names: {names_used}')
     available_names = [name for name in name_list if not name in names_used]
-    print(f'Available names: {available_names}')
+    #print(f'Available names: {available_names}')
     if available_names:
         selection = random.choice(available_names)
-        print(f'Selected name: {selection}')
+        #print(f'Selected name: {selection}')
         return selection
     else:
         selection = random.choice(name_list)
-        print(f'Selected name: {selection}')
+        #print(f'Selected name: {selection}')
         return selection
     
 def suggest_name(gender, names_used):
@@ -142,7 +148,7 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     pronoun_dict = create_pronoun_dict(parameters)
     name_dict = create_name_dict(parameters)
     match_dict = {**pronoun_dict, **name_dict}
-    print(f'match_dict: {match_dict}')
+    #print(f'match_dict: {match_dict}')
     parameters['match dict'] = match_dict
     with open('reference/test_match_dict.json', 'w') as json_file:
         json_dict = {}

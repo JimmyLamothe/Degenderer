@@ -30,7 +30,7 @@ def process_epub(book_file, parameters):
     name_list = []
     for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
         name_list.append(key)
-    print(name_list)
+    #print(name_list)
     degender_book(book_soup, parameters)
     soup_to_book(book_soup, book)
     write_epub(book, filepath)

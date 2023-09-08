@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Unkown Names Replacement
+  Unknown Names Replacement
 {% endblock %}
 
 {% block head_scripts %}
@@ -10,8 +10,8 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Name Selection</h1>
-  <form method="POST">
+  <h1 id="header">Name Selection</h1>
+  <form method="POST" id="name-selection-form">
     <table>
       <thead>
         <tr>
@@ -54,4 +54,32 @@
       </tbody>
     </table>
   </form>
+  <div id="processing-message" style="display: none;">
+    Your book is being degendered/regendered!<br>
+    Keep this page open until it's ready.<br>
+    You can keep browsing in a different tab in the meantime.<br>
+    A file save dialogue will pop up when it's done.
+  </div>
+  <script>
+    // Intercept the form submission
+    document.getElementById('name-selection-form').addEventListener('submit', function () {
+	changeHeaderToDownloading(); // Change the header	
+	showProcessingMessage(); // Show the processing message
+    });
+
+    // Function to show the processing message
+    function showProcessingMessage() {
+	// Hide the form
+	document.getElementById('name-selection-form').style.display = 'none';
+
+	// Show the processing message
+	document.getElementById('processing-message').style.display = 'block';
+    }
+    // Function to change the header to "Downloading"
+    function changeHeaderToDownloading() {
+	var header = document.getElementById('header');
+	header.textContent = 'Degendering.../Regendering...';
+    }
+  </script>
+
 {% endblock %}

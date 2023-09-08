@@ -4,7 +4,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
 from markupsafe import escape
 import config
-from degenderer import suggest_name
+from degenderer import suggest_name, get_pronoun_list
 import process_book
 import process_text
 
@@ -55,13 +55,13 @@ def upload():
         file.save(filepath)
         session['filepath'] = str(filepath)
         known_names = process_book.get_known_names(filepath)
-        print('known_names:', known_names)
+        #print('known_names:', known_names)
         potential_names = process_book.get_potential_names(filepath)
         potential_names = [name for name in potential_names if not name in known_names]
         session['known_name_list'] = known_names
-        print(session['known_name_list'])
+        #print(session['known_name_list'])
         session['potential_name_list'] = potential_names[:30]
-        print(session['potential_name_list'])
+        #print(session['potential_name_list'])
         return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
 
@@ -69,15 +69,15 @@ def upload():
 def text_upload():
     if request.method == 'POST':
         session['text'] = escape(request.form.get('text'))
-        print(f'session text in text_upload: {session["text"]}')
+        #print(f'session text in text_upload: {session["text"]}')
         known_names = process_text.get_known_names(session['text'])
-        print('known_names:', known_names)
+        #print('known_names:', known_names)
         potential_names = process_text.get_potential_names(session['text'])
         potential_names = [name for name in potential_names if not name in known_names]
         session['known_name_list'] = known_names
-        print(session['known_name_list'])
+        #print(session['known_name_list'])
         session['potential_name_list'] = potential_names[:30]
-        print(session['potential_name_list'])
+        #print(session['potential_name_list'])
         return redirect('/pronouns')
     #If GET
     clear_session()
@@ -170,7 +170,7 @@ def unknown_names():
             if session['text']: #If we got here via text box input
                 session['text'] = process_text.process_text(escape(session['text']),
                                                             parameters)
-                print(f'session text: {session["text"]}')
+                #print(f'session text: {session["text"]}')
                 #We escape a second time in case the session cookie was hacked
                 return redirect('/text-display')
         except KeyError: #If we got here via file upload
@@ -190,14 +190,14 @@ def unknown_names():
 def text_display():
     try:
         if session['text']:
-            print(f'session text in text_display: {session["text"]}')
+            #print(f'session text in text_display: {session["text"]}')
             return render_template('text-display.html')
     except KeyError:
         pass
     return redirect('/') #If we don't have text to display, go to home page
 
 def get_suggestion(gender):
-    print(f'Working on row {request.json.get("row")}')
+    #print(f'Working on row {request.json.get("row")}')
     page_suggestions = request.json.get('pageSuggestions')
     saved_suggestions = list(session['name_matches'].values())
     names_used = list(set(page_suggestions + saved_suggestions))

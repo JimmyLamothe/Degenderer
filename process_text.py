@@ -2,7 +2,7 @@ from degenderer import degender_text, get_text_names, get_text_dict
 
 def process_text(text, parameters):
     new_text = degender_text(text, parameters)
-    print(f'new text: {new_text}')
+    #print(f'new text: {new_text}')
     return new_text
 
 def get_known_names(text):

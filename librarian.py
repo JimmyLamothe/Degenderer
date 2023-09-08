@@ -6,11 +6,6 @@ from bs4 import BeautifulSoup
 
 BOOK_PATH = '../books/'
 
-BOOK_LIBRARY = {
-    'Jane Eyre' : 'pg1260.epub',
-    'Segreti' : 'Harry Potter e la Camera dei Segreti.epub'
-    }
-
 def pause():
     input('Press enter to continue')
 
@@ -39,17 +34,8 @@ def create_soup(book):
 def is_string(soup_item):
     return type(soup_item) == bs4.element.NavigableString
 
-def set_text(navigable_string, text, verbose=False):
-    if verbose:
-        print('Paragraph pre-text:')
-        print(paragraph.text)
-        print('Changing to:')
-        print(text)
+def set_text(navigable_string, text):
     navigable_string.replace_with(text)
-    if verbose:
-        print('Paragraph post-text:')
-        print(paragraph.text)
-        pause()
 
 def get_paragraphs(soup):
     paragraphs = soup.find_all('p')
@@ -80,33 +66,15 @@ def get_paragraph_text(paragraph):
 def get_div_text(div):
     return div.get_text()
 
-def set_paragraph_text(paragraph, text, verbose=False):
-    if verbose:
-        print('Paragraph pre-text:')
-        print(paragraph.text)
-        print('Changing to:')
-        print(text)
+def set_paragraph_text(paragraph, text):
     paragraph.clear()
     paragraph.append(text)
-    if verbose:
-        print('Paragraph post-text:')
-        print(paragraph.text)
-        pause()
 
-def set_div_text(div, text, verbose=False):
-    if verbose:
-        print('Div pre-text:')
-        print(div.text)
-        print('Changing to:')
-        print(text)
+def set_div_text(div, text):
     div.clear()
     div.append(text)
-    if verbose:
-        print('Div post-text:')
-        print(div.text)
-        pause()
         
-def get_book_names(book_soup, verbose=False):
+def get_book_names(book_soup):
     book_text = get_book_text(book_soup)
     name_list = regex.sub(r'[^\p{Latin}]',' ',book_text).split()
     name_dict = {}
@@ -138,11 +106,3 @@ def soup_to_book(book_soup, book):
     
 def create_epub(book, filename):
     epub.write_epub(BOOK_PATH + filename, book)
-
-
-"""
-for paragraph in paragraph_list:
-    try:
-
-    except AttributeError:
-"""
