@@ -1,6 +1,5 @@
 BUGS
-Make sure potential names show up in order of most appearances
-Degendering times went back up - figure out what version this happened in and what change caused it.
+Make sure that unkwnown names works with capitalization
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -34,6 +33,9 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+DONE - Combined book + text get names methods
+DONE - Make sure potential names show up in order of most appearances
+DONE - Degendering times went back up - figure out what version this happened in and what change caused it.
 DONE - Don't show Known Names or Unknown names if no names
 DONE - Make sure the names in potential names aren't already taken care of by the pronoun list
 DONE - Warn for common names in potential name list

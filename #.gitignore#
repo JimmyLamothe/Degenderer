@@ -1,0 +1,13 @@
+*.py~
+*.json~
+html
+books
+bin
+lib
+
+*.cfg
+.*
+#*
+__*
+\#get_html.py#
+config.py

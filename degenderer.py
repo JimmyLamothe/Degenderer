@@ -170,7 +170,7 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
         print(f'Degendering times for soup: {soup_timer} seconds')
         soup_timer = 0
     print(f'Degendering times for book {book_timer} seconds:')
-    
+"""    
 def get_text_dict(text):
     word_list = regex.sub(r'[^\p{Latin}]',' ',text).split()
     name_list = [word for word in word_list if word in ALL_NAMES]
@@ -196,6 +196,7 @@ def get_text_names(text):
         else:
             name_dict[name] = 1
     return name_dict
+
 
 def get_potential_names_dict(book_soup):
     #Tries to get all proper names used in the book
@@ -236,3 +237,79 @@ def split_clean_warning(name_list):
         else:
             clean_list.append(name)
     return (clean_list, warning_list)
+"""
+
+def get_known_names(text):
+    word_list = regex.sub(r'[^\p{Latin}]', ' ', text).split()
+    name_list = [word for word in word_list if word in ALL_NAMES]
+    name_dict = {}
+    for name in name_list:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    return name_dict
+    name_tuple_list = []
+    for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
+        name_tuple_list.append((key,value))
+    return name_tuple_list
+
+def get_potential_names(text):
+    pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
+    matches = regex.findall(pattern, text)
+    names = []
+    for match in matches:
+        if not match.lower() in [word.lower() for word in COMMON_WORDS + ALL_PRONOUNS]:
+            names += [match]
+    name_dict = {}
+    for name in names:
+        if name in name_dict:
+            name_dict[name] += 1
+        else:
+            name_dict[name] = 1
+    short_name_dict = {key: value for key, value in name_dict.items() if value >= 5}
+    return short_name_dict
+    name_tuple_list = []
+    for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
+        name_tuple_list.append((key,value))
+    return name_tuple_list
+
+def split_clean_warning_dict(count_dict):
+    warning_dict = {}
+    clean_dict = {}
+    for key, count in count_dict.items():
+        if key in WARNING_WORDS:
+            warning_dict[key] = count
+        else:
+            clean_dict[key] = count
+    return (clean_dict, warning_dict)
+
+def combine_dicts(count_dicts):
+    combined_dict = {}
+    for count_dict in count_dicts:
+        for key, count in count_dict.items():
+            combined_dict[key] = combined_dict.get(key, 0) + count
+    return combined_dict
+
+def get_names(text):
+    known_name_dict = get_known_names(text)
+    potential_name_dict = get_potential_names(text)
+    temp_tuple = split_clean_warning_dict(known_name_dict)
+    known_name_dict = temp_tuple[0]
+    warning_name_dict = temp_tuple[1]
+    known_names = []
+    for key, value in sorted(known_name_dict.items(), key = lambda x: x[1], reverse=True):
+        known_names.append(key)
+    potential_name_dict = combine_dicts([potential_name_dict, warning_name_dict])
+    for key in [key for (key, value) in potential_name_dict.items()]:
+        if key in known_names:
+            del potential_name_dict[key]
+    potential_names = []
+    for key, value in sorted(potential_name_dict.items(), key = lambda x: x[1], reverse=True):
+        potential_names.append(key)
+    return (known_names, potential_names)
+
+def get_book_names(book_soup):
+    book_text = get_book_text(book_soup)
+    name_tuple = get_names(book_text)
+    return name_tuple
