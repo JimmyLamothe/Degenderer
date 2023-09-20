@@ -1,7 +1,7 @@
-from degenderer import degender_text, get_text_names, get_text_dict
+from degenderer import degender_text_box, get_text_names, get_text_dict
 
 def process_text(text, parameters):
-    new_text = degender_text(text, parameters)
+    new_text = degender_text_box(text, parameters)
     #print(f'new text: {new_text}')
     return new_text
 
