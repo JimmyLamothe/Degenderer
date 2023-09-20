@@ -1,5 +1,6 @@
 BUGS
 Make sure that unkwnown names works with capitalization
+Figure out why the text is more centered in pronouns and known names
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -7,16 +8,16 @@ Remove debugging print calls and console.logs
 DEGENDERING FEATURES
 
 Change potential name page to warning page explaining that these might not be people names
-Add a submit page
+Add a submit page - Save all upload files and parameters somewhere?
 Transpose same method for identifying warning names from book to text - Avoid dupe code
+Remember selections in cookie and prepopulate forms with last answers?
 
 OTHER FEATURES
 
 
 DEGENDERING HTML CONTENT
 
-Add text to explain limitations
-Add text to Unknown Names explain where to change pronouns
+Add examples to example page
 
 DEGENDERING IMPROVEMENTS
 
@@ -33,6 +34,8 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+DONE - Add text to explain limitations
+DONE - Add text to Unknown Names explain where to change pronouns
 DONE - Combined book + text get names methods
 DONE - Make sure potential names show up in order of most appearances
 DONE - Degendering times went back up - figure out what version this happened in and what change caused it.
