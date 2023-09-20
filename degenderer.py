@@ -74,7 +74,10 @@ def fix_text(text):
 def degender_text(text, parameters):
     start = timer()
     original_text = text
-    match_dict = parameters['match dict']
+    parameters = fill_defaults(parameters)
+    pronoun_dict = create_pronoun_dict(parameters)
+    name_dict = create_name_dict(parameters)
+    match_dict = {**pronoun_dict, **name_dict}
     for key in match_dict:
         key_dict = match_dict[key]
         text = regex.sub(key_dict['pattern'], key_dict['replacement'], text)

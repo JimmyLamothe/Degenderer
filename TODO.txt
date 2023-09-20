@@ -1,12 +1,13 @@
 BUGS
-
+Make sure potential names show up in order of most appearances
+Degendering times went back up - figure out what version this happened in and what change caused it.
 
 CLEANUP
 Remove debugging print calls and console.logs
 
 DEGENDERING FEATURES
 
-Add a page for common names with a warning
+Change potential name page to warning page explaining that these might not be people names
 Add a submit page
 Transpose same method for identifying warning names from book to text - Avoid dupe code
 
@@ -16,7 +17,7 @@ OTHER FEATURES
 DEGENDERING HTML CONTENT
 
 Add text to explain limitations
-Add text to explain where to change pronouns
+Add text to Unknown Names explain where to change pronouns
 
 DEGENDERING IMPROVEMENTS
 
@@ -25,12 +26,15 @@ Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
 Create warning name list
 Have some pronouns only be degendered when capitalized: e.g. "Miss"
+Check if boy and girl have different nb equivalent
+Make sure all her/hers are gone
 
 EXTRAS
 
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+DONE - Don't show Known Names or Unknown names if no names
 DONE - Make sure the names in potential names aren't already taken care of by the pronoun list
 DONE - Warn for common names in potential name list
 DONE - Add a download page to tell the user they can keep browsing until their book is ready

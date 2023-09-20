@@ -142,10 +142,12 @@ def known_names():
         session.modified = True
         return redirect('/potential-names')
     #If GET
-    if session['male_pronoun'] and session['female_pronoun']:
+    if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
+        return redirect('/')
+    if session['known_name_list']:
         return render_template('known-names.html')
     else:
-        return redirect('/')
+        return redirect('/potential-names')
         
 @app.route('/potential-names', methods=['GET', 'POST'])
 def potential_names():
@@ -157,13 +159,12 @@ def potential_names():
         session.modified = True
         return redirect('/unknown-names')
     else:
-        try:
-            if session['male_pronoun'] and session['female_pronoun']:
-                return render_template('potential-names.html')
-            else:
-                return redirect('/')
-        except KeyError:
+        if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
             return redirect('/')
+        if session['potential_name_list']:
+            return render_template('potential-names.html')
+        else:
+            return redirect('/unknown-names')
 
 @app.route('/unknown-names', methods=['GET', 'POST'])
 def unknown_names():
@@ -181,6 +182,7 @@ def unknown_names():
             }
         try:
             if session['text']: #If we got here via text box input
+                print(session['text'])
                 session['text'] = process_text.process_text(escape(session['text']),
                                                             parameters)
                 #print(f'session text: {session["text"]}')
