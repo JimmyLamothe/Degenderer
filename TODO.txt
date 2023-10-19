@@ -8,7 +8,6 @@ Remove debugging print calls and console.logs
 
 DEGENDERING FEATURES
 
-Change potential name page to warning page explaining that these might not be people names
 Add a submit page - Save parameters somewhere - cookie?
     Submit page: Book name - Author - Short excerpt - Webpage - Parameters
 Transpose same method for identifying warning names from book to text - Avoid dupe code
@@ -36,6 +35,8 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+DONE - Add a favorite pronouns page - only when non-binary
+DONE - Change potential name page to warning page explaining that these might not be names
 DONE - Add text to explain limitations
 DONE - Add text to Unknown Names explain where to change pronouns
 DONE - Combined book + text get names methods

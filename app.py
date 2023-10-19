@@ -103,8 +103,23 @@ def pronouns():
         else:
             raise ValueError
     if request.method == 'POST':
+        print(request.form)
+        print(request.form.get('male'))
+        print(request.form.get('female'))
+        print(request.form.get('sheHe'))
+        print(request.form.get('himHer'))
+        print(request.form.get('hersHis'))
+        print(request.form.get('himHerSelf'))
         session['male_pronoun'] = abbreviate(request.form['male'])
         session['female_pronoun'] = abbreviate(request.form['female'])
+        session['name_matches']['he'] = request.form['sheHe'].lower()
+        session['name_matches']['she'] = request.form['sheHe'].lower()
+        session['name_matches']['him'] = request.form['himHer'].lower()
+        session['name_matches']['her'] = request.form['himHer'].lower()
+        session['name_matches']['hers'] = request.form['hersHis'].lower()
+        session['name_matches']['his'] = request.form['hersHis'].lower()
+        session['name_matches']['himself'] = request.form['himHerSelf'].lower()
+        session['name_matches']['herself'] = request.form['himHerSelf'].lower()
         return redirect('/known-names') #If file upload
     #If GET
     if session['filepath']: #If file upload

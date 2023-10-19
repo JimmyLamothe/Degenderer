@@ -7,15 +7,32 @@
 {% block content %}
   <form method="POST">
     <h3>Female Pronouns:</h3>
-    <label><input type="radio" name="female" value="non-binary" checked>Non-binary</label><br>
-    <label><input type="radio" name="female" value="female">Female</label><br>
-    <label><input type="radio" name="female" value="male">Male</label><br>
+    <label><input type="radio" name="female" value="non-binary" onchange="showNonBinaryForm()">Non-binary</label><br>
+    <label><input type="radio" name="female" value="female" onchange="showNonBinaryForm()" checked>Female</label><br>
+    <label><input type="radio" name="female" value="male" onchange="showNonBinaryForm()">Male</label><br>
     <h3>Male Pronouns:</h3>
-    <label><input type="radio" name="male" value="non-binary" checked>Non-binary</label><br>
-    <label><input type="radio" name="male" value="female">Female</label><br>
-    <label><input type="radio" name="male" value="male">Male</label><br>
+    <label><input type="radio" name="male" value="non-binary" onchange="showNonBinaryForm()">Non-binary</label><br>
+    <label><input type="radio" name="male" value="female" onchange="showNonBinaryForm()">Female</label><br>
+    <label><input type="radio" name="male" value="male" onchange="showNonBinaryForm()" checked>Male</label><br>
+
+    <div id="non-binary-form" style="display: none;">
+      <h3>Non-binary Pronouns:</h3>
+      <label for="sheHe">She/He</label>
+      <input type="text" name="sheHe" id="sheHe" value="They"><br>
+      
+      <label for="himHer">Him/Her</label>
+      <input type="text" name="himHer" id="himHer" value="Them"><br>
+      
+      <label for="hersHis">Hers/His</label>
+      <input type="text" name="hersHis" id="hersHis" value="Their"><br>
+      
+      <label for="himHerSelf">Himself/Herself</label>
+      <input type="text" name="himHerSelf" id="himHerSelf" value="Themself"><br>
+    </div>
+
     <br>
     <input type="submit" value="Submit">
+    
     <p>We'll attempt to change all words that refer to males or to females to your selection.
       Unfortunately, we're just doing simple search and replace, so we can't only change the
       gender of a specific character. Changing a character's gender affects all others
@@ -25,4 +42,20 @@
     <p>If you have Natural Language Processing skills, feel free to contact us and help us
       make the De/Regenderer better!</p>
   </form>
+{% endblock %}
+
+{% block body_scripts %}
+  <script>
+    function showNonBinaryForm() {
+      const nonBinaryForm = document.getElementById('non-binary-form');
+      const nonBinaryRadioMale = document.querySelector(`input[type=radio][name=male][value=non-binary]`);
+      const nonBinaryRadioFemale = document.querySelector(`input[type=radio][name=female][value=non-binary]`);	
+      
+	if (nonBinaryRadioMale.checked || nonBinaryRadioFemale.checked) {
+        nonBinaryForm.style.display = 'block';
+      } else {
+        nonBinaryForm.style.display = 'none';
+      }
+    }
+  </script>
 {% endblock %}
