@@ -1,6 +1,7 @@
 BUGS
 Make sure that unkwnown names works with capitalization
 Figure out why the text is more centered in pronouns and known names
+Loading page stopped working
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -8,9 +9,10 @@ Remove debugging print calls and console.logs
 DEGENDERING FEATURES
 
 Change potential name page to warning page explaining that these might not be people names
-Add a submit page - Save all upload files and parameters somewhere?
+Add a submit page - Save parameters somewhere - cookie?
+    Submit page: Book name - Author - Short excerpt - Webpage - Parameters
 Transpose same method for identifying warning names from book to text - Avoid dupe code
-Remember selections in cookie and prepopulate forms with last answers?
+Remember parameters in cookie and prepopulate forms with last answers?
 
 OTHER FEATURES
 

@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-  <p>This where you can choose your pronouns if you prefer something different from they/them/their.
+  <div id="explanation">This where you can choose your pronouns if you prefer something different from they/them/their.
     Just enter the male or female pronoun you want to replace on the left, and the pronoun you want
     to replace it with on the right. If you're making all characters non-binary, you probably want
     to change "he", "she", "him", "her", "his" and "hers". Any pronouns you don't change will default
@@ -18,7 +18,8 @@
   <p>You can also use this form to change any gendered word that we forgot or that is specific to your
     book. Just type the word you want to change on the left, and the replacement you'd like to use on the
     right. If you are a right-wing troll-child, you can probably use this to amuse your easily-amused
-    troll-friends by creating racist or sexist trash. We do not care and are not impressed.</p>
+    troll-friends by creating racist or sexist trash. We do not care and are not impressed.
+  </div>
   <form method="POST" id="name-selection-form">
     <table>
       <thead>
@@ -71,7 +72,6 @@
   <script>
     // Intercept the form submission
     document.getElementById('name-selection-form').addEventListener('submit', function () {
-	changeHeaderToDownloading(); // Change the header	
 	showProcessingMessage(); // Show the processing message
     });
 
@@ -80,13 +80,11 @@
 	// Hide the form
 	document.getElementById('name-selection-form').style.display = 'none';
 
+	// Hide the text
+	document.getElementById('explanation').style.display = 'none';
+	
 	// Show the processing message
 	document.getElementById('processing-message').style.display = 'block';
-    }
-    // Function to change the header to "Downloading"
-    function changeHeaderToDownloading() {
-	var header = document.getElementById('header');
-	header.textContent = 'Degendering.../Regendering...';
     }
   </script>
 
