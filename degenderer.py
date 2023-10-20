@@ -254,7 +254,7 @@ def get_known_names(text):
         name_tuple_list.append((key,value))
     return name_tuple_list
 
-def get_potential_names(text):
+def get_potential_names(text, min_occurrences=5):
     pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
     matches = regex.findall(pattern, text)
     names = []
@@ -267,7 +267,7 @@ def get_potential_names(text):
             name_dict[name] += 1
         else:
             name_dict[name] = 1
-    short_name_dict = {key: value for key, value in name_dict.items() if value >= 5}
+    short_name_dict = {key: value for key, value in name_dict.items() if value >= min_occurrences}
     return short_name_dict
     name_tuple_list = []
     for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
@@ -291,9 +291,9 @@ def combine_dicts(count_dicts):
             combined_dict[key] = combined_dict.get(key, 0) + count
     return combined_dict
 
-def get_names(text):
+def get_names(text, min_occurrences=5):
     known_name_dict = get_known_names(text)
-    potential_name_dict = get_potential_names(text)
+    potential_name_dict = get_potential_names(text, min_occurrences=min_occurrences)
     temp_tuple = split_clean_warning_dict(known_name_dict)
     known_name_dict = temp_tuple[0]
     warning_name_dict = temp_tuple[1]

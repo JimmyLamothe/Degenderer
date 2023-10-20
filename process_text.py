@@ -5,4 +5,4 @@ def process_text(text, parameters):
     return new_text
 
 def get_all_names(text):
-    return get_names(text)
+    return get_names(text, min_occurrences = 3)

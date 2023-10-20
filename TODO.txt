@@ -1,7 +1,6 @@
 BUGS
 Make sure that unkwnown names works with capitalization
 Figure out why the text is more centered in pronouns and known names
-Loading page stopped working
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -10,7 +9,7 @@ DEGENDERING FEATURES
 
 Add a submit page - Save parameters somewhere - cookie?
     Submit page: Book name - Author - Short excerpt - Webpage - Parameters
-Transpose same method for identifying warning names from book to text - Avoid dupe code
+
 Remember parameters in cookie and prepopulate forms with last answers?
 
 OTHER FEATURES
@@ -26,15 +25,17 @@ Add more non-binary names
 Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
 Create warning name list
-Have some pronouns only be degendered when capitalized: e.g. "Miss"
+Have some words only be degendered when capitalized: e.g. "Miss"
 Check if boy and girl have different nb equivalent
-Make sure all her/hers are gone
 
 EXTRAS
 
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+DONE - Make sure all her/hers are gone
+DONE - Transpose same method for identifying warning names from book to text - Avoid dupe code
+DONE - Loading page stopped working
 DONE - Add a favorite pronouns page - only when non-binary
 DONE - Change potential name page to warning page explaining that these might not be names
 DONE - Add text to explain limitations
