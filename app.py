@@ -6,6 +6,7 @@ from markupsafe import escape
 import config
 from degenderer import suggest_name
 from utilities import remove_dupes
+from samples import add_sample, get_samples
 import process_book
 import process_text
 
@@ -194,6 +195,38 @@ def unknown_names():
         except KeyError:
             return redirect('/')
 
+@app.route('/submission-form', methods=['GET', 'POST'])
+def submission_form():
+    if request.method == 'POST':
+        book_name = request.form['book_name']
+        author = request.form['author']
+        webpage = request.form['webpage']
+        tags = request.form['tags']
+        excerpt = request.form['excerpt']
+
+        # Save the submitted data (you can store it in a database or file)
+        submitted_book = {
+            'book_name': book_name,
+            'author': author,
+            'webpage': webpage,
+            'tags': tags,
+            'excerpt': excerpt,
+            'male pronouns': session['male_pronoun'],
+            'female pronouns': session['female_pronoun'],
+            'name matches': session['name_matches'],
+            'reviewed': False,
+            'approved': False
+        }
+        add_sample(submitted_book)
+        print(get_samples(reviewed=False, approved=False))
+        return redirect('/thank-you')
+
+    return render_template('submission-form.html')
+
+@app.route('/thank-you')
+def thank_you():
+    return render_template('thank-you.html')
+        
 @app.route('/text-display', methods=['GET'])
 def text_display():
     try:

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block extra_stylesheets %}
+
+{% endblock %}
+
+{% block head_scripts %}
+
+{% endblock %}
+
+{% block content %}
+<p>Thank you for submitting your version of the book! After review,
+  it should be added to the samples for other users to consult and make for themselves.</p>
+{% endblock %}
+
+{% block body_scripts %}
+
+{% endblock %}

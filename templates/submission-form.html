@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+</body>
+</html>
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Submission Form</title>
+{% endblock %}
+
+{% block extra_stylesheets %}
+
+{% endblock %}
+
+{% block head_scripts %}
+
+{% endblock %}
+
+{% block content %}
+  <h1>Submit Your Book</h1>
+  <p>Please enter the name and author of your book.<br>
+    If it's freely available online without copyright, you can also provide
+    a link where it can be found.<br>
+    You can also add some tags that might help interested readers find your version.<br> 
+    Finally, copy and paste a short excerpt of your version of the book
+    so that people can see what makes it special. This can be anywhere from a paragraph
+    to one or two pages.</p>
+
+  <form method="post">
+      <label for="book-name">Book Name:</label>
+      <input type="text" id="book-name" name="book_name" required><br>
+
+      <label for="author">Author:</label>
+      <input type="text" id="author" name="author" required><br>
+
+      <label for="webpage">Webpage (Optional):</label>
+      <input type="text" id="webpage" name="webpage"><br>
+
+      <label for="webpage">Tags (Optional):</label>
+      <input type="text" id="tags" name="tags"><br>
+      
+      <label for="excerpt">Excerpt:</label>
+      <textarea id="excerpt" name="excerpt" rows="10" cols="50" required></textarea><br>
+
+      <input type="submit" value="Submit">
+  </form>
+
+{% endblock %}
+
+{% block body_scripts %}
+
+{% endblock %}

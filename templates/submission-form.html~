@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submission Form</title>
+</head>
+<body>
+    <h1>Submit Your Book</h1>
+    <p>Please enter the name and author of your book. If it's freely available online without
+      copyright, you can also provide a link where it can be found. Finally, copy and paste
+      a short excerpt of your version of the book so that people can see what makes it special.
+      This can be anywhere from a paragraph to one or two pages.</p>
+
+    <form method="post" action="/submit-book">
+        <label for="book-name">Book Name:</label>
+        <input type="text" id="book-name" name="book_name" required><br>
+
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required><br>
+
+        <label for="webpage">Webpage (Optional):</label>
+        <input type="text" id="webpage" name="webpage"><br>
+
+        <label for="excerpt">Excerpt:</label>
+        <textarea id="excerpt" name="excerpt" rows="10" cols="50" required></textarea><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

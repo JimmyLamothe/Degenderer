@@ -1,14 +1,17 @@
 BUGS
 Make sure that unkwnown names works with capitalization
 Figure out why the text is more centered in pronouns and known names
+Fix them showing up instead of their (for him/his I think)
 
 CLEANUP
 Remove debugging print calls and console.logs
 
 DEGENDERING FEATURES
 
-Add a submit page - Save parameters somewhere - cookie?
-    Submit page: Book name - Author - Short excerpt - Webpage - Parameters
+IN PROGRESS Let the user modify their choices instead of starting from scratch
+
+IN PROGRESS Add a submit page - Save parameters somewhere - cookie?
+    	    	Submit page: Book name - Author - Short excerpt - Webpage - Parameters
 
 Remember parameters in cookie and prepopulate forms with last answers?
 
