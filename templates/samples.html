@@ -1,54 +1,36 @@
 {% extends "base.html" %}
 
 {% block title %}
-  The Degenderer/Regenderer - Examples
+  The Degenderer/Regenderer - Samples
 {% endblock %}
 
 {% block extra_stylesheets %}
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 {% endblock %}
 
-{% block content %}
-  <h1>Examples</h1>
-  <div class="example">
-    <div class="example-header">
-      <h2>Example One</h2>
-      <button class="toggle">
-	<i class="material-icons">chevron_right</i>
-      </button>
-    </div>
-    <div class="example-content" hidden>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
-      <a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example One</a>
-    </div>
-  </div>
-    
-  <div class="example">
-    <div class="example-header">
-      <h2>Example Two</h2>
-      <button class="toggle">
-	<i class="material-icons">chevron_right</i>
-      </button>
-    </div>
-    <div class="example-content" hidden>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
-      <a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example Two</a>
-    </div>
-  </div>
-    
-  <div class="example">
-    <div class="example-header">
-      <h2>Example Three</h2>
-      <button class="toggle">
-	<i class="material-icons">chevron_right</i>
-      </button>
-    </div>
-    <div class="example-content" hidden>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempor dui in ex euismod consectetur. In ullamcorper lacus lorem, quis lacinia tellus pretium ac.</p>
-      <a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Example Three</a>
-    </div>
-  </div>
-
+{% block content %}  
+  <h1>Samples</h1>
+    {% for sample in selection %}
+      <div class="sample">
+	<div class="sample-header">
+	  <h2>{{ sample['book_name'] }} by {{ sample['author'] }}</h2>
+	  <h3>Female pronouns: {{ sample['female pronouns'] }}</h3>
+	  <h3>Male Pronouns: {{ sample['male pronouns'] }}</h3>
+	  {% if sample['male pronouns'] == 'Non-binary' or sample['female_pronouns'] == 'Non-binary' %}
+	  <h3>Non-binary pronouns: {{ sample['name matches']['she'] }} and {{ sample['name matches']['her'] }}</h3>
+	  {% endif %}
+	  {% if sample['webpage'] %}
+	  <a href="{{ url_for('download', filename='pg1260') }}" class="download-link">Download Sample One</a>
+	  {% endif %}
+	  <button class="toggle">
+	    <i class="material-icons">chevron_right</i>
+	  </button>
+	</div>
+	<div class="sample-content" hidden>
+	  <p>{{ sample['excerpt'] }}</p>
+	</div>
+      </div>
+    {% endfor %}
 {% endblock %}
 {% block body_scripts %}
   <script src="{{ url_for('static', filename='samples.js') }}"></script>

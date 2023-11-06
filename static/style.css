@@ -90,7 +90,7 @@ input[type=submit]:hover {
     transform: rotate(90deg);
 }
 
-.example-header {
+.sample-header {
     display: flex;
     align-items: left;
     align-items: center;

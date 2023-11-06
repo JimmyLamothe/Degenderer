@@ -71,17 +71,38 @@ def get_samples(reviewed=True, approved=True):
     conn = sqlite3.connect('sample_library.db')
     cursor = conn.cursor()
     if reviewed and approved:
-        query = "SELECT * FROM sample_library WHERE reviewed = 1 AND accepted = 1"
+        query = "SELECT * FROM sample_library WHERE reviewed = 1 AND approved = 1"
     elif reviewed:
         query = "SELECT * FROM sample_library WHERE reviewed = 1"
     elif approved:
-        query = "SELECT * FROM sample_library WHERE accepted = 1"
+        query = "SELECT * FROM sample_library WHERE approved = 1"
     else:
         query = "SELECT * FROM sample_library"
     cursor.execute(query)
     samples = cursor.fetchall()
+    print(samples)
     conn.close()
-    return samples
+    sample_dicts = []
+    abbreviations = {
+        'm' : 'Male',
+        'f' : 'Female',
+        'nb' : 'Non-binary'
+        }
+    for sample in samples:
+        sample_dict = {
+            'book_name': sample[1],
+            'author': sample[2], 
+            'webpage': sample[3],
+            'tags': sample[4],
+            'excerpt': sample[5],
+            'male pronouns': abbreviations[sample[6]],
+            'female pronouns': abbreviations[sample[7]],
+            'name matches': sample[8],
+            'reviewed': sample[9],
+            'approved': sample[10]
+        }
+        sample_dicts.append(sample_dict)
+    return sample_dicts
 
 #TESTING ONLY - Reset sample_library
 def clear_sample_library():
@@ -96,3 +117,10 @@ def clear_sample_library():
     else:
         print('Cancelling operation')
 
+#TESTING ONLY - Approve all samples        
+def approve_all():
+    conn = sqlite3.connect('sample_library.db')
+    cursor = conn.cursor()
+    update_query = "UPDATE sample_library SET approved = 1, reviewed = 1"
+    cursor.execute(update_query)
+    conn.commit()
