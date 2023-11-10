@@ -80,7 +80,6 @@ def get_samples(reviewed=True, approved=True):
         query = "SELECT * FROM sample_library"
     cursor.execute(query)
     samples = cursor.fetchall()
-    print(samples)
     conn.close()
     sample_dicts = []
     abbreviations = {

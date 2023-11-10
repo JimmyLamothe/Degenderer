@@ -1,5 +1,6 @@
-# -*- coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
+# -*- coding: utf-8; iAndent-tabs-mode: nil; tab-width: 4 -*-
 import sys
+import json
 import random
 from pathlib import Path
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
@@ -45,14 +46,15 @@ def home():
 def samples():
     clear_session()
     samples = get_samples()
-    number = 3
+    number = 10
     if len(samples) > number:
         selection = random.sample(samples, number)
     else:
         selection = samples
+    for item in selection:
+        item['name matches'] = json.loads(item['name matches'])
     session['samples'] = [item for item in samples if not item in selection]
     session.modified=True
-    print(samples, selection)
     return render_template('samples.html', selection=selection)
 
 @app.route('/download/<filename>')

@@ -95,3 +95,12 @@ input[type=submit]:hover {
     align-items: left;
     align-items: center;
 }
+
+.read-excerpt-text {
+    font-size: 18px; /* Adjust the size as needed */
+    font-weight: bold; /* Optionally make it bold */
+    vertical-align: middle; /* Align vertically to the middle */
+}
+
+.material-icons {
+    vertical-align: bottom; /* Align vertically to the middle */B
