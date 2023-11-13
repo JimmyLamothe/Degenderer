@@ -12,13 +12,19 @@
   <h1>Samples</h1>
     {% for sample in selection %}
       <div class="sample" style="margin-top:20px">
-	<h3 style="display: inline;">{{ sample['book_name'] }} by {{ sample['author'] }}</h3>
+	<div>
+	  <h3 style="display: inline;">{{ sample['book_name'] }} - </h3>
+	  <h4 style="display: inline;"><i>{{ sample['author'] }}</i></h4>
 	{% if sample['webpage'] %}
 	-   
-	<a href="{{ url_for('download', filename='pg1260') }}"
-	   class="download-link"
-	   style="display: inline;">Get ebook</a><br>
+	<a href="{{ url_for('download_sample', sample_id=sample['id']) }}"
+	   style="display: inline;"
+	   onclick="showDownloadingMessage()">Get de/regendered eBook</a><br>
+	<span id="downloading-message"
+	      style="display: none; margin-top: 10px;">Processing, thank you for your patience.</span>
+	{% else %} - No eBook included
 	{% endif %}
+	</div>
 	<p><b>Female characters:</b> {{ sample['female pronouns'] }} - 
 	<b>Male characters:</b> {{ sample['male pronouns'] }}
 	{% if sample['male pronouns'] == 'Non-binary' or sample['female_pronouns'] == 'Non-binary' %}
@@ -26,7 +32,7 @@
 	{% endif %}
 	</p>  
 	<button class="toggle">
-	  <span class="read-excerpt-text">Read excerpt</span>
+	  <span class="read-excerpt-text" style="font-size: 1.2em;">Read excerpt</span>
 	  <i class="material-icons">chevron_right</i>
 	</button>
 	<div class="sample-content" hidden>
@@ -37,4 +43,9 @@
 {% endblock %}
 {% block body_scripts %}
   <script src="{{ url_for('static', filename='samples.js') }}"></script>
+  <script>
+  function showDownloadingMessage() {
+    document.getElementById('downloading-message').style.display = 'block';
+  }
+  </script>
 {% endblock %}

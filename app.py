@@ -1,23 +1,23 @@
-# -*- coding: utf-8; iAndent-tabs-mode: nil; tab-width: 4 -*-
+# -*- coding: utf-8; indent-tabs-mode: nil; tab-Awidth: 4 -*-
 import sys
-import json
 import random
 from pathlib import Path
+import requests
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
 from markupsafe import escape
 import config
 from degenderer import suggest_name
 from utilities import remove_dupes
-from samples import add_sample, get_samples
+from samples import add_sample, get_sample_by_id, get_samples
 import process_book
 import process_text
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.SECRET_KEY
 
-SAMPLE_DIR = Path('samples') 
-
-UPLOAD_DIR = Path('uploads')
+SAMPLE_DIR = Path('sample_books') #eBooks submitted by users and downloaded at least once
+WORKING_DIR = Path('temp') #Used to temporarily store downloaded eBooks
+UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combine with WORKING_DIR?
 
 EMPTY_PARAMETERS = 'empty_dict.json'
 
@@ -51,16 +51,31 @@ def samples():
         selection = random.sample(samples, number)
     else:
         selection = samples
-    for item in selection:
-        item['name matches'] = json.loads(item['name matches'])
     session['samples'] = [item for item in samples if not item in selection]
     session.modified=True
     return render_template('samples.html', selection=selection)
 
-@app.route('/download/<filename>')
-def download(filename):
-    filename = filename + '.epub'
-    return send_file(SAMPLE_DIR.joinpath(filename), as_attachment=True)
+@app.route('/download-sample/<sample_id>')
+def download_sample(sample_id):
+    sample = get_sample_by_id(sample_id)
+    url = sample['webpage']
+    book_filename = url.split("/")[-1]
+    degendered_filepath = SAMPLE_DIR / book_filename
+    if not degendered_filepath.exists():
+        temp_filepath = WORKING_DIR / book_filename
+        # Download the book using requests if it doesn't exist
+        response = requests.get(url)
+        with open(temp_filepath, 'wb') as f:
+            f.write(response.content)
+        parameters = {
+            'male' : sample['male pronouns'],
+            'female': sample['female pronouns'],
+            'name matches': sample['name matches'],
+        }
+        epub_filepath = process_book.process_epub(temp_filepath, parameters)
+        epub_filepath.rename(degendered_filepath)
+        temp_filepath.unlink()
+    return send_file(degendered_filepath)
 
 @app.route('/upload-book')
 def upload_book():
@@ -194,15 +209,15 @@ def unknown_names():
         try:
             if session['text']: #If we got here via text box input
                 print(session['text'])
+                #We escape a second time in case the session cookie was hacked
                 session['text'] = process_text.process_text(escape(session['text']),
                                                             parameters)
                 #print(f'session text: {session["text"]}')
-                #We escape a second time in case the session cookie was hacked
                 return redirect('/text-display')
         except KeyError: #If we got here via file upload
             pass
         epub_filepath = process_book.process_epub(session['filepath'], parameters)        
-        return send_file(epub_filepath)
+        return send_file(epub_filepath, as_attachment=True)
     else:
         try:
             if session['male_pronoun'] and session['female_pronoun']:

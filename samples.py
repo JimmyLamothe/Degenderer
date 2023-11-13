@@ -66,7 +66,41 @@ def add_sample(submission, reviewed=False, approved=False):
     conn.commit()
     conn.close()
 
-# Get list of samples from the database    
+def get_sample_dict(sample, keep_abbreviations=True):
+    abbreviations = {
+        'm' : 'Male',
+        'f' : 'Female',
+        'nb' : 'Non-binary'
+        }
+    sample_dict = {
+            'id': sample[0],
+            'book_name': sample[1],
+            'author': sample[2], 
+            'webpage': sample[3],
+            'tags': sample[4],
+            'excerpt': sample[5],
+            'male pronouns': sample[6],
+            'female pronouns': sample[7],
+            'name matches': json.loads(sample[8]),
+            'reviewed': sample[9],
+            'approved': sample[10]
+        }
+    if not keep_abbreviations:
+        sample_dict['male pronouns'] = abbreviations[sample_dict['male pronouns']]
+        sample_dict['female pronouns'] = abbreviations[sample_dict['female pronouns']]
+    return sample_dict
+        
+def get_sample_by_id(sample_id):
+    conn = sqlite3.connect('sample_library.db')
+    cursor = conn.cursor()
+    query = f"SELECT * FROM sample_library WHERE id = {sample_id};"
+    cursor.execute(query)
+    sample = cursor.fetchall()[0]
+    conn.close()
+    sample_dict = get_sample_dict(sample)
+    return sample_dict
+
+# Get list of samples from the database - TODO: Get a certain number at a time?
 def get_samples(reviewed=True, approved=True):
     conn = sqlite3.connect('sample_library.db')
     cursor = conn.cursor()
@@ -82,25 +116,8 @@ def get_samples(reviewed=True, approved=True):
     samples = cursor.fetchall()
     conn.close()
     sample_dicts = []
-    abbreviations = {
-        'm' : 'Male',
-        'f' : 'Female',
-        'nb' : 'Non-binary'
-        }
     for sample in samples:
-        sample_dict = {
-            'book_name': sample[1],
-            'author': sample[2], 
-            'webpage': sample[3],
-            'tags': sample[4],
-            'excerpt': sample[5],
-            'male pronouns': abbreviations[sample[6]],
-            'female pronouns': abbreviations[sample[7]],
-            'name matches': sample[8],
-            'reviewed': sample[9],
-            'approved': sample[10]
-        }
-        sample_dicts.append(sample_dict)
+        sample_dicts.append(get_sample_dict(sample, keep_abbreviations=False))
     return sample_dicts
 
 #TESTING ONLY - Reset sample_library
