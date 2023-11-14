@@ -1,4 +1,4 @@
-# -*- coding: utf-8; indent-tabs-mode: nil; tab-Awidth: 4 -*-
+# -*- coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 import sys
 import random
 from pathlib import Path
@@ -38,7 +38,8 @@ def clear_session():
     
 @app.route('/')
 @app.route('/home')
-def home():
+@app.route('/welcome')
+def welcome():
     clear_session()
     return render_template('welcome.html')
   

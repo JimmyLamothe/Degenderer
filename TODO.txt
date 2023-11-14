@@ -34,8 +34,8 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
-DONE Let the user modify their choices instead of starting from scratch
-     Simple solution: browser back button
+DONE - Let the user modify their choices instead of starting from scratch
+       Simple solution: browser back button
 DONE - Add a submit page - Created an sqllite3 db to store them
        Submit page: Book name - Author - Short excerpt - Webpage - Parameters
 DONE - Make sure all her/hers are gone

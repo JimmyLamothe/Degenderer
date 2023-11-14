@@ -6,10 +6,9 @@
 
 {% block content %}
   <div class="welcome">
-    <h1>Welcome to The Degenderer/Regenderer</h1>
+    <h1>Welcome to the Degenderer/Regenderer!</h1>
   </div>
-  <p>Our platform allows you to create your own version of books where the characters are non-binary or have different genders than in the original. With our tool, you can explore the possibilities of gender in literature and create your own unique reading experience.</p>
-  <p>Imagine reading Romeo and Juliet with non-binary heroes, or The Handmaid's Tale with men as the victims. Or perhaps you'd like to turn Brokeback Mountain into a lesbian love story. With The Degenderer/Regenderer, the possibilities are endless. Read some samples <a href="/samples">here</a>.</p>
-  <p>If you're looking for books to degender/regender, you can find many of them on <a href="https://www.gutenberg.org/">Project Gutenberg</a>, a free online library with over 60,000 ebooks.</p>
-  <p>If you have your own book that you want to degender/regender, you can use our <a href="/select">upload page</a> to upload it and create your own customized version.</p>
+  <p>Classic literature is full of love stories. And like all classic love stories, they feature a man and a woman, playing their traditional roles. But no more! Now, you can bring today's more complex and nuanced vision of gender to classic books by making all characters non-binary, or by inverting male and female roles. You can play around with sexuality by making any literary relationship lesbian or gay. You choose the pronouns, you choose the names... make the story yours!</p>
+  <p>Okay, let's be honest, changing names and pronouns isn't enough to really change a character's gender. They'll still be the same underneath. But it does conjure up different images! It's fun to read Brokeback Mountain with lesbian cowboys, even if the sex scenes don't make much sense. The Handmaid's Tale feels different when men are the breeders. And Romeo and Juliet are as much in love as Payton and Sawyer.</p>
+  <p>If you're looking for classic books to de/regender, you can find many of them on <a href="https://www.gutenberg.org/">Project Gutenberg</a>, a free online library with over 60,000 ebooks. Our <a href={{ url_for('search') }}>search tool</a> redirects you there. We can't process copy-protected eBooks, but you can still have fun de/regendering excerpts in our <a href={{ url_for('text_upload') }}>text converter.</a></p>
 {% endblock %}
