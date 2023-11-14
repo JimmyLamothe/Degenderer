@@ -1,0 +1,3 @@
+# Degenderer/Regenderer
+
+This is a website where you can process eBooks and text to change characters' gender. It's super basic, using search and replace, so it's quite limited. It could be the start of something much better, but would definitely need talented help to make that possible. Please go to the <a href="https://github.com/JimmyLamothe/Degenderer/discussions/1">discussions</a> page if you want to help.
