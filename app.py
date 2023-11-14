@@ -141,15 +141,15 @@ def pronouns():
         session['male_pronoun'] = abbreviate(request.form['male'])
         session['female_pronoun'] = abbreviate(request.form['female'])
         if session['male_pronoun'] == 'nb':
-            session['name_matches']['he'] = request.form['sheHe'].lower()
-            session['name_matches']['him'] = request.form['himHer'].lower()
-            session['name_matches']['his'] = request.form['hersHis'].lower()
-            session['name_matches']['himself'] = request.form['himHerSelf'].lower()
+            session['name_matches']['he'] = request.form['he'].lower()
+            session['name_matches']['him'] = request.form['him'].lower()
+            session['name_matches']['his'] = request.form['his'].lower()
+            session['name_matches']['himself'] = request.form['himself'].lower()
         if session['female_pronoun'] == 'nb':
-            session['name_matches']['she'] = request.form['sheHe'].lower()
-            session['name_matches']['her'] = request.form['himHer'].lower()
-            session['name_matches']['hers'] = request.form['hersHis'].lower()
-            session['name_matches']['herself'] = request.form['himHerSelf'].lower()
+            session['name_matches']['she'] = request.form['she'].lower()
+            session['name_matches']['her'] = request.form['her'].lower()
+            session['name_matches']['hers'] = request.form['hers'].lower()
+            session['name_matches']['herself'] = request.form['herself'].lower()
         return redirect('/known-names') #If file upload
     #If GET
     if session['filepath']: #If file upload

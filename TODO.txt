@@ -1,7 +1,11 @@
 BUGS
-Make sure that unkwnown names works with capitalization
-Figure out why the text is more centered in pronouns and known names
+Unkwnown names only works with matched capitalization - this is bad I think
+Known names only works with matched capitalization - this is good I think
+Pronouns match capitalization - this is good
+Have some words only be degendered when capitalized: e.g. "Miss"
 Fix them showing up instead of their (for him/his I think)
+Figure out why the text is more centered in pronouns and known names
+
 
 
 CLEANUP
@@ -25,9 +29,8 @@ Add more non-binary names
 Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
 Create warning name list
-Have some words only be degendered when capitalized: e.g. "Miss"
 Check if boy and girl have different nb equivalent
-
+Schoolmistress should be schoolteacher - not schoolteachers
 
 EXTRAS
 
