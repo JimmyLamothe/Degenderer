@@ -24,7 +24,7 @@
 	  <th colspan="3">Suggestion</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="name-entries">
 	{% for _ in range(10) %}
         <tr>
 	  <td><input type="text" name="existing_names[]" /></td>
@@ -52,8 +52,17 @@
 
         </tr>
         {% endfor %}
+      </tbody>
+      <tbody>
         <tr>
-          <td colspan="3"><button type="submit">Submit</button></td>
+            <td colspan="3">
+                <button type="button" onclick="addMoreEntries()">More</button>
+            </td>
+	</tr>
+	<tr>
+            <td colspan="3">
+                <button type="submit">Submit</button>
+            </td>
         </tr>
       </tbody>
     </table>
@@ -71,6 +80,36 @@
     <a href="/pronouns">click here</a>.</p>
   </div>
   <script>
+    function addMoreEntries() {
+        // Get the table body
+        var tbody = document.getElementById('name-entries');
+
+        // Check the maximum number of entries
+        var maxEntries = 100;
+        var currentEntries = tbody.childElementCount;
+
+        // Add 10 entries at a time
+        var entriesToAdd = Math.min(10, maxEntries - currentEntries);
+
+        for (var i = 0; i < entriesToAdd; i++) {
+            // Clone the last row (the one before the buttons)
+            var lastRow = tbody.lastElementChild.cloneNode(true);
+
+            // Clear the input values in the cloned row
+            var inputs = lastRow.querySelectorAll('input[type="text"]');
+            inputs.forEach(function (input) {
+                input.value = '';
+            });
+
+            // Append the cloned row to the table
+            tbody.appendChild(lastRow);
+        }
+
+        // Hide the "More" button if the maximum number of entries is reached
+        if (currentEntries + entriesToAdd >= maxEntries) {
+            document.querySelector('button[onclick="addMoreEntries()"]').style.display = 'none';
+        }
+    }
     // Intercept the form submission
     document.getElementById('name-selection-form').addEventListener('submit', function () {
 	showProcessingMessage(); // Show the processing message
