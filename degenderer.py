@@ -7,9 +7,10 @@ import random
 import json
 from timeit import default_timer as timer
 from librarian import get_book_text, is_string
-from reference_library import NB_NAMES, NB_NAMES_MODERN, NB_NAMES_BY_DECADE, ALL_NAMES
-from reference_library import BOY_NAMES, GIRL_NAMES, ALL_PRONOUNS
-from reference_library import COMMON_WORDS, WARNING_WORDS, MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT
+from reference_library import MALE_PRONOUNS, FEMALE_PRONOUNS #DataFrames
+from reference_library import NB_NAMES, GIRL_NAMES, BOY_NAMES, ALL_NAMES, ALL_PRONOUNS #Lists
+#from reference_library import MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT  #OLD - Unused
+from reference_library import COMMON_WORDS, WARNING_WORDS #Lists
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
 DEFAULT_PARAMETERS = {
@@ -106,20 +107,21 @@ def degender_all(item, parameters):
         except AttributeError:
             pass
 
-def create_pronoun_dict(parameters):
+#Backup method - old JSON data
+def create_pronoun_dict_json(parameters):
     pronoun_dict = {}
     if parameters['male'] == 'nb':
         male_index = 0
     elif parameters['male'] == 'f':
         male_index = 1
     else:
-        male_index = -1
+        male_index = -1 #No change - same gender as original
     if parameters['female'] == 'nb':
         female_index = 0
     elif parameters['female'] == 'm':
         female_index = 1
     else:
-        female_index = -1
+        female_index = -1 #No change - same gender as original
     for tup in [(MALE_PRONOUN_DICT,male_index),(FEMALE_PRONOUN_DICT,female_index)]:
       index = tup[1]
       reference_dict = tup[0]
@@ -139,6 +141,44 @@ def create_pronoun_dict(parameters):
                                           'replacement': match.upper() + 'àéà'}
     return pronoun_dict
 
+#New method - Data from Excel file
+def create_pronoun_dict(parameters):
+    pronoun_dict = {}
+    if parameters['female'] == 'nb':
+        female_match = 'NB'
+    elif parameters['female'] == 'm':
+        female_match = 'Opposite'
+    else:
+        female_match = None #No change - same gender as original
+    if parameters['male'] == 'nb':
+        male_match = 'NB'
+    elif parameters['male'] == 'f':
+        male_match = 'Opposite'
+    else:
+        male_match = None #No change - same gender as original
+    def process_df(gender_match, df):
+        if gender_match:
+            for index, row in df.iterrows():
+                original = row['Original']
+                match = row[gender_match]
+                match_case = row['Match case']
+                pronoun_dict[original] = {'match':match,
+                                          'pattern':regex.compile(r'\b' + original + r'\b'),
+                                          'replacement': match + 'àéà'}
+                if match_case:
+                    pronoun_dict[original.title()] = {'match':match.title(),
+                                                      'pattern':regex.compile(r'\b' + original.title()
+                                                                              + r'\b'),
+                                                      'replacement': match.title() + 'àéà'}
+                    pronoun_dict[original.upper()] = {'match':match.upper(),
+                                                      'pattern':regex.compile(r'\b' + original.upper()
+                                                                              + r'\b'),
+                                                      'replacement': match.upper() + 'àéà'}
+    process_df(female_match, FEMALE_PRONOUNS)
+    process_df(male_match, MALE_PRONOUNS)
+    print(pronoun_dict)
+    return pronoun_dict
+    
 def create_name_dict(parameters):
     name_matches = parameters['name matches']
     name_dict = {}

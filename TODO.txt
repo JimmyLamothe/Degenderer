@@ -2,11 +2,7 @@ BUGS
 Unkwnown names only works with matched capitalization - this is bad I think
 Known names only works with matched capitalization - this is good I think
 Pronouns match capitalization - this is good
-Have some words only be degendered when capitalized: e.g. "Miss"
-Fix them showing up instead of their (for him/his I think)
 Figure out why the text is more centered in pronouns and known names
-
-
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -37,6 +33,13 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 pip install epubcheck
 
+
+
+
+DONE - Have some words only be degendered when capitalized: e.g. "Miss"
+DONE - Changed pronouns and name storage from JSON files to a single Excel file for manual editing
+       Modified degenderer.py to work with dfs instead of lists of lists
+DONE - Fix them showing up instead of their (for him/his I think)
 DONE - Let the user modify their choices instead of starting from scratch
        Simple solution: browser back button
 DONE - Add a submit page - Created an sqllite3 db to store them
