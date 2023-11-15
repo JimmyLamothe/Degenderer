@@ -199,8 +199,10 @@ def unknown_names():
         unknown_name_list = request.form.getlist('existing_names[]')
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(unknown_name_list, new_name_list):
-            if item[0] and item[1]:
-                session['name_matches'][item[0]] = item[1]
+            if item[0] and item[1]: #Match all cases for unknown names
+                session['name_matches'][item[0].lower()] = item[1].lower()
+                session['name_matches'][item[0].title()] = item[1].title()
+                session['name_matches'][item[0].upper()] = item[1].upper()
         session.modified = True
         parameters = {
             'male' : session['male_pronoun'],

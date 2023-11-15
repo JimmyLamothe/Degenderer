@@ -1,12 +1,9 @@
-BUGS
-Unkwnown names only works with matched capitalization - this is bad I think
-Known names only works with matched capitalization - this is good I think
-Pronouns match capitalization - this is good
+HTML / CSS
 Figure out why the text is more centered in pronouns and known names
 
 CLEANUP
 Remove debugging print calls and console.logs
-
+Document code (with ChatGPT?)
 
 DEGENDERING FEATURES
 
@@ -24,19 +21,19 @@ DEGENDERING IMPROVEMENTS
 Add more non-binary names
 Add terms for genitals - cock, pussy, etc.
 Good names for Brokeback: Myrtle & Mandy
-Create warning name list
 Check if boy and girl have different nb equivalent
-Schoolmistress should be schoolteacher - not schoolteachers
+
 
 EXTRAS
 
 Validate the process_epub function - replace first part with epub validation
-pip install epubcheck
+	 pip install epubcheck
 
 
-
-
-DONE - Have some words only be degendered when capitalized: e.g. "Miss"
+DONE - Schoolmistress should be schoolteacher - not schoolteachers
+DONE - Unkwnown now works with all cases - lower/upper/title
+       Known names only works with matched capitalization - this is good I think
+DONE - Have some pronouns only be degendered when capitalized: e.g. "Miss"
 DONE - Changed pronouns and name storage from JSON files to a single Excel file for manual editing
        Modified degenderer.py to work with dfs instead of lists of lists
 DONE - Fix them showing up instead of their (for him/his I think)
@@ -56,6 +53,7 @@ DONE - Make sure potential names show up in order of most appearances
 DONE - Degendering times went back up - figure out what version this happened in and what change caused it.
 DONE - Don't show Known Names or Unknown names if no names
 DONE - Make sure the names in potential names aren't already taken care of by the pronoun list
+DONE - Create warning name list
 DONE - Warn for common names in potential name list
 DONE - Add a download page to tell the user they can keep browsing until their book is ready
 DONE - Check ways to make conversion faster
