@@ -4,7 +4,7 @@ function getCurrentSuggestions() {
     for (var i = 1; i < rows.length - 1; i++) {
         var row = rows[i];
 	var inputField = row.querySelector('input[name="new_names[]"]');
-	if (inputField.value != '') {
+	if (inputField && inputField.value != '') {
 	    currentSuggestions.push(inputField.value);
 	}
     }

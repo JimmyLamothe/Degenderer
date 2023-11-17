@@ -25,32 +25,49 @@
         </tr>
       </thead>
       <tbody id="name-entries">
-	{% for _ in range(10) %}
-        <tr>
-	  <td><input type="text" name="existing_names[]" /></td>
-          <td><input type="text" name="new_names[]" /></td>
-          <td>
-            <button type="button" onclick="suggestNb(this.parentNode.parentNode)">
-              NB
-            </button>
-          </td>
-	  <td>
-            <button type="button" onclick="suggestFemale(this.parentNode.parentNode)">
-              F
-            </button>
-          </td>
-	  <td>
-            <button type="button" onclick="suggestMale(this.parentNode.parentNode)">
-              M
-            </button>
-          </td>
-	  <td>
-            <button type="button" onclick="clearRow(this.parentNode.parentNode)">
-              Clear
-            </button>
-          </td>
-
-        </tr>
+	{% set keys = session['unknown_matches'].keys()|list %}
+	{% for i in range(num_entries) %}
+	    {% if i < session['unknown_matches']|length %}
+		{% set name = keys[i] %}
+		<tr>
+		  <td><input type="text"
+			     name="existing_names[]"
+			     value="{{ name }}">
+		  </td>
+		  <td><input type="text"
+			     name="new_names[]"
+			     value="{{ session['unknown_matches'][name] }}">
+		  </td>
+	    {% else %}
+		  <tr>
+		  <td><input type="text"
+			     name="existing_names[]">
+		  </td>
+		  <td><input type="text"
+			     name="new_names[]">
+		  </td>
+	    {% endif %}
+	    <td>
+	      <button type="button" onclick="suggestNb(this.parentNode.parentNode)">
+		NB
+	      </button>
+	    </td>
+	    <td>
+	      <button type="button" onclick="suggestFemale(this.parentNode.parentNode)">
+		F
+	      </button>
+	    </td>
+	    <td>
+	      <button type="button" onclick="suggestMale(this.parentNode.parentNode)">
+		M
+	      </button>
+	    </td>
+	    <td>
+	      <button type="button" onclick="clearRow(this.parentNode.parentNode)">
+		Clear
+	      </button>
+	    </td>
+	    </tr>
         {% endfor %}
       </tbody>
       <tbody>
@@ -60,9 +77,10 @@
             </td>
 	</tr>
 	<tr>
-            <td colspan="3">
-                <button type="submit">Submit</button>
-            </td>
+	  <input type="hidden" name="submit_type" id="action" value="submit">
+	  <td colspan="2"></td>
+	  <td colspan="3"><button type="submit" onclick="submitForm('submit')">Submit</button></td>
+          <td><button type="button" onclick="submitForm('back')">Back</button></td>
         </tr>
       </tbody>
     </table>
@@ -75,9 +93,7 @@
     <p>If you like the result and would like it to be included in our samples page,
       <a href="/submission-form">click here</a>.</p>
     <p>If you want to change the names of some characters or degender words that we missed,
-    you can click the back button in your browswer until you get to the entries you want to modify.</p>
-    <p>If you want to start the degendering process for your book from scratch,
-    <a href="/pronouns">click here</a>.</p>
+    click <a href="/pronouns"> here.</p>
   </div>
   <script>
     function addMoreEntries() {
@@ -85,7 +101,7 @@
         var tbody = document.getElementById('name-entries');
 
         // Check the maximum number of entries
-        var maxEntries = 100;
+        var maxEntries = 200;
         var currentEntries = tbody.childElementCount;
 
         // Add 10 entries at a time
@@ -116,7 +132,8 @@
     });
 
     // Function to show the processing message
-    function showProcessingMessage() {
+	function showProcessingMessage() {
+	console.log('showProcessingMessage called');
 	// Hide the form
 	document.getElementById('name-selection-form').style.display = 'none';
 
@@ -126,6 +143,14 @@
 	// Show the processing message
 	document.getElementById('processing-message').style.display = 'block';
     }
+    function submitForm(action) {
+        // Set the value of the hidden input field based on the button clicked
+        document.getElementById('action').value = action;
+
+        // Submit the form
+        document.forms[0].submit();
+    }
+
   </script>
 
 {% endblock %}

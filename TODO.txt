@@ -1,5 +1,11 @@
+BUGS
+
+NAMES & PRONOUNS
+Add Kent to Warning
+
 HTML / CSS
 Figure out why the text is more centered in pronouns and known names
+
 
 CLEANUP
 Remove debugging print calls and console.logs
@@ -29,7 +35,7 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	 pip install epubcheck
 
-
+DONE - Add back button so people can change things from previous page
 DONE - Schoolmistress should be schoolteacher - not schoolteachers
 DONE - Unkwnown now works with all cases - lower/upper/title
        Known names only works with matched capitalization - this is good I think

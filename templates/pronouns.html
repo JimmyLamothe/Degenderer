@@ -16,25 +16,48 @@
     <label><input type="radio" name="male" value="male" onchange="showNonBinaryForm()" checked>Male</label><br>
 
     <div id="non-binary-form" style="display: none;">
-      <h3>Non-binary Pronouns:</h3>
-	  <label for="she">She</label>
-	  <input type="text" name="she" id="she" value="They"><br>
-	  <label for="he">He</label>
-	  <input type="text" name="he" id="he" value="They"><br>
-	  <label for="her">Her</label>
-	  <input type="text" name="her" id="her" value="Their"><br>
-	  <label for="his">His</label>
-	  <input type="text" name="his" id="his" value="Their"><br>
-	  <label for="him">Him</label>
-	  <input type="text" name="him" id="him" value="Them"><br>
-	  <label for="hers">Hers</label>
-	  <input type="text" name="hers" id="hers" value="Theirs"><br>
-	  <label for="herself">Herself</label>
-	  <input type="text" name="herself" id="herself" value="Themself"><br>
-	  <label for="himself">Himself</label>
-	  <input type="text" name="himself" id="himself" value="Themself"><br>
+	<h3>Non-binary Pronouns:</h3>
+	<label for="she">She</label>
+	<input type="text"
+	       name="she"
+	       id="she"
+	       value="{{ session['pronoun_matches'].get('she', 'They') }}"><br>
+	<label for="he">He</label>
+	<input type="text"
+	       name="he"
+	       id="he"
+	       value="{{ session['pronoun_matches'].get('he', 'They') }}"><br>
+	<label for="her">Her</label>
+	<input type="text"
+	       name="her"
+	       id="her"
+	       value="{{ session['pronoun_matches'].get('her', 'Their') }}"><br>
+	<label for="his">His</label>
+	<input type="text"
+	       name="his"
+	       id="his"
+	       value="{{ session['pronoun_matches'].get('his', 'Their') }}"><br>
+	<label for="him">Him</label>
+	<input type="text"
+	       name="him"
+	       id="him"
+	       value="{{ session['pronoun_matches'].get('him', 'Them') }}"><br>
+	<label for="hers">Hers</label>
+	<input type="text"
+	       name="hers"
+	       id="hers"
+	       value="{{ session['pronoun_matches'].get('hers', 'Theirs') }}"><br>
+	<label for="herself">Herself</label>
+	<input type="text"
+	       name="herself"
+	       id="herself"
+	       value="{{ session['pronoun_matches'].get('herself', 'Themself') }}"><br>
+	<label for="himself">Himself</label>
+	<input type="text"
+	       name="himself"
+	       id="himself"
+	       value="{{ session['pronoun_matches'].get('himself', 'Themself') }}"><br>
     </div>
-
     <br>
     <input type="submit" value="Submit">
     

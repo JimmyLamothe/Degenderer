@@ -25,7 +25,9 @@
         {% for name in session['potential_name_list'] %}
           <tr>
             <td class="existing-name">{{ name }}</td>
-            <td><input type="text" name="new_names[]" /></td>
+            <td><input type="text"
+		       name="new_names[]"
+		       value="{{ session['potential_matches'].get(name, '') }}"></td>
             <td>
               <button type="button" onclick="suggestNb(this.parentNode.parentNode)">
                 NB
@@ -50,9 +52,24 @@
           </tr>
         {% endfor %}
         <tr>
-          <td colspan="3"><button type="submit">Submit</button></td>
+	  <input type="hidden" name="submit_type" id="action" value="submit">
+	  <td colspan="2"></td>
+	  <td colspan="3"><button type="button" onclick="submitForm('submit')">Submit</button></td>
+          <td><button type="button" onclick="submitForm('back')">Back</button></td>
         </tr>
       </tbody>
     </table>
   </form>
+{% endblock %}
+
+{% block body_scripts %}
+  <script>
+  function submitForm(action) {
+        // Set the value of the hidden input field based on the button clicked
+        document.getElementById('action').value = action;
+
+        // Submit the form
+        document.forms[0].submit();
+  }
+  </script>
 {% endblock %}

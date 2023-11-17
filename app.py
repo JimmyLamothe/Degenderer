@@ -22,19 +22,35 @@ UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combin
 EMPTY_PARAMETERS = 'empty_dict.json'
 
 def clear_session():
-    session['text'] = ''
-    session['filepath'] = ''
-    session['known_name_list'] = []
-    session['potential_name_list'] = []
-    session['warning_list'] = []
-    session['name_matches'] = {}
-    session['male_pronoun'] = ''
-    session['female_pronoun'] = ''
+    session['text'] = '' #Text input by user for degendering
+    session['filepath'] = '' #Filepath of book uploaded by user
+    session['known_name_list'] = [] #Known names detected in user submission
+    session['potential_name_list'] = [] #Potential names detected in user submission
+    session['pronoun_matches'] = {} #Current pronoun matches
+    session['known_matches'] = {} #Current known name matches
+    session['potential_matches'] = {} #Current potential name matches
+    session['unknown_matches'] = {} #Current matches for words submitted by user
+    session['all_matches'] = {} #Final matches submitted for degendering
+    session['male_pronoun'] = '' #Gender to make male pronouns
+    session['female_pronoun'] = '' #Gender to make female pronouns
     try:
         if not session['samples']:
-            session['samples'] = []
+            session['samples'] = [] #We do not want to clear the samples when clearing the session
     except KeyError:
-        session['samples'] = []
+        session['samples'] = [] #Samples not yet displayed to user
+    session.modified=True
+
+#Update all matches with current user choices
+def update_matches(user_matches=None):
+    session['all_matches'] = {}
+    session['all_matches'].update(session['pronoun_matches'])
+    session['all_matches'].update(session['known_matches'])
+    session['all_matches'].update(session['potential_matches'])
+    if user_matches:
+        session['all_matches'].update(user_matches)
+    else: #Just for safety, normally this updates with an empty dict
+        session['all_matches'].update(session['unknown_matches'])
+    session.modified=True
     
 @app.route('/')
 @app.route('/home')
@@ -141,15 +157,16 @@ def pronouns():
         session['male_pronoun'] = abbreviate(request.form['male'])
         session['female_pronoun'] = abbreviate(request.form['female'])
         if session['male_pronoun'] == 'nb':
-            session['name_matches']['he'] = request.form['he'].lower()
-            session['name_matches']['him'] = request.form['him'].lower()
-            session['name_matches']['his'] = request.form['his'].lower()
-            session['name_matches']['himself'] = request.form['himself'].lower()
+            session['pronoun_matches']['he'] = request.form['he'].lower()
+            session['pronoun_matches']['him'] = request.form['him'].lower()
+            session['pronoun_matches']['his'] = request.form['his'].lower()
+            session['pronoun_matches']['himself'] = request.form['himself'].lower()
         if session['female_pronoun'] == 'nb':
-            session['name_matches']['she'] = request.form['she'].lower()
-            session['name_matches']['her'] = request.form['her'].lower()
-            session['name_matches']['hers'] = request.form['hers'].lower()
-            session['name_matches']['herself'] = request.form['herself'].lower()
+            session['pronoun_matches']['she'] = request.form['she'].lower()
+            session['pronoun_matches']['her'] = request.form['her'].lower()
+            session['pronoun_matches']['hers'] = request.form['hers'].lower()
+            session['pronoun_matches']['herself'] = request.form['herself'].lower()
+        update_matches()
         return redirect('/known-names') #If file upload
     #If GET
     if session['filepath']: #If file upload
@@ -162,11 +179,16 @@ def pronouns():
 @app.route('/known-names', methods=['GET', 'POST'])
 def known_names():
     if request.method == 'POST':
+        submit_type = request.form.get('submit_type', 'submit')
+        print(submit_type)
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['known_name_list'], new_name_list):
             if item[1]:
-                session['name_matches'][item[0]] = item[1]
-        session.modified = True
+                session['known_matches'][item[0]] = item[1]
+        session.modified=True
+        if submit_type == 'back': #If user clicked back button
+            return redirect('/pronouns')
+        #If user clicked submit button
         return redirect('/potential-names')
     #If GET
     if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
@@ -179,11 +201,15 @@ def known_names():
 @app.route('/potential-names', methods=['GET', 'POST'])
 def potential_names():
     if request.method == 'POST':
+        submit_type = request.form.get('submit_type', 'submit')
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['potential_name_list'], new_name_list):
             if item[1]:
-                session['name_matches'][item[0]] = item[1]
-        session.modified = True
+                session['potential_matches'][item[0]] = item[1]
+        session.modified=True
+        if submit_type == 'back': #If user clicked back button
+            return redirect('/known-names')
+        #If user clicked submit button
         return redirect('/unknown-names')
     else:
         if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
@@ -196,18 +222,31 @@ def potential_names():
 @app.route('/unknown-names', methods=['GET', 'POST'])
 def unknown_names():
     if request.method == 'POST':
+        submit_type = request.form.get('submit_type', 'submit')
         unknown_name_list = request.form.getlist('existing_names[]')
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(unknown_name_list, new_name_list):
-            if item[0] and item[1]: #Match all cases for unknown names
-                session['name_matches'][item[0].lower()] = item[1].lower()
-                session['name_matches'][item[0].title()] = item[1].title()
-                session['name_matches'][item[0].upper()] = item[1].upper()
-        session.modified = True
+            if item[0] and item[1]:
+                session['unknown_matches'][item[0]] = item[1]
+        session.modified=True
+        if submit_type == 'back': #If user clicked back button
+            return redirect('/potential-names')
+        #If user clicked submit button
+        lower_dict = {(key.lower(), value.lower())
+                      for (key, value) in session['unknown_matches'].items()}
+        title_dict = {(key.title(), value.title())
+                      for (key, value) in session['unknown_matches'].items()}
+        upper_dict = {(key.upper(), value.upper())
+                      for (key, value) in session['unknown_matches'].items()}
+        user_matches = {}
+        user_matches.update(lower_dict)
+        user_matches.update(title_dict)
+        user_matches.update(upper_dict)
+        update_matches(user_matches=user_matches) #Updating session['all_matches'] with final values 
         parameters = {
             'male' : session['male_pronoun'],
             'female': session['female_pronoun'],
-            'name matches': session['name_matches'],
+            'all matches': session['all_matches'],
             }
         try:
             if session['text']: #If we got here via text box input
@@ -222,9 +261,11 @@ def unknown_names():
         epub_filepath = process_book.process_epub(session['filepath'], parameters)        
         return send_file(epub_filepath, as_attachment=True)
     else:
+        print(session['unknown_matches'])
+        num_entries = (max(10, len(session['unknown_matches'])))
         try:
             if session['male_pronoun'] and session['female_pronoun']:
-                return render_template('unknown-names.html')
+                return render_template('unknown-names.html', num_entries=num_entries)
             else:
                 return redirect('/')
         except KeyError:
@@ -248,7 +289,7 @@ def submission_form():
             'excerpt': excerpt,
             'male pronouns': session['male_pronoun'],
             'female pronouns': session['female_pronoun'],
-            'name matches': session['name_matches'],
+            'name matches': session['all_matches'],
             'reviewed': False,
             'approved': False
         }
@@ -275,7 +316,7 @@ def text_display():
 def get_suggestion(gender):
     #print(f'Working on row {request.json.get("row")}')
     page_suggestions = request.json.get('pageSuggestions')
-    saved_suggestions = list(session['name_matches'].values())
+    saved_suggestions = list(session['all_matches'].values())
     names_used = list(set(page_suggestions + saved_suggestions))
     suggestion = suggest_name(gender, names_used)
     return jsonify({'suggested_name': suggestion})
