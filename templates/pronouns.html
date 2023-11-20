@@ -7,41 +7,50 @@
 {% block content %}
   <form method="POST">
     <h3>Female Pronouns:</h3>
-    <label><input type="radio" name="female" value="non-binary" onchange="showNonBinaryForm()">Non-binary</label><br>
-    <label><input type="radio" name="female" value="female" onchange="showNonBinaryForm()" checked>Female</label><br>
-    <label><input type="radio" name="female" value="male" onchange="showNonBinaryForm()">Male</label><br>
+    <label><input type="radio"
+		  name="female"
+		  value="non-binary"
+		  onchange="showNonBinaryForm()"
+		  {% if session['female_pronoun'] == 'nb' %}checked{% endif %}>Non-binary</label><br>
+    <label><input type="radio"
+		  name="female"
+		  value="female"
+		  onchange="showNonBinaryForm()"
+		  {% if session['female_pronoun'] in ['', 'f'] %}checked{% endif %}>Female</label><br>
+    <label><input type="radio"
+		  name="female"
+		  value="male"
+		  onchange="showNonBinaryForm()"
+		  {% if session['female_pronoun'] == 'm' %}checked{% endif %}>Male</label><br>
     <h3>Male Pronouns:</h3>
-    <label><input type="radio" name="male" value="non-binary" onchange="showNonBinaryForm()">Non-binary</label><br>
-    <label><input type="radio" name="male" value="female" onchange="showNonBinaryForm()">Female</label><br>
-    <label><input type="radio" name="male" value="male" onchange="showNonBinaryForm()" checked>Male</label><br>
+    <label><input type="radio"
+		  name="male"
+		  value="non-binary"
+		  onchange="showNonBinaryForm()"
+		  {% if session['male_pronoun'] == 'nb' %}checked{% endif %}>Non-binary</label><br>
+    <label><input type="radio"
+		  name="male"
+		  value="female"
+		  onchange="showNonBinaryForm()"
+		  {% if session['male_pronoun'] == 'f' %}checked{% endif %}>Female</label><br>
+    <label><input type="radio"
+		  name="male"
+		  value="male"
+		  onchange="showNonBinaryForm()"
+		  {% if session['male_pronoun'] in ['', 'm'] %}checked{% endif %}>Male</label><br>
 
-    <div id="non-binary-form" style="display: none;">
+    <div id="non-binary-female-form" style="display: none;">
 	<h3>Non-binary Pronouns:</h3>
 	<label for="she">She</label>
 	<input type="text"
 	       name="she"
 	       id="she"
 	       value="{{ session['pronoun_matches'].get('she', 'They') }}"><br>
-	<label for="he">He</label>
-	<input type="text"
-	       name="he"
-	       id="he"
-	       value="{{ session['pronoun_matches'].get('he', 'They') }}"><br>
 	<label for="her">Her</label>
 	<input type="text"
 	       name="her"
 	       id="her"
 	       value="{{ session['pronoun_matches'].get('her', 'Their') }}"><br>
-	<label for="his">His</label>
-	<input type="text"
-	       name="his"
-	       id="his"
-	       value="{{ session['pronoun_matches'].get('his', 'Their') }}"><br>
-	<label for="him">Him</label>
-	<input type="text"
-	       name="him"
-	       id="him"
-	       value="{{ session['pronoun_matches'].get('him', 'Them') }}"><br>
 	<label for="hers">Hers</label>
 	<input type="text"
 	       name="hers"
@@ -52,6 +61,24 @@
 	       name="herself"
 	       id="herself"
 	       value="{{ session['pronoun_matches'].get('herself', 'Themself') }}"><br>
+    </div>
+    <div id="non-binary-male-form" style="display: none;">
+	<h3 id="male-nb-header" style="display: none;">Non-binary Pronouns:</h3>
+	<label for="he">He</label>
+	<input type="text"
+	       name="he"
+	       id="he"
+	       value="{{ session['pronoun_matches'].get('he', 'They') }}"><br>
+	<label for="his">His</label>
+	<input type="text"
+	       name="his"
+	       id="his"
+	       value="{{ session['pronoun_matches'].get('his', 'Their') }}"><br>
+	<label for="him">Him</label>
+	<input type="text"
+	       name="him"
+	       id="him"
+	       value="{{ session['pronoun_matches'].get('him', 'Them') }}"><br>
 	<label for="himself">Himself</label>
 	<input type="text"
 	       name="himself"
@@ -84,16 +111,34 @@
 
 {% block body_scripts %}
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Trigger the showNonBinaryForm() function on page load
+        showNonBinaryForm();
+    });
+    
     function showNonBinaryForm() {
-      const nonBinaryForm = document.getElementById('non-binary-form');
-      const nonBinaryRadioMale = document.querySelector(`input[type=radio][name=male][value=non-binary]`);
-      const nonBinaryRadioFemale = document.querySelector(`input[type=radio][name=female][value=non-binary]`);	
+	const nonBinaryFemaleForm = document.getElementById('non-binary-female-form');
+	const nonBinaryMaleForm = document.getElementById('non-binary-male-form');
+	const nonBinaryRadioMale = document.querySelector(`input[type=radio][name=male][value=non-binary]`);
+	const nonBinaryRadioFemale = document.querySelector(`input[type=radio][name=female][value=non-binary]`);	
+	const maleNbHeader = document.getElementById(`male-nb-header`);	
       
-	if (nonBinaryRadioMale.checked || nonBinaryRadioFemale.checked) {
-        nonBinaryForm.style.display = 'block';
+	if (nonBinaryRadioFemale.checked) {
+            nonBinaryFemaleForm.style.display = 'block';
       } else {
-        nonBinaryForm.style.display = 'none';
+          nonBinaryFemaleForm.style.display = 'none';
       }
+	if (nonBinaryRadioMale.checked) {
+            nonBinaryMaleForm.style.display = 'block';
+	    if (nonBinaryRadioFemale.checked) {
+		maleNbHeader.style.display = 'none';
+	    } else {
+		maleNbHeader.style.display = 'block';
+	    }
+      } else {
+          nonBinaryMaleForm.style.display = 'none';
+      }
+
     }
   </script>
 {% endblock %}

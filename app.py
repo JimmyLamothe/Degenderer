@@ -208,7 +208,10 @@ def potential_names():
                 session['potential_matches'][item[0]] = item[1]
         session.modified=True
         if submit_type == 'back': #If user clicked back button
-            return redirect('/known-names')
+            if session['known_name_list']:
+                return redirect('/known-names')
+            else:
+                return redirect('/pronouns')
         #If user clicked submit button
         return redirect('/unknown-names')
     else:
@@ -230,7 +233,12 @@ def unknown_names():
                 session['unknown_matches'][item[0]] = item[1]
         session.modified=True
         if submit_type == 'back': #If user clicked back button
-            return redirect('/potential-names')
+            if session['potential_name_list']:
+                return redirect('/potential-names')
+            elif session['known_name_list']:
+                return redirect('/known-names')
+            else:
+                return redirect('/pronouns')
         #If user clicked submit button
         lower_dict = {(key.lower(), value.lower())
                       for (key, value) in session['unknown_matches'].items()}
