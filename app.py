@@ -129,16 +129,8 @@ def text_upload():
     clear_session()
     return render_template('text-upload.html')
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search')
 def search():
-    if request.method == 'POST':
-        query = request.form.get('query')
-        modified_query = query.replace(' ', '+')
-        start_url = 'https://www.gutenberg.org/ebooks/search/?query=>'
-        end_url = '&submit_search=Go%21'
-        search_url = start_url + modified_query + end_url
-        return redirect(search_url)
-    #If GET
     clear_session()
     return render_template('search.html')
 

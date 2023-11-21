@@ -6,8 +6,27 @@ Search for books
 
 {% block content %}
 <h2>Search for eBooks</h2>
-<form action="{{ url_for('search') }}" method="post">
+<form id="searchForm" onsubmit="submitSearch(event)">
   <input type="text" name="query" id="query" style="width: 200px;">
   <input type="submit" value="Search">
 </form>
+{% endblock %}
+{% block body_scripts %}
+<script>
+    function submitSearch(event) {
+        event.preventDefault();  // Prevent the default form submission
+
+        // Get the query from the input field
+        var query = document.getElementById('query').value;
+
+        // Construct the URL
+        var modifiedQuery = query.replace(' ', '+');
+        var startUrl = 'https://www.gutenberg.org/ebooks/search/?query=';
+        var endUrl = '&submit_search=Go%21';
+        var searchUrl = startUrl + modifiedQuery + endUrl;
+
+        // Open the URL in a new tab
+        window.open(searchUrl, '_blank');
+    }
+</script>
 {% endblock %}
