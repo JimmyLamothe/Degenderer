@@ -266,7 +266,11 @@ def unknown_names():
                 return redirect('/text-display')
         except KeyError: #If we got here via file upload
             pass
-        epub_filepath = process_book.process_epub(session['filepath'], parameters)        
+        try:
+            epub_filepath = process_book.process_epub(session['filepath'], parameters)
+        except Exception as e:
+            #raise e #Uncomment to diagnose exception
+            return redirect('/processing-error')
         return send_file(epub_filepath, as_attachment=True)
     else:
         print(session['unknown_matches'])
@@ -340,5 +344,37 @@ def suggest_female():
 @app.route('/suggest-male', methods=['POST'])
 def suggest_male():
     return get_suggestion('m')
+
+@app.route('/processing-error')
+def processing_error():
+    return render_template('processing-error.html')
+
+@app.errorhandler(400)
+def bad_request(e):
+    return render_template('400.html'), 400
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template('401.html'), 401
+
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('403.html'), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
+
+@app.errorhandler(503)
+def unavailable(e):
+    return render_template('503.html'), 503
+
+@app.route('/test-error/<error>')
+def test_error(error):
+    return render_template(f'{error}.html')
 
 app.run(host='0.0.0.0', port=5001)

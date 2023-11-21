@@ -1,7 +1,8 @@
 BUGS
 
 NAMES & PRONOUNS
-Add Kent to Warning
+
+
 
 HTML / CSS
 Figure out why the text is more centered in pronouns and known names
@@ -24,10 +25,10 @@ Add more book samples
 
 DEGENDERING IMPROVEMENTS
 
-Add more non-binary names
-Add terms for genitals - cock, pussy, etc.
-Good names for Brokeback: Myrtle & Mandy
-Check if boy and girl have different nb equivalent
+
+
+
+
 
 
 EXTRAS
@@ -35,6 +36,21 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	 pip install epubcheck
 
+
+
+NOT DONE - Check if boy and girl have different nb equivalent (forgot why I asked myself this?)
+DONE - Good names for Brokeback: Myrtle & Mandy
+DONE - Add more non-binary names
+NOT DONE - Add terms for genitals - cock, pussy, etc. (this is too personal + animal names)
+DONE - bloke - lass - landlord - landlady
+DONE - master - mistress (is this not already there?)
+DONE - Churchman - Churchwoman - Witch - Wizard - fatherland - motherland
+DONE - mistresses - misters ? lovers /
+DONE - Lord - Almighty? Only for the Lord... Otherwise Lady and ?
+DONE - Remove Count (counting) - or make it match case?
+DONE - Add Herr - Frau - Monsieur - Madame - Senor - Senora - Signor - Signora
+DONE - Add Englishman - woman, Frenchman - woman, etc
+DONE - Add Don and Kent to Warning
 DONE - Add back button so people can change things from previous page
 DONE - Schoolmistress should be schoolteacher - not schoolteachers
 DONE - Unkwnown now works with all cases - lower/upper/title

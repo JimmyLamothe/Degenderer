@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block extra_stylesheets %}
+
+{% endblock %}
+
+{% block head_scripts %}
+
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+{% block body_scripts %}
+
+{% endblock %}
