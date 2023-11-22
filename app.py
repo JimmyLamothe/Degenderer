@@ -62,15 +62,22 @@ def welcome():
 @app.route('/samples')
 def samples():
     clear_session()
-    samples = get_samples()
-    number = 10
-    if len(samples) > number:
-        selection = random.sample(samples, number)
+    if not session['samples']:
+        samples = get_samples()
+    else:
+        samples = session['samples']
+    samples_per_page = 6
+    if len(samples) > samples_per_page:
+        selection = random.sample(samples, samples_per_page)
     else:
         selection = samples
     session['samples'] = [item for item in samples if not item in selection]
     session.modified=True
     return render_template('samples.html', selection=selection)
+
+@app.route('/samples/more')
+def more_samples():
+    return redirect('/samples')
 
 @app.route('/download-sample/<sample_id>')
 def download_sample(sample_id):
@@ -298,7 +305,7 @@ def submission_form():
             'approved': False
         }
         add_sample(submitted_book)
-        print(get_samples(reviewed=False, approved=False))
+        #print(get_samples(reviewed=False, approved=False))
         return redirect('/thank-you')
     return render_template('submission-form.html')
 

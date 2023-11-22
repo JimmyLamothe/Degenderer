@@ -45,6 +45,10 @@
 	</div>
       </div>
     {% endfor %}
+    <a href="{{ url_for('more_samples') }}">
+    <button class="load-more-button" style="margin-top: 20px; margin-bottom: 20px;">Load More</button>
+    </a>
+  
 {% endblock %}
 {% block body_scripts %}
   <script src="{{ url_for('static', filename='samples.js') }}"></script>
