@@ -87,7 +87,7 @@ def download_sample(sample_id):
         parameters = {
             'male' : sample['male pronouns'],
             'female': sample['female pronouns'],
-            'name matches': sample['name matches'],
+            'all matches': sample['all matches'],
         }
         epub_filepath = process_book.process_epub(temp_filepath, parameters)
         epub_filepath.rename(degendered_filepath)
@@ -281,7 +281,7 @@ def submission_form():
         book_name = request.form['book_name']
         author = request.form['author']
         webpage = request.form['webpage']
-        tags = request.form['tags']
+        tagline = request.form['tagline']
         excerpt = request.form['excerpt']
 
         # Save the submitted data (you can store it in a database or file)
@@ -289,18 +289,17 @@ def submission_form():
             'book_name': book_name,
             'author': author,
             'webpage': webpage,
-            'tags': tags,
+            'tagline': tagline,
             'excerpt': excerpt,
             'male pronouns': session['male_pronoun'],
             'female pronouns': session['female_pronoun'],
-            'name matches': session['all_matches'],
+            'all matches': session['all_matches'],
             'reviewed': False,
             'approved': False
         }
         add_sample(submitted_book)
         print(get_samples(reviewed=False, approved=False))
         return redirect('/thank-you')
-
     return render_template('submission-form.html')
 
 @app.route('/thank-you')

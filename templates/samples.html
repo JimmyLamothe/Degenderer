@@ -27,10 +27,15 @@
 	</div>
 	<p><b>Female characters:</b> {{ sample['female pronouns'] }} - 
 	<b>Male characters:</b> {{ sample['male pronouns'] }}
-	{% if sample['male pronouns'] == 'Non-binary' or sample['female_pronouns'] == 'Non-binary' %}
-	   - <b>Pronouns:</b> {{ sample['name matches']['she'] }} / {{ sample['name matches']['her'] }}
+	{% if sample['female pronouns'] == 'Non-binary' %}
+	  - <b>Pronouns:</b> {{ sample['all matches']['she'] }} / {{ sample['all matches']['her'] }}
+	{% elif sample['male pronouns'] == 'Non-binary' %}
+           - <b>Pronouns:</b> {{ sample['all matches']['he'] }} / {{ sample['all matches']['him'] }}
 	{% endif %}
-	</p>  
+	</p>
+	<p>
+	  <b>Tagline:</b> {{ sample['tagline'] }}
+	</p>
 	<button class="toggle">
 	  <span class="read-excerpt-text" style="font-size: 1.2em;">Read excerpt</span>
 	  <i class="material-icons">chevron_right</i>

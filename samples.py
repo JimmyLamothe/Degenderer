@@ -8,7 +8,7 @@ submitted book format:
     'excerpt': request.form['excerpt'],
     'male pronouns': session['male_pronoun'],
     'female pronouns': session['female_pronoun'],
-    'name matches': session['name_matches'],
+    'all matches': session['all_matches'],
     'reviewed': False,
     'approved': False
 }
@@ -33,7 +33,7 @@ def initialize_sample_database():
             excerpt TEXT NOT NULL,
             male_pronouns TEXT NOT NULL,
             female_pronouns TEXT NOT NULL,
-            name_matches JSON NOT NULL,
+            all_matches JSON NOT NULL,
             reviewed BOOLEAN NOT NULL,
             approved BOOLEAN NOT NULL
         )
@@ -47,11 +47,11 @@ def add_sample(submission, reviewed=False, approved=False):
     book_name = submission['book_name']
     author = submission['author']
     webpage = submission['webpage']
-    tags = submission['tags']
+    tagline = submission['tagline']
     excerpt = submission['excerpt']
     male_pronouns = submission['male pronouns']
     female_pronouns = submission['female pronouns']
-    name_matches = json.dumps(submission['name matches'])
+    all_matches = json.dumps(submission['all matches'])
     if not reviewed:
         reviewed = submission['reviewed'] #if not specified, use submission data
     if not approved:
@@ -59,10 +59,10 @@ def add_sample(submission, reviewed=False, approved=False):
     conn = sqlite3.connect('sample_library.db')
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO sample_library (book_name, author, webpage, tags, excerpt, male_pronouns, "
-        "female_pronouns, name_matches, reviewed, approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (book_name, author, webpage, tags, excerpt, male_pronouns, female_pronouns,
-         name_matches, reviewed, approved))
+        "INSERT INTO sample_library (book_name, author, webpage, tagline, excerpt, male_pronouns, "
+        "female_pronouns, all_matches, reviewed, approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (book_name, author, webpage, tagline, excerpt, male_pronouns, female_pronouns,
+         all_matches, reviewed, approved))
     conn.commit()
     conn.close()
 
@@ -77,11 +77,11 @@ def get_sample_dict(sample, keep_abbreviations=True):
             'book_name': sample[1],
             'author': sample[2], 
             'webpage': sample[3],
-            'tags': sample[4],
+            'tagline': sample[4],
             'excerpt': sample[5],
             'male pronouns': sample[6],
             'female pronouns': sample[7],
-            'name matches': json.loads(sample[8]),
+            'all matches': json.loads(sample[8]),
             'reviewed': sample[9],
             'approved': sample[10]
         }

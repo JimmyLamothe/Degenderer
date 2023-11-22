@@ -216,6 +216,8 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
 def get_known_names(text):
     word_list = regex.sub(r'[^\p{Latin}]', ' ', text).split()
     name_list = [word for word in word_list if word in ALL_NAMES]
+    print(WARNING_WORDS + COMMON_WORDS)
+    name_list = [word for word in name_list if not word in WARNING_WORDS + COMMON_WORDS]
     name_dict = {}
     for name in name_list:
         if name in name_dict:
