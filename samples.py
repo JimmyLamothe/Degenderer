@@ -17,7 +17,25 @@ submitted book format:
 import json
 import sqlite3
 
+#Used to initialize the processed books the first time
+def initialize_books_database():
+    conn = sqlite3.connect('processed_books.db')
+    cursor = conn.cursor()
 
+    # Create a table to store processed books data
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS processed_books (
+            id INTEGER PRIMARY KEY,
+            filename TEXT NOT NULL,
+            address TEXT NOT NULL
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+    
+#Used to initialize the sample database the first time
 def initialize_sample_database():
     conn = sqlite3.connect('sample_library.db')
     cursor = conn.cursor()
@@ -42,7 +60,7 @@ def initialize_sample_database():
     conn.commit()
     conn.close()
 
-# Add a sample to the database
+# Add a sample to the samples database
 def add_sample(submission, reviewed=False, approved=False):
     book_name = submission['book_name']
     author = submission['author']
@@ -62,10 +80,31 @@ def add_sample(submission, reviewed=False, approved=False):
         "INSERT INTO sample_library (book_name, author, webpage, tagline, excerpt, male_pronouns, "
         "female_pronouns, all_matches, reviewed, approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (book_name, author, webpage, tagline, excerpt, male_pronouns, female_pronouns,
-         all_matches, reviewed, approved))
+         all_matches, reviewed, approved)
+    )
     conn.commit()
     conn.close()
 
+#Add a book - ip combination to the processed books database
+def add_book(filename, address):
+    conn = sqlite3.connect('processed_books.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO processed_books (filename, address) VALUES (?, ?)",
+        (filename, address)
+    )
+    conn.commit()
+    conn.close()
+
+#Get total number of books that have been degendered
+def get_book_count():
+    conn = sqlite3.connect('processed_books.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(id) FROM processed_books')
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count
+    
 def get_sample_dict(sample, keep_abbreviations=True):
     abbreviations = {
         'm' : 'Male',

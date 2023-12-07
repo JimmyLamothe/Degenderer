@@ -103,4 +103,19 @@ input[type=submit]:hover {
 }
 
 .material-icons {
-    vertical-align: bottom; /* Align vertically to the middle */B
+    vertical-align: bottom; /* Align vertically to the middle */
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: #3498db; /* Background color */
+    color: #fff; /* Text color */
+    padding: 10px; /* Padding for better visibility */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow for depth */
+    z-index: 10;
+    margin-left: auto; /* Push to the right */
+    margin-right: 10px; /* Margin from the rest of the content */
+    transition: background-color 0.3s ease; /* Smooth color transition */
+}

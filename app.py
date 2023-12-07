@@ -8,7 +8,7 @@ from markupsafe import escape
 import config
 from degenderer import suggest_name
 from utilities import remove_dupes
-from samples import add_sample, get_sample_by_id, get_samples
+from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_samples
 import process_book
 import process_text
 
@@ -57,7 +57,7 @@ def update_matches(user_matches=None):
 @app.route('/welcome')
 def welcome():
     clear_session()
-    return render_template('welcome.html')
+    return render_template('welcome.html', books_processed=get_book_count())
   
 @app.route('/samples')
 def samples():
@@ -126,7 +126,7 @@ def text_upload():
     if request.method == 'POST':
         session['text'] = escape(request.form.get('text'))
         all_names = process_text.get_all_names(session['text'])
-        print(f'all_names: {all_names}')
+        #print(f'all_names: {all_names}')
         known_names = all_names[0]
         potential_names = all_names[1]
         session['known_name_list'] = known_names
@@ -179,7 +179,7 @@ def pronouns():
 def known_names():
     if request.method == 'POST':
         submit_type = request.form.get('submit_type', 'submit')
-        print(submit_type)
+        #print(submit_type)
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['known_name_list'], new_name_list):
             if item[1]:
@@ -257,7 +257,7 @@ def unknown_names():
             }
         try:
             if session['text']: #If we got here via text box input
-                print(session['text'])
+                #print(session['text'])
                 #We escape a second time in case the session cookie was hacked
                 session['text'] = process_text.process_text(escape(session['text']),
                                                             parameters)
@@ -270,9 +270,17 @@ def unknown_names():
         except Exception as e:
             #raise e #Uncomment to diagnose exception
             return redirect('/processing-error')
+        #Add filename / IP combination to processed books database
+        try:
+            filename = epub_filepath.name
+            address = request.remote_addr
+            add_book(filename, address)
+        #Not important if it fails, so simply log the exception
+        except Exception as e:
+            app.logger.error(e)
         return send_file(epub_filepath, as_attachment=True)
     else:
-        print(session['unknown_matches'])
+        #print(session['unknown_matches'])
         num_entries = (max(10, len(session['unknown_matches'])))
         try:
             if session['male_pronoun'] and session['female_pronoun']:
