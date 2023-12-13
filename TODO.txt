@@ -1,4 +1,10 @@
+AWS Installation
+Check is SECRET_KEY is needed in config.py and if it's safe
+
 BUGS
+sir'ram'ram is back - Mrs. Dalloway
+Samples should not repeat before all have been displayed
+Uploads directory should be cleared after processing
 
 NAMES & PRONOUNS
 
@@ -25,6 +31,7 @@ DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
+manly - womanly - personly
 
 
 

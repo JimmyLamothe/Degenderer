@@ -1,5 +1,4 @@
 import json
-import uuid
 from pathlib import Path
 
 from librarian import check_out, create_soup, read_epub, soup_to_book, write_epub

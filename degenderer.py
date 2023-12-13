@@ -9,7 +9,6 @@ from timeit import default_timer as timer
 from librarian import get_book_text, is_string
 from reference_library import MALE_PRONOUNS, FEMALE_PRONOUNS #DataFrames
 from reference_library import NB_NAMES, GIRL_NAMES, BOY_NAMES, ALL_NAMES, ALL_PRONOUNS #Lists
-#from reference_library import MALE_PRONOUN_DICT, FEMALE_PRONOUN_DICT  #OLD - Unused
 from reference_library import COMMON_WORDS, WARNING_WORDS #Lists
 from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
@@ -216,7 +215,7 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
 def get_known_names(text):
     word_list = regex.sub(r'[^\p{Latin}]', ' ', text).split()
     name_list = [word for word in word_list if word in ALL_NAMES]
-    print(WARNING_WORDS + COMMON_WORDS)
+    #print(WARNING_WORDS + COMMON_WORDS)
     name_list = [word for word in name_list if not word in WARNING_WORDS + COMMON_WORDS]
     name_dict = {}
     for name in name_list:

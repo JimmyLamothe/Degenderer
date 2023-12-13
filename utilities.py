@@ -1,5 +1,4 @@
 import random
-import uuid
 
 def drop_low(dictionary, floor = 3):
     return {key : value for (key, value) in dictionary.items() if value > floor}  
@@ -35,3 +34,8 @@ def remove_dupes(lst):
             new_list.append(value)
     return new_list
 
+#Take an url string and return a filename ending in epub
+def url_to_epub(url):
+    filename = url.split("/")[-1]
+    stem = filename.split('.')[0]
+    return stem + '.epub'

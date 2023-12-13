@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request, redirect, render_template, send_file,
 from markupsafe import escape
 import config
 from degenderer import suggest_name
-from utilities import remove_dupes
+from utilities import remove_dupes, url_to_epub
 from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_samples
 import process_book
 import process_text
@@ -83,7 +83,7 @@ def more_samples():
 def download_sample(sample_id):
     sample = get_sample_by_id(sample_id)
     url = sample['webpage']
-    book_filename = url.split("/")[-1]
+    book_filename = url_to_epub(url)
     degendered_filepath = SAMPLE_DIR / book_filename
     if not degendered_filepath.exists():
         temp_filepath = WORKING_DIR / book_filename

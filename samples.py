@@ -1,3 +1,6 @@
+import json
+import sqlite3
+
 """
 submitted book format:
 {
@@ -13,9 +16,6 @@ submitted book format:
     'approved': False
 }
 """
-
-import json
-import sqlite3
 
 #Used to initialize the processed books the first time
 def initialize_books_database():
