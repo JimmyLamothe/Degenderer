@@ -45,9 +45,16 @@
 	</div>
       </div>
     {% endfor %}
+    {% if previous %}
+      <a href="{{ url_for('previous_samples') }}">
+	<button class="load-previous-button" style="margin-top: 20px; margin-bottom: 20px;">Previous</button>
+      </a>
+    {% endif %}
+    {% if more %}  
     <a href="{{ url_for('more_samples') }}">
-    <button class="load-more-button" style="margin-top: 20px; margin-bottom: 20px;">Load More</button>
+    <button class="load-more-button" style="margin-top: 20px; margin-bottom: 20px;">More</button>
     </a>
+    {% endif %}
   
 {% endblock %}
 {% block body_scripts %}

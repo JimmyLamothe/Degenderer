@@ -8,7 +8,7 @@ from markupsafe import escape
 import config
 from degenderer import suggest_name
 from utilities import remove_dupes, url_to_epub
-from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_samples
+from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_sample_ids
 import process_book
 import process_text
 
@@ -21,7 +21,9 @@ UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combin
 
 EMPTY_PARAMETERS = 'empty_dict.json'
 
-def clear_session():
+PER_PAGE = 5 #Samples to load per page
+
+def clear_session(clear_samples=False):
     session['text'] = '' #Text input by user for degendering
     session['filepath'] = '' #Filepath of book uploaded by user
     session['known_name_list'] = [] #Known names detected in user submission
@@ -34,10 +36,15 @@ def clear_session():
     session['male_pronoun'] = '' #Gender to make male pronouns
     session['female_pronoun'] = '' #Gender to make female pronouns
     try:
-        if not session['samples']:
-            session['samples'] = [] #We do not want to clear the samples when clearing the session
-    except KeyError:
-        session['samples'] = [] #Samples not yet displayed to user
+        if clear_samples: #Reset to default values
+            session['sample_ids'] = get_sample_ids()
+            session['sample_index'] = 0
+        else: #Leave as is, but check if they have been initialized
+            session['sample_ids'] #To trigger KeyError if it hasn't been initialized
+            session['sample_index'] #To trigger KeyError if it hasn't been initialized
+    except KeyError: #Default values on initialization
+        session['sample_ids'] = get_sample_ids()
+        session['sample_index'] = 0
     session.modified=True
 
 #Update all matches with current user choices
@@ -56,28 +63,43 @@ def update_matches(user_matches=None):
 @app.route('/home')
 @app.route('/welcome')
 def welcome():
-    clear_session()
+    clear_session(clear_samples=True)
     return render_template('welcome.html', books_processed=get_book_count())
   
 @app.route('/samples')
 def samples():
     clear_session()
-    if not session['samples']:
-        samples = get_samples()
+    sample_ids = session['sample_ids']
+    start = session['sample_index']
+    print(f'sample_ids = {sample_ids}')
+    if (start + PER_PAGE) < len(sample_ids): #If there are more samples to load
+        end = start + PER_PAGE
+        more = True
     else:
-        samples = session['samples']
-    samples_per_page = 6
-    if len(samples) > samples_per_page:
-        selection = random.sample(samples, samples_per_page)
+        end = len(sample_ids)
+        more = False
+    selected_ids = sample_ids[start:end]
+    if start - PER_PAGE >= 0:
+        previous = True
     else:
-        selection = samples
-    session['samples'] = [item for item in samples if not item in selection]
-    session.modified=True
-    return render_template('samples.html', selection=selection)
+        previous = False
+    session.modified=True #For safety only in case of future code changes
+    selection = []
+    print(f'selected_ids = {selected_ids}')
+    for sample_id in selected_ids:
+        selection.append(get_sample_by_id(sample_id, keep_abbreviations=False))
+    return render_template('samples.html', selection=selection, more=more, previous=previous)
 
 @app.route('/samples/more')
 def more_samples():
+    session['sample_index'] = session['sample_index'] + PER_PAGE
     return redirect('/samples')
+
+@app.route('/samples/previous')
+def previous_samples():
+    session['sample_index'] = session['sample_index'] - PER_PAGE
+    return redirect('/samples')
+
 
 @app.route('/download-sample/<sample_id>')
 def download_sample(sample_id):

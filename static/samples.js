@@ -29,4 +29,3 @@ sampleDownloadButtons.forEach((button, index) => {
   button.href = sampleName + '.epub';
   button.download = sampleName + '.epub';
 });
-

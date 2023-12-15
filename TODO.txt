@@ -1,9 +1,7 @@
-AWS Installation
-Check is SECRET_KEY is needed in config.py and if it's safe
+AWS
+Check if SECRET_KEY is needed in config.py and if it's safe
 
 BUGS
-sir'ram'ram is back - Mrs. Dalloway
-Samples should not repeat before all have been displayed
 Uploads directory should be cleared after processing
 
 NAMES & PRONOUNS
@@ -22,8 +20,8 @@ DEGENDERING FEATURES
 
 
 OTHER FEATURES
-
-
+Track download count of samples
+Print session cookie size to make sure we are not close to 5k limit.
 
 DEGENDERING HTML CONTENT
 
@@ -31,7 +29,7 @@ DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
-manly - womanly - personly
+
 
 
 
@@ -42,8 +40,15 @@ manly - womanly - personly
 EXTRAS
 
 Validate the process_epub function - replace first part with epub validation
-	 pip install epubcheck
+	 	 pip install epubcheck
 
+
+DONE - Session cookie too big - 5k max?
+      SOLUTION - This was because of all sample data being inside session cookie
+DONE - Samples should not repeat before all have been displayed
+     Reworked samples with fixed random order, more and previous pages
+DONE - manly - womanly - personly
+DONE - sir'ram'ram is back - Mrs. Dalloway
 DONE - Count of books degendered
 DONE - Check IP - for count of books only
 DONE - Add more book samples
