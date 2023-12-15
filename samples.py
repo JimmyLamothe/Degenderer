@@ -54,7 +54,8 @@ def initialize_sample_database():
             female_pronouns TEXT NOT NULL,
             all_matches JSON NOT NULL,
             reviewed BOOLEAN NOT NULL,
-            approved BOOLEAN NOT NULL
+            approved BOOLEAN NOT NULL,
+            download_count INTEGER NOT NULL DEFAULT 0
         )
     ''')
 
@@ -79,9 +80,10 @@ def add_sample(submission, reviewed=False, approved=False):
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO sample_library (book_name, author, webpage, tagline, excerpt, male_pronouns, "
-        "female_pronouns, all_matches, reviewed, approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "female_pronouns, all_matches, reviewed, approved, download_count)"
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (book_name, author, webpage, tagline, excerpt, male_pronouns, female_pronouns,
-         all_matches, reviewed, approved)
+         all_matches, reviewed, approved, 0)
     )
     conn.commit()
     conn.close()
@@ -160,6 +162,18 @@ def get_sample_ids(reviewed=True, approved=True, order='random'):
     print(f'sample_ids in get_sample_ids = {sample_ids}')
     conn.close()
     return sample_ids
+
+#Increment download count for a sample
+def increment_download_count(sample_id):
+    conn = sqlite3.connect('sample_library.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE sample_library
+        SET download_count = download_count + 1
+        WHERE id = ?;
+    ''', (sample_id,))
+    conn.commit()
+    conn.close()
 
 #TESTING ONLY - Reset sample_library
 def clear_sample_library():

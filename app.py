@@ -9,6 +9,7 @@ import config
 from degenderer import suggest_name
 from utilities import remove_dupes, url_to_epub
 from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_sample_ids
+from samples import increment_download_count
 import process_book
 import process_text
 
@@ -23,6 +24,15 @@ EMPTY_PARAMETERS = 'empty_dict.json'
 
 PER_PAGE = 5 #Samples to load per page
 
+#NOT TO BE USED IN PRODUCTION - Only for testing
+@app.before_request
+def print_cookie_size():
+    import pickle
+    values = []
+    for key in session.keys():
+        values.append(session[key])
+    print(f'approximate cookie size: {len(pickle.dumps(values))} bytes')
+    
 def clear_session(clear_samples=False):
     session['text'] = '' #Text input by user for degendering
     session['filepath'] = '' #Filepath of book uploaded by user
@@ -121,6 +131,7 @@ def download_sample(sample_id):
         epub_filepath = process_book.process_epub(temp_filepath, parameters)
         epub_filepath.rename(degendered_filepath)
         temp_filepath.unlink()
+    increment_download_count(sample_id)
     return send_file(degendered_filepath)
 
 @app.route('/upload-book')
