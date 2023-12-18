@@ -5,7 +5,7 @@ import random
 """
 submitted book format:
 {
-    'book_name': request.form['book_name'],
+    'title': request.form['title'],
     'author': request.form['author'],
     'webpage': request.form['webpage'],
     'tags': request.form['tags'],
@@ -45,7 +45,7 @@ def initialize_sample_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sample_library (
             id INTEGER PRIMARY KEY,
-            book_name TEXT NOT NULL,
+            title TEXT NOT NULL,
             author TEXT NOT NULL,
             webpage TEXT NOT NULL,
             tags TEXT NOT NULL,
@@ -64,7 +64,7 @@ def initialize_sample_database():
 
 # Add a sample to the samples database
 def add_sample(submission, reviewed=False, approved=False):
-    book_name = submission['book_name']
+    title = submission['title']
     author = submission['author']
     webpage = submission['webpage']
     tagline = submission['tagline']
@@ -79,10 +79,10 @@ def add_sample(submission, reviewed=False, approved=False):
     conn = sqlite3.connect('sample_library.db')
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO sample_library (book_name, author, webpage, tagline, excerpt, male_pronouns, "
+        "INSERT INTO sample_library (title, author, webpage, tagline, excerpt, male_pronouns, "
         "female_pronouns, all_matches, reviewed, approved, download_count)"
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (book_name, author, webpage, tagline, excerpt, male_pronouns, female_pronouns,
+        (title, author, webpage, tagline, excerpt, male_pronouns, female_pronouns,
          all_matches, reviewed, approved, 0)
     )
     conn.commit()
@@ -116,7 +116,7 @@ def get_sample_dict(sample, keep_abbreviations=True):
         }
     sample_dict = {
             'id': sample[0],
-            'book_name': sample[1],
+            'title': sample[1],
             'author': sample[2], 
             'webpage': sample[3],
             'tagline': sample[4],

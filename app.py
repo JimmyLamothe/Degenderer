@@ -32,9 +32,12 @@ def print_cookie_size():
     for key in session.keys():
         values.append(session[key])
     print(f'approximate cookie size: {len(pickle.dumps(values))} bytes')
-    
+
+#NOTE: Most of this should not be in client session.
+#Temporary until better solution is implemented.
 def clear_session(clear_samples=False):
     session['text'] = '' #Text input by user for degendering
+    session['new_text'] = '' #Text output
     session['filepath'] = '' #Filepath of book uploaded by user
     session['known_name_list'] = [] #Known names detected in user submission
     session['potential_name_list'] = [] #Potential names detected in user submission
@@ -215,8 +218,13 @@ def known_names():
         #print(submit_type)
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['known_name_list'], new_name_list):
-            if item[1]:
+            if item[1]: #If user gave a match for a name, add it to dict
                 session['known_matches'][item[0]] = item[1]
+            else:
+                try: #If user came back and deleted a match, remove it from dict
+                    del session['known_matches'][item[0]]
+                except KeyError: #If user never gave a match, do nothing
+                    pass
         session.modified=True
         if submit_type == 'back': #If user clicked back button
             return redirect('/pronouns')
@@ -236,8 +244,13 @@ def potential_names():
         submit_type = request.form.get('submit_type', 'submit')
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['potential_name_list'], new_name_list):
-            if item[1]:
+            if item[1]: #If user gave a match for a name, add it to dict
                 session['potential_matches'][item[0]] = item[1]
+            else:
+                try: #If user came back and deleted a match, remove it from dict
+                    del session['potential_matches'][item[0]]
+                except KeyError: #If user never gave a match, do nothing
+                    pass
         session.modified=True
         if submit_type == 'back': #If user clicked back button
             if session['known_name_list']:
@@ -261,8 +274,13 @@ def unknown_names():
         unknown_name_list = request.form.getlist('existing_names[]')
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(unknown_name_list, new_name_list):
-            if item[0] and item[1]:
+            if item[0] and item[1]: #If user gave a name and match, add them to dict
                 session['unknown_matches'][item[0]] = item[1]
+            elif item[0]:
+                try: #If user came back and deleted a match, remove it from dict
+                    del session['unknown_matches'][item[0]]
+                except KeyError: #If user never gave a match, do nothing
+                    pass
         session.modified=True
         if submit_type == 'back': #If user clicked back button
             if session['potential_name_list']:
@@ -290,11 +308,9 @@ def unknown_names():
             }
         try:
             if session['text']: #If we got here via text box input
-                #print(session['text'])
                 #We escape a second time in case the session cookie was hacked
-                session['text'] = process_text.process_text(escape(session['text']),
+                session['new_text'] = process_text.process_text(escape(session['text']),
                                                             parameters)
-                #print(f'session text: {session["text"]}')
                 return redirect('/text-display')
         except KeyError: #If we got here via file upload
             pass
@@ -315,6 +331,7 @@ def unknown_names():
     else:
         #print(session['unknown_matches'])
         num_entries = (max(10, len(session['unknown_matches'])))
+        #To make sure user didn't get here by typing the url directly
         try:
             if session['male_pronoun'] and session['female_pronoun']:
                 return render_template('unknown-names.html', num_entries=num_entries)
@@ -326,15 +343,14 @@ def unknown_names():
 @app.route('/submission-form', methods=['GET', 'POST'])
 def submission_form():
     if request.method == 'POST':
-        book_name = request.form['book_name']
+        title = request.form['title']
         author = request.form['author']
         webpage = request.form['webpage']
         tagline = request.form['tagline']
         excerpt = request.form['excerpt']
-
         # Save the submitted data (you can store it in a database or file)
         submitted_book = {
-            'book_name': book_name,
+            'title': title,
             'author': author,
             'webpage': webpage,
             'tagline': tagline,
@@ -356,13 +372,10 @@ def thank_you():
         
 @app.route('/text-display', methods=['GET'])
 def text_display():
-    try:
-        if session['text']:
-            #print(f'session text in text_display: {session["text"]}')
-            return render_template('text-display.html')
-    except KeyError:
-        pass
-    return redirect('/') #If we don't have text to display, go to home page
+    if session['new_text']:
+        return render_template('text-display.html')
+    else:
+        return redirect('/') #If we don't have text to display, go to home page
 
 def get_suggestion(gender):
     #print(f'Working on row {request.json.get("row")}')

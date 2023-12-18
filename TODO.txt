@@ -3,6 +3,7 @@ Check if SECRET_KEY is needed in config.py and if it's safe
 
 BUGS
 Uploads directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
+Going back in text doesn't work once text has been degendered
 
 NAMES & PRONOUNS
 
@@ -20,9 +21,8 @@ Remove before_request cookie size checker
 DEGENDERING FEATURES
 
 
-OTHER FEATURES
+OTHER IMPROVEMENTS
 Session cookies get pretty large - Might be better to save more data locally
-
 
 
 DEGENDERING HTML CONTENT
@@ -36,13 +36,12 @@ can create examples for copyrighted books
 
 
 EXTRAS
-
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
 
-
+DONE - Going back and clearing a name correspondence should actually clear it
 DONE - Check cookie size to see if it's large - would make running the server more expensive
 DONE - Track download count of samples
 DONE - Session cookie too big - 5k max?
