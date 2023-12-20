@@ -2,8 +2,8 @@ AWS
 Check if SECRET_KEY is needed in config.py and if it's safe
 
 BUGS
-Uploads directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
-Going back in text doesn't work once text has been degendered
+Text samples don't show up in samples.html
+
 
 NAMES & PRONOUNS
 
@@ -23,7 +23,8 @@ DEGENDERING FEATURES
 
 OTHER IMPROVEMENTS
 Session cookies get pretty large - Might be better to save more data locally
-
+    SOLUTION: Switch to flask-sessions and Redis
+Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
 
 DEGENDERING HTML CONTENT
 
@@ -40,7 +41,7 @@ Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
-
+DONE - Going back in text doesn't work once text has been degendered
 DONE - Going back and clearing a name correspondence should actually clear it
 DONE - Check cookie size to see if it's large - would make running the server more expensive
 DONE - Track download count of samples

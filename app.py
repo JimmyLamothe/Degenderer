@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 import requests
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
+from flask_session import Session
 from markupsafe import escape
 import config
 from degenderer import suggest_name
@@ -15,9 +16,14 @@ import process_text
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.SECRET_KEY
+app.config['SESSION_TYPE'] = config.SESSION_TYPE
+app.config['SESSION_PERMANENT'] = config.SESSION_PERMANENT
+app.config['SESSION_USE_SIGNER'] = config.SESSION_USE_SIGNER
+app.config['SESSION_REDIS'] = config.SESSION_REDIS
+Session(app)
 
 SAMPLE_DIR = Path('sample_books') #eBooks submitted by users and downloaded at least once
-WORKING_DIR = Path('temp') #Used to temporarily store downloaded eBooks
+WORKING_DIR = Path('temp') #Used to temporarily store downloaded eBooks - Currently not cleared
 UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combine with WORKING_DIR?
 
 EMPTY_PARAMETERS = 'empty_dict.json'
