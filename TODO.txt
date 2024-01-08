@@ -1,12 +1,17 @@
 AWS
+Test with gunicorn
 Check if SECRET_KEY is needed in config.py and if it's safe
 
 BUGS
-Text samples don't show up in samples.html
 
 
 NAMES & PRONOUNS
 
+
+SECURITY
+https://flask.palletsprojects.com/en/3.0.x/security/
+https://github.com/GoogleCloudPlatform/flask-talisman
+https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
@@ -22,8 +27,6 @@ DEGENDERING FEATURES
 
 
 OTHER IMPROVEMENTS
-Session cookies get pretty large - Might be better to save more data locally
-    SOLUTION: Switch to flask-sessions and Redis
 Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
 
 DEGENDERING HTML CONTENT
@@ -32,8 +35,6 @@ DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
-It should be possible to create samples from text degendering so that people
-can create examples for copyrighted books
 
 
 EXTRAS
@@ -41,6 +42,15 @@ Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
+
+DONE - Session cookies get pretty large - Might be better to save more data locally
+       SOLUTION: Switch to flask-sessions and Redis
+DONE - It should be possible to create samples from text degendering so that people
+       can create examples for copyrighted books
+DONE - Samples always show up in same order
+DONE - Text samples don't show up in samples.html
+DONE - Line breaks don't show up in samples
+DONE - Samples processing message always shows up in sample one
 DONE - Going back in text doesn't work once text has been degendered
 DONE - Going back and clearing a name correspondence should actually clear it
 DONE - Check cookie size to see if it's large - would make running the server more expensive

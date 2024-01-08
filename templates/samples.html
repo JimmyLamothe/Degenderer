@@ -19,8 +19,8 @@
 	-   
 	<a href="{{ url_for('download_sample', sample_id=sample['id']) }}"
 	   style="display: inline;"
-	   onclick="showDownloadingMessage()">Get de/regendered eBook</a><br>
-	<span id="downloading-message"
+	   onclick="showDownloadingMessage({{ sample['id'] }})">Get de/regendered eBook</a><br>
+	<span id="downloading-message-{{ sample['id'] }}"
 	      style="display: none; margin-top: 10px;">Processing, thank you for your patience.</span>
 	{% else %} - No eBook included
 	{% endif %}
@@ -41,7 +41,15 @@
 	  <i class="material-icons">chevron_right</i>
 	</button>
 	<div class="sample-content" hidden>
-	  <p>{{ sample['excerpt'] }}</p>
+	  <div id="box" style="border: 2px solid black;
+			       border-radius: 10px;
+			       padding: 10px;
+			       background-color: #EEEEEE;
+			       display: inline-block;
+			       margin-top: 10px;">
+	    <div id="text-container" style="padding: 10px;
+					    white-space: pre-line;">{{ sample['excerpt'] }}</div>
+	  </div>
 	</div>
       </div>
     {% endfor %}
@@ -60,8 +68,8 @@
 {% block body_scripts %}
   <script src="{{ url_for('static', filename='samples.js') }}"></script>
   <script>
-  function showDownloadingMessage() {
-    document.getElementById('downloading-message').style.display = 'block';
+  function showDownloadingMessage(sampleId) {
+    document.getElementById('downloading-message-' + sampleId).style.display = 'block';
   }
   </script>
 {% endblock %}

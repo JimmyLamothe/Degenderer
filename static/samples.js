@@ -20,12 +20,3 @@ sampleDescriptions.forEach((description) => {
 	toggleBtn.click();
     });
 });
-
-// Add download links to sample download buttons
-const sampleDownloadButtons = document.querySelectorAll('.sample-download');
-const sampleNames = ['one', 'two', 'three']; // Change these to match your sample names
-sampleDownloadButtons.forEach((button, index) => {
-  const sampleName = sampleNames[index];
-  button.href = sampleName + '.epub';
-  button.download = sampleName + '.epub';
-});

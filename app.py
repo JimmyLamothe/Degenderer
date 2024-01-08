@@ -90,7 +90,6 @@ def samples():
     clear_session()
     sample_ids = session['sample_ids']
     start = session['sample_index']
-    print(f'sample_ids = {sample_ids}')
     if (start + PER_PAGE) < len(sample_ids): #If there are more samples to load
         end = start + PER_PAGE
         more = True
@@ -104,7 +103,6 @@ def samples():
         previous = False
     session.modified=True #For safety only in case of future code changes
     selection = []
-    print(f'selected_ids = {selected_ids}')
     for sample_id in selected_ids:
         selection.append(get_sample_by_id(sample_id, keep_abbreviations=False))
     return render_template('samples.html', selection=selection, more=more, previous=previous)
@@ -435,4 +433,5 @@ def unavailable(e):
 def test_error(error):
     return render_template(f'{error}.html')
 
-app.run(host='0.0.0.0', port=5001)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)

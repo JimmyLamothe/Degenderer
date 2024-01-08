@@ -157,10 +157,9 @@ def get_sample_ids(reviewed=True, approved=True, order='random'):
     cursor.execute(query)
     sample_ids = cursor.fetchall()
     sample_ids = [item[0] for item in sample_ids]
+    conn.close()
     if order == 'random': #Other sort orders could be implemented - popularity?
         random.shuffle(sample_ids)
-    print(f'sample_ids in get_sample_ids = {sample_ids}')
-    conn.close()
     return sample_ids
 
 #Increment download count for a sample
