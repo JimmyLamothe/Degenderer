@@ -1,6 +1,8 @@
-AWS
-Test with gunicorn
+FLY.IO
+Use environment variables - secrets to configure local vs online environments
+Implement permanent storage
 Check if SECRET_KEY is needed in config.py and if it's safe
+Monitor pricing of Redis - Move to a local non-persistent DB file if needed
 
 BUGS
 
@@ -15,7 +17,7 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-Figure out why the text is more centered in pronouns and known names
+Make site mobile-friendly
 
 
 CLEANUP
@@ -27,7 +29,7 @@ DEGENDERING FEATURES
 
 
 OTHER IMPROVEMENTS
-Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
+
 
 DEGENDERING HTML CONTENT
 
@@ -41,8 +43,10 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
-
-
+NOT DONE - Figure out why the text is more centered in pronouns and known names (do I really care?)
+DONE - Test with gunicorn
+NOT DONE - Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
+    	 Not needed since not in permanent storage on fly.io
 DONE - Session cookies get pretty large - Might be better to save more data locally
        SOLUTION: Switch to flask-sessions and Redis
 DONE - It should be possible to create samples from text degendering so that people

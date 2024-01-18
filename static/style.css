@@ -1,9 +1,9 @@
 .logo {
-    background-color: #
     display: flex;
     margin-right: 20px;
     justify-content: center;
 }
+
 .logo img {
     max-height: 80px;
 }
@@ -12,12 +12,11 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   overflow: hidden;
   background-color: #ECE0F8;
-}
-
-li {
-  float: left;
 }
 
 li a {
@@ -26,10 +25,18 @@ li a {
   text-align: center;
   padding: 16px;
   text-decoration: none;
+  transition: background-color 0.2s;
 }
 
 li a:hover {
   background-color: #E3CEF6;
+}
+
+@media screen and (max-width: 1024px) {
+    li a {
+	padding: 20px; /* Larger padding for easier touch navigation */
+	font-size: 1.2rem; /* Larger font size for better readability */
+    }
 }
 
 body {
@@ -37,16 +44,48 @@ body {
     color: #3B0B39;
     font-family: Arial, sans-serif;
     max-width: 800px;
-    margin: 0 auto;
+    margin: 10px auto;
+}
+
+@media screen and (max-width: 1024px) {
+    body {
+	font-size: 1.2rem; /* Larger font size for better readability */
+	max-width: 90%;
+	padding: 20px;
+    }
 }
 
 form {
-    width: 400px;
+    max-width: 400px; /* Maximum width */
+    width: 100%; /* Full width on smaller screens */
     margin: 0 auto;
     padding: 20px;
     background-color: #ECE0F8;
     border-radius: 10px;
 }
+
+textarea, input[type="submit"] {
+    width: calc(100% - 40px); /* Full width minus padding */
+    max-width: 360px; /* Maximum width */
+    margin-bottom: 10px; /* Spacing between elements */
+}
+
+textarea {
+    height: auto; /* Let the height be automatic */
+    min-height: 150px; /* Minimum height */
+}
+
+input[type="submit"] {
+    padding: 10px; /* Comfortable click area */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+@media screen and (max-width: 1024px) {
+    form {
+	font-size: 2rem; /* Larger font size for better readability */
+    }
+}
+
 
 input[type=file] {
     border: none;

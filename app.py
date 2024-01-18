@@ -30,17 +30,6 @@ EMPTY_PARAMETERS = 'empty_dict.json'
 
 PER_PAGE = 5 #Samples to load per page
 
-#NOT TO BE USED IN PRODUCTION - Only for testing
-@app.before_request
-def print_cookie_size():
-    import pickle
-    values = []
-    for key in session.keys():
-        values.append(session[key])
-    print(f'approximate cookie size: {len(pickle.dumps(values))} bytes')
-
-#NOTE: Most of this should not be in client session.
-#Temporary until better solution is implemented.
 def clear_session(clear_samples=False):
     session['text'] = '' #Text input by user for degendering
     session['new_text'] = '' #Text output
