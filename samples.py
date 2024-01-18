@@ -2,6 +2,7 @@ import os
 import json
 import sqlite3
 import random
+from pathlib import Path
 
 """
 submitted book format:
@@ -19,15 +20,17 @@ submitted book format:
 }
 """
 
+DB_FOLDER = Path(os.environ.get('DATABASE_PATH', 'databases'))
+
 #Get database connection object - target = production, default = local devlopment
-def get_db_conn(target, default):
-    db_path = os.environ.get(target, default)
+def get_db_conn(db_name):
+    db_path = DB_FOLDER / db_name
     conn = sqlite3.connect(db_path)
     return conn
 
 #Used to initialize the processed books the first time
 def initialize_books_database():
-    conn = get_db_conn('PROCESSED_BOOKS_URI', 'processed_books.db')
+    conn = get_db_conn('processed_books.db')
     cursor = conn.cursor()
 
     # Create a table to store processed books data
@@ -45,7 +48,7 @@ def initialize_books_database():
     
 #Used to initialize the sample database the first time
 def initialize_sample_database():
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
 
     # Create a table to store sample library data
@@ -83,7 +86,7 @@ def add_sample(submission, reviewed=False, approved=False):
         reviewed = submission['reviewed'] #if not specified, use submission data
     if not approved:
         approved = submission['approved'] #if not specified, use submission data
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO sample_library (title, author, webpage, tagline, excerpt, male_pronouns, "
@@ -97,7 +100,7 @@ def add_sample(submission, reviewed=False, approved=False):
 
 #Add a book - ip combination to the processed books database
 def add_book(filename, address):
-    conn = get_db_conn('PROCESSED_BOOKS_URI', 'processed_books.db')
+    conn = get_db_conn('processed_books.db')
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO processed_books (filename, address) VALUES (?, ?)",
@@ -108,7 +111,7 @@ def add_book(filename, address):
 
 #Get total number of books that have been degendered
 def get_book_count():
-    conn = get_db_conn('PROCESSED_BOOKS_URI', 'processed_books.db')
+    conn = get_db_conn('processed_books.db')
     cursor = conn.cursor()
     cursor.execute('SELECT COUNT(id) FROM processed_books')
     count = cursor.fetchone()[0]
@@ -140,7 +143,7 @@ def get_sample_dict(sample, keep_abbreviations=True):
     return sample_dict
         
 def get_sample_by_id(sample_id, keep_abbreviations=True):
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
     query = f"SELECT * FROM sample_library WHERE id = {sample_id};"
     cursor.execute(query)
@@ -151,7 +154,7 @@ def get_sample_by_id(sample_id, keep_abbreviations=True):
 
 # Get list of approved samples ids from the database
 def get_sample_ids(reviewed=True, approved=True, order='random'):
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
     if reviewed and approved:
         query = "SELECT id FROM sample_library WHERE reviewed = 1 AND approved = 1"
@@ -171,7 +174,7 @@ def get_sample_ids(reviewed=True, approved=True, order='random'):
 
 #Increment download count for a sample
 def increment_download_count(sample_id):
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE sample_library
@@ -188,7 +191,7 @@ def clear_sample_library():
     if input('Deleting sample library - Are you sure?\n'
              'Type y to confirm, anything else to exit\n').lower() == 'y':
         print('Deleting samples')
-        conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+        conn = get_db_conn('sample_library.db')
         cursor = conn.cursor()
         cursor.execute("DELETE FROM sample_library")
         conn.commit()
@@ -200,7 +203,7 @@ def clear_sample_library():
 def approve_all():
     print('Not allowed') #Delete to use - for safety
     return #Delete to use - for safety
-    conn = get_db_conn('SAMPLE_BOOKS_URI', 'sample_library.db')
+    conn = get_db_conn('sample_library.db')
     cursor = conn.cursor()
     update_query = "UPDATE sample_library SET approved = 1, reviewed = 1"
     cursor.execute(update_query)
