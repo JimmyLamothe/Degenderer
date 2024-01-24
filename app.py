@@ -8,7 +8,7 @@ from flask_session import Session
 from markupsafe import escape
 import config
 from degenderer import suggest_name
-from utilities import remove_dupes, url_to_epub
+from utilities import remove_dupes, url_to_epub, compare_dicts
 from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_sample_ids
 from samples import increment_download_count
 import process_book
@@ -43,6 +43,10 @@ def clear_session(clear_samples=False):
     session['all_matches'] = {} #Final matches submitted for degendering
     session['male_pronoun'] = '' #Gender to make male pronouns
     session['female_pronoun'] = '' #Gender to make female pronouns
+    session['latest_filepath'] = '' #Filepath of latest user-modified book version
+    session['latest_all_matches'] = {} #All matches for latest user-modified book version
+    session['latest_female_pronoun'] = '' #Female pronouns for latest user-modified book version
+    session['latest_male_pronoun'] = '' #Male pronouns for latest user-modified book version
     try:
         if clear_samples: #Reset to default values
             session['sample_ids'] = get_sample_ids()
@@ -308,12 +312,24 @@ def unknown_names():
         except KeyError: #If we got here via file upload
             pass
         try:
-            epub_filepath = process_book.process_epub(session['filepath'], parameters)
+            filepath = session['filepath']
+            if session['latest_all_matches']: #If user is modifying a previous submission
+                if (session['latest_female_pronouns'] == session['female_pronouns'] and
+                    session['latest_male_pronouns'] == session['male_pronouns']):
+                    changed_matches, unchanged_matches  = compare_dicts(session['all_matches'],
+                                                                        session['latest_all_matches'])
+                    if len(changed_matches) < len(unchanged_matches):
+                        filepath = session['latest_filepath']
+                        parameters['all_matches'] = dict(changed_matches)
+            epub_filepath = process_book.process_epub(filepath, parameters)
         except Exception as e:
-            #raise e #Uncomment to diagnose exception
+            app.logger.error(e)
+            raise e #Uncomment to diagnose exception
             return redirect('/processing-error')
         #Add filename / IP combination to processed books database
         try:
+            session['latest_filepath'] = epub_filepath
+            session['latest_all_matches'] = dict(session['all_matches'])
             filename = epub_filepath.name
             address = request.remote_addr
             add_book(filename, address)
@@ -423,4 +439,4 @@ def test_error(error):
     return render_template(f'{error}.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)

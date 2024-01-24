@@ -1,8 +1,9 @@
 FLY.IO
 Use environment variables - secrets to configure local vs online environments
-Implement permanent storage
 Check if SECRET_KEY is needed in config.py and if it's safe
 Monitor pricing of Redis - Move to a local non-persistent DB file if needed
+Make sure the permanent database on volume storage is actually being used
+
 
 BUGS
 
@@ -28,6 +29,8 @@ Remove before_request cookie size checker
 DEGENDERING FEATURES
 
 
+
+
 OTHER IMPROVEMENTS
 
 
@@ -37,12 +40,24 @@ DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
+IN PROGRESS: Make modifying books more efficient
+   TODO: Add button to let user decide if they want to make modifications or start fresh
+            This will make bugs less problematic and allow trying to revert modifications
+	 Modify code to make it work with following cases:
+	 	New word (match from old dict)
+		Modified word (match from latest dict)
+		Removed word (reverse match from latest dict)
+	 Any rare problems this creates (multiplying duplicate names, for example) become
+	 the user's responsibility and they can just press the new button to fix them
 
-
+	
+		 
+		 
 EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
+DONE - Implement permanent storage
 NOT DONE - Figure out why the text is more centered in pronouns and known names (do I really care?)
 DONE - Test with gunicorn
 NOT DONE - Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?

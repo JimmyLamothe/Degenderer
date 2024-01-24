@@ -39,3 +39,14 @@ def url_to_epub(url):
     filename = url.split("/")[-1]
     stem = filename.split('.')[0]
     return stem + '.epub'
+
+#Compare two dicts and return two dicts of matching values and unmatched values
+def compare_dicts(dict1, dict2):
+    unchanged_matches = {}
+    changed_matches = {}
+    for key, value in dict1.items():
+        if key in dict2 and dict2[key] == value:
+            unchanged_matches[key] = value
+        else:
+            changed_matches[key] = value
+    return unchanged_matches, changed_matches
