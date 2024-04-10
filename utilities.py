@@ -40,13 +40,27 @@ def url_to_epub(url):
     stem = filename.split('.')[0]
     return stem + '.epub'
 
-#Compare two dicts and return two dicts of matching values and unmatched values
+#Compare two dicts and get four dicts by category of change
 def compare_dicts(dict1, dict2):
-    unchanged_matches = {}
-    changed_matches = {}
+    matching_keys = {} #key in both dicts, same value
+    modified_keys_old = {} #key in both dicts, different value - old key-value pair from dict1
+    modified_keys_new = {} #key in both dicts, different value - new key-value pair from dict1
+    new_keys = {} #key only in dict2
+    removed_keys = {} #key only in dict1
+    print(f'dict1: {dict1}')
+    print(f'dict2: {dict2}')
     for key, value in dict1.items():
-        if key in dict2 and dict2[key] == value:
-            unchanged_matches[key] = value
+        if key in dict2:
+            if dict2[key] == value:
+                matching_keys[key] = value
+            else:
+                print(f'dict1[key]: {dict1[key]}')
+                print(f'dict2[key]: {dict2[key]}')
+                modified_keys_old[key] = dict1[key]
+                modified_keys_new[key] = dict2[key]
         else:
-            changed_matches[key] = value
-    return unchanged_matches, changed_matches
+            removed_keys[key] = value
+    for key, value in dict2.items():
+        if not key in dict1:
+            new_keys[key] = value
+    return matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys

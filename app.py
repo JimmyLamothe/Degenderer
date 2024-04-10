@@ -41,12 +41,12 @@ def clear_session(clear_samples=False):
     session['potential_matches'] = {} #Current potential name matches
     session['unknown_matches'] = {} #Current matches for words submitted by user
     session['all_matches'] = {} #Final matches submitted for degendering
-    session['male_pronoun'] = '' #Gender to make male pronouns
-    session['female_pronoun'] = '' #Gender to make female pronouns
+    session['male_pronouns'] = '' #Gender to make male pronouns
+    session['female_pronouns'] = '' #Gender to make female pronouns
     session['latest_filepath'] = '' #Filepath of latest user-modified book version
     session['latest_all_matches'] = {} #All matches for latest user-modified book version
-    session['latest_female_pronoun'] = '' #Female pronouns for latest user-modified book version
-    session['latest_male_pronoun'] = '' #Male pronouns for latest user-modified book version
+    session['latest_female_pronouns'] = '' #Female pronouns for latest user-modified book version
+    session['latest_male_pronouns'] = '' #Male pronouns for latest user-modified book version
     try:
         if clear_samples: #Reset to default values
             session['sample_ids'] = get_sample_ids()
@@ -186,14 +186,14 @@ def pronouns():
         else:
             raise ValueError
     if request.method == 'POST':
-        session['male_pronoun'] = abbreviate(request.form['male'])
-        session['female_pronoun'] = abbreviate(request.form['female'])
-        if session['male_pronoun'] == 'nb':
+        session['male_pronouns'] = abbreviate(request.form['male'])
+        session['female_pronouns'] = abbreviate(request.form['female'])
+        if session['male_pronouns'] == 'nb':
             session['pronoun_matches']['he'] = request.form['he'].lower()
             session['pronoun_matches']['him'] = request.form['him'].lower()
             session['pronoun_matches']['his'] = request.form['his'].lower()
             session['pronoun_matches']['himself'] = request.form['himself'].lower()
-        if session['female_pronoun'] == 'nb':
+        if session['female_pronouns'] == 'nb':
             session['pronoun_matches']['she'] = request.form['she'].lower()
             session['pronoun_matches']['her'] = request.form['her'].lower()
             session['pronoun_matches']['hers'] = request.form['hers'].lower()
@@ -228,7 +228,7 @@ def known_names():
         #If user clicked submit button
         return redirect('/potential-names')
     #If GET
-    if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
+    if not session['male_pronouns'] and session['female_pronouns']: #If user typed url directly
         return redirect('/')
     if session['known_name_list']:
         return render_template('known-names.html')
@@ -257,7 +257,7 @@ def potential_names():
         #If user clicked submit button
         return redirect('/unknown-names')
     else:
-        if not session['male_pronoun'] and session['female_pronoun']: #If user typed url directly
+        if not session['male_pronouns'] and session['female_pronouns']: #If user typed url directly
             return redirect('/')
         if session['potential_name_list']:
             return render_template('potential-names.html')
@@ -299,8 +299,8 @@ def unknown_names():
         user_matches.update(upper_dict)
         update_matches(user_matches=user_matches) #Updating session['all_matches'] with final values 
         parameters = {
-            'male' : session['male_pronoun'],
-            'female': session['female_pronoun'],
+            'male' : session['male_pronouns'],
+            'female': session['female_pronouns'],
             'all matches': session['all_matches'],
             }
         try:
@@ -314,13 +314,34 @@ def unknown_names():
         try:
             filepath = session['filepath']
             if session['latest_all_matches']: #If user is modifying a previous submission
+                print('modifying')
                 if (session['latest_female_pronouns'] == session['female_pronouns'] and
                     session['latest_male_pronouns'] == session['male_pronouns']):
-                    changed_matches, unchanged_matches  = compare_dicts(session['all_matches'],
-                                                                        session['latest_all_matches'])
-                    if len(changed_matches) < len(unchanged_matches):
-                        filepath = session['latest_filepath']
-                        parameters['all_matches'] = dict(changed_matches)
+                    print('matching pronouns')
+                    comparison = compare_dicts(session['latest_all_matches'], session['all_matches'])
+                    matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
+                    print(f'matching_keys: {matching_keys}')
+                    print(f'modified_keys_old: {modified_keys_old}')
+                    print(f'modified_keys_new: {modified_keys_new}')
+                    print(f'new_keys: {new_keys}')
+                    print(f'removed_keys: {removed_keys}')
+                    changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
+                    unchanged_values = len(matching_keys)
+                    if changed_values < unchanged_values: #If few modifications
+                        print('few modifications')
+                        filepath = session['latest_filepath'] #Start from latest version
+                        all_matches = {}
+                        for key, value in new_keys.items():
+                            print(f'adding: {key} = {value}')
+                        all_matches.update(new_keys) #Add new matches
+                        for key, value in removed_keys.items():
+                            print(f'removing: {key} = {value}')
+                            all_matches[value] = key #Revert removed matches
+                        for key, value in modified_keys_old.items(): #Adapt modified matches
+                            print(f'modifying: {modified_keys_old[key]} = {modified_keys_new[key]}')
+                            all_matches[modified_keys_old[key]] = modified_keys_new[key] 
+                        parameters['all matches'] = all_matches #Use latest changes only
+                        print(f'parameters: {all_matches}')
             epub_filepath = process_book.process_epub(filepath, parameters)
         except Exception as e:
             app.logger.error(e)
@@ -330,6 +351,8 @@ def unknown_names():
         try:
             session['latest_filepath'] = epub_filepath
             session['latest_all_matches'] = dict(session['all_matches'])
+            session['latest_female_pronouns'] = session['female_pronouns']
+            session['latest_male_pronouns'] = session['male_pronouns']
             filename = epub_filepath.name
             address = request.remote_addr
             add_book(filename, address)
@@ -342,7 +365,7 @@ def unknown_names():
         num_entries = (max(10, len(session['unknown_matches'])))
         #To make sure user didn't get here by typing the url directly
         try:
-            if session['male_pronoun'] and session['female_pronoun']:
+            if session['male_pronouns'] and session['female_pronouns']:
                 return render_template('unknown-names.html', num_entries=num_entries)
             else:
                 return redirect('/')
@@ -364,8 +387,8 @@ def submission_form():
             'webpage': webpage,
             'tagline': tagline,
             'excerpt': excerpt,
-            'male pronouns': session['male_pronoun'],
-            'female pronouns': session['female_pronoun'],
+            'male pronouns': session['male_pronouns'],
+            'female pronouns': session['female_pronouns'],
             'all matches': session['all_matches'],
             'reviewed': False,
             'approved': False

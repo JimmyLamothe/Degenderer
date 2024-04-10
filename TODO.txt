@@ -7,6 +7,8 @@ Make sure the permanent database on volume storage is actually being used
 
 BUGS
 
+Fix the extra _ff when modifying
+Make sure books in upload are deleted (not a problem if not on permanent storage?)
 
 NAMES & PRONOUNS
 
@@ -28,11 +30,13 @@ Remove before_request cookie size checker
 
 DEGENDERING FEATURES
 
-
+Make sure modifying a book is actually quicker than starting from scratch
 
 
 OTHER IMPROVEMENTS
 
+Add back button to done page
+Add start over button to done page
 
 DEGENDERING HTML CONTENT
 
@@ -40,23 +44,21 @@ DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
-IN PROGRESS: Make modifying books more efficient
-   TODO: Add button to let user decide if they want to make modifications or start fresh
-            This will make bugs less problematic and allow trying to revert modifications
-	 Modify code to make it work with following cases:
-	 	New word (match from old dict)
-		Modified word (match from latest dict)
-		Removed word (reverse match from latest dict)
-	 Any rare problems this creates (multiplying duplicate names, for example) become
-	 the user's responsibility and they can just press the new button to fix them
 
-	
 		 
 		 
 EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
+
+DONE - Make modifying books more efficient
+       Modify code to make it work with following cases:
+       	 	New word (match from old dict)
+		Modified word (match from latest dict)
+		Removed word (reverse match from latest dict)
+       Any rare problems this creates (multiplying duplicate names, for example) become
+       the user's responsibility and they can just press the new button to fix them
 DONE - Implement permanent storage
 NOT DONE - Figure out why the text is more centered in pronouns and known names (do I really care?)
 DONE - Test with gunicorn

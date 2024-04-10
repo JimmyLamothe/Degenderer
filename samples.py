@@ -12,8 +12,8 @@ submitted book format:
     'webpage': request.form['webpage'],
     'tags': request.form['tags'],
     'excerpt': request.form['excerpt'],
-    'male pronouns': session['male_pronoun'],
-    'female pronouns': session['female_pronoun'],
+    'male pronouns': session['male_pronouns'],
+    'female pronouns': session['female_pronouns'],
     'all matches': session['all_matches'],
     'reviewed': False,
     'approved': False
