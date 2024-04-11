@@ -17,7 +17,8 @@ DEFAULT_PARAMETERS = {
     'female' : 'nb',
     'year' : 1960,
     'name matches' : {},
-    'name choices' : 20
+    'name choices' : 20,
+    'modifying': False
     }
 
 #Temporary values used to debug an optimization issue
@@ -106,7 +107,7 @@ def degender_all(item, parameters):
         except AttributeError:
             pass
 
-#Backup method - old JSON data
+#Backup method - old JSON data - DO NOT USE - WILL BE REMOVED
 def create_pronoun_dict_json(parameters):
     pronoun_dict = {}
     if parameters['male'] == 'nb':
@@ -142,6 +143,8 @@ def create_pronoun_dict_json(parameters):
 
 #New method - Data from Excel file
 def create_pronoun_dict(parameters):
+    if parameters['modifying']: #If pronouns have already been modified
+        return {} #We return an empty dict to skip pronoun processing
     pronoun_dict = {}
     if parameters['female'] == 'nb':
         female_match = 'NB'

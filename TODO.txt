@@ -27,11 +27,13 @@ CLEANUP
 Remove debugging print calls and console.logs
 Document code (with ChatGPT?)
 Remove before_request cookie size checker
+Remove old methods like create_pronoun_dict_json
 
 DEGENDERING FEATURES
 
 Make sure modifying a book is actually quicker than starting from scratch
-
+Check if we can remove the Title + Upper case to user additions since they
+are already created in degenderer.create_name_dict()
 
 OTHER IMPROVEMENTS
 

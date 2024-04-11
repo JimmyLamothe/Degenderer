@@ -329,6 +329,7 @@ def unknown_names():
                     unchanged_values = len(matching_keys)
                     if changed_values < unchanged_values: #If few modifications
                         print('few modifications')
+                        parameters['modifying'] = True #So process_book knows not to change pronouns again
                         filepath = session['latest_filepath'] #Start from latest version
                         all_matches = {}
                         for key, value in new_keys.items():
