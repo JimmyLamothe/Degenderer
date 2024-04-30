@@ -11,33 +11,33 @@
 		  name="female"
 		  value="non-binary"
 		  onchange="showNonBinaryForm()"
-		  {% if session['female_pronoun'] == 'nb' %}checked{% endif %}>Non-binary</label><br>
+		  {% if session.get('female_pronouns', '') == 'nb' %}checked{% endif %}>Non-binary</label><br>
     <label><input type="radio"
 		  name="female"
 		  value="female"
 		  onchange="showNonBinaryForm()"
-		  {% if session['female_pronoun'] in ['', 'f'] %}checked{% endif %}>Female</label><br>
+		  {% if session.get('female_pronouns', '') in ['', 'f'] %}checked{% endif %}>Female</label><br>
     <label><input type="radio"
 		  name="female"
 		  value="male"
 		  onchange="showNonBinaryForm()"
-		  {% if session['female_pronoun'] == 'm' %}checked{% endif %}>Male</label><br>
+		  {% if session.get('female_pronouns', '') == 'm' %}checked{% endif %}>Male</label><br>
     <h3>Male Pronouns:</h3>
     <label><input type="radio"
 		  name="male"
 		  value="non-binary"
 		  onchange="showNonBinaryForm()"
-		  {% if session['male_pronoun'] == 'nb' %}checked{% endif %}>Non-binary</label><br>
+		  {% if session.get('male_pronouns', '') == 'nb' %}checked{% endif %}>Non-binary</label><br>
     <label><input type="radio"
 		  name="male"
 		  value="female"
 		  onchange="showNonBinaryForm()"
-		  {% if session['male_pronoun'] == 'f' %}checked{% endif %}>Female</label><br>
+		  {% if session.get('male_pronouns', '') == 'f' %}checked{% endif %}>Female</label><br>
     <label><input type="radio"
 		  name="male"
 		  value="male"
 		  onchange="showNonBinaryForm()"
-		  {% if session['male_pronoun'] in ['', 'm'] %}checked{% endif %}>Male</label><br>
+		  {% if session.get('male_pronouns', '') in ['', 'm'] %}checked{% endif %}>Male</label><br>
 
     <div id="non-binary-female-form" style="display: none;">
 	<h3>Non-binary Pronouns:</h3>

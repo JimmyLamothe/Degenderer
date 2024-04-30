@@ -7,8 +7,7 @@ Make sure the permanent database on volume storage is actually being used
 
 BUGS
 
-Fix the extra _ff when modifying
-Make sure books in upload are deleted (not a problem if not on permanent storage?)
+
 
 NAMES & PRONOUNS
 
@@ -20,7 +19,8 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-Make site mobile-friendly
+
+IN PROGRESS - Make site mobile-friendly
 
 
 CLEANUP
@@ -31,14 +31,9 @@ Remove old methods like create_pronoun_dict_json
 
 DEGENDERING FEATURES
 
-Make sure modifying a book is actually quicker than starting from scratch
-Check if we can remove the Title + Upper case to user additions since they
-are already created in degenderer.create_name_dict()
 
 OTHER IMPROVEMENTS
 
-Add back button to done page
-Add start over button to done page
 
 DEGENDERING HTML CONTENT
 
@@ -47,13 +42,22 @@ DEGENDERING HTML CONTENT
 
 DEGENDERING IMPROVEMENTS
 
-		 
+
+
 		 
 EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
+DONE - Add back button to done page
+DONE - Add start over button to done page
+DONE - Have pronouns pre-filled when modifying
+DONE - Degendering times for book is incorrect when modifying - adds to previous time
+DONE - Fix the extra _ff when modifying
+DONE - Check if we can remove the Title + Upper case to user additions since they
+       are already created in degenderer.create_name_dict()
+DONE - Make sure modifying a book is actually quicker than starting from scratch
 DONE - Make modifying books more efficient
        Modify code to make it work with following cases:
        	 	New word (match from old dict)
@@ -65,7 +69,7 @@ DONE - Implement permanent storage
 NOT DONE - Figure out why the text is more centered in pronouns and known names (do I really care?)
 DONE - Test with gunicorn
 NOT DONE - Upload and temp directory should be cleared after 24 hours - AWS Cloudwatch + Lambda?
-    	 Not needed since not in permanent storage on fly.io
+    	   Not needed since not in permanent storage on fly.io
 DONE - Session cookies get pretty large - Might be better to save more data locally
        SOLUTION: Switch to flask-sessions and Redis
 DONE - It should be possible to create samples from text degendering so that people
@@ -79,9 +83,9 @@ DONE - Going back and clearing a name correspondence should actually clear it
 DONE - Check cookie size to see if it's large - would make running the server more expensive
 DONE - Track download count of samples
 DONE - Session cookie too big - 5k max?
-      SOLUTION - This was because of all sample data being inside session cookie
+       SOLUTION - This was because of all sample data being inside session cookie
 DONE - Samples should not repeat before all have been displayed
-     Reworked samples with fixed random order, more and previous pages
+       Reworked samples with fixed random order, more and previous pages
 DONE - manly - womanly - personly
 DONE - sir'ram'ram is back - Mrs. Dalloway
 DONE - Count of books degendered
@@ -156,7 +160,6 @@ DONE - Fix the messed up formatting in Romeo and Juliet that loses the line retu
 DONE - JULIET --> MARION
 DONE - Replacement of lower case - title case - upper case at once
 
-
 BETTER SOLUTION FOUND - Add <text> tag to conversion - possibly inside <navLabel>
 BETTER SOLUTION FOUND - Add <td> tag to conversion
 BETTER SOLUTION FOUND - Add <i> tag to conversion
@@ -166,25 +169,25 @@ CANCELLED - Add progress bar using soups degendered percentage - Too complex to 
 
 Names to non-binarize:
 
-Mistress - Master
-Guys - Guy
-Dad
-Maid
-Friar
-daddy
-master - mistress
-girl/boy to kid instead of youth
-madman/madwoman
-kinsman/kinsmen
-nobleman/noblemen
-allmother/allfather
+DONE - Mistress - Master
+DONE - Guys - Guy
+DONE - Dad
+DONE - Maid
+DONE - Friar
+DONE - daddy
+DONE - master - mistress
+DONE - girl/boy to kid instead of youth
+DONE - madman/madwoman
+DONE - kinsman/kinsmen
+DONE - nobleman/noblemen
+DONE - allmother/allfather
 
 
 Names to add to common words:
-Will
-All months
-All seasons
-All flowers
-Joy
-Pearl
-Christian
+DONE - Will
+DONE - All months
+DONE - All seasons
+DONE - All flowers
+DONE - Joy
+DONE - Pearl
+DONE - Christian

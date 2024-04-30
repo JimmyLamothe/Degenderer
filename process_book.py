@@ -16,9 +16,10 @@ def get_all_names(book_file):
 def process_epub(filepath, parameters):
     input_filepath = Path(filepath)
     output_filename = input_filepath.stem
-    output_filename += '_'
-    output_filename += parameters['male']
-    output_filename += parameters['female']
+    if not parameters['modifying']:
+        output_filename += '_'
+        output_filename += parameters['male']
+        output_filename += parameters['female']
     output_filename += input_filepath.suffix
     output_filepath = WORKING_DIR.joinpath(output_filename)
     if not type(parameters) is dict:

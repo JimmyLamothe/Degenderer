@@ -204,6 +204,8 @@ def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
     #print(f'match_dict: {match_dict}')
     parameters['match dict'] = match_dict
     with open('reference/test_match_dict.json', 'w') as json_file:
+        global book_timer
+        book_timer = 0
         json_dict = {}
         for key in match_dict:
             json_dict[key] = match_dict[key]['match']

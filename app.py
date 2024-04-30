@@ -30,12 +30,13 @@ EMPTY_PARAMETERS = 'empty_dict.json'
 
 PER_PAGE = 5 #Samples to load per page
 
-def clear_session(clear_samples=False):
+def clear_session(clear_samples=False, same_book=False):
     session['text'] = '' #Text input by user for degendering
     session['new_text'] = '' #Text output
-    session['filepath'] = '' #Filepath of book uploaded by user
-    session['known_name_list'] = [] #Known names detected in user submission
-    session['potential_name_list'] = [] #Potential names detected in user submission
+    if not same_book:
+        session['filepath'] = '' #Filepath of book uploaded by user
+        session['known_name_list'] = [] #Known names detected in user submission
+        session['potential_name_list'] = [] #Potential names detected in user submission
     session['pronoun_matches'] = {} #Current pronoun matches
     session['known_matches'] = {} #Current known name matches
     session['potential_matches'] = {} #Current potential name matches
@@ -110,7 +111,6 @@ def previous_samples():
     session['sample_index'] = session['sample_index'] - PER_PAGE
     return redirect('/samples')
 
-
 @app.route('/download-sample/<sample_id>')
 def download_sample(sample_id):
     sample = get_sample_by_id(sample_id)
@@ -174,8 +174,16 @@ def search():
     clear_session()
     return render_template('search.html')
 
+@app.route('/start-over') #Used to keep working on the same book but starting from scratch
+def start_over():
+    clear_session(same_book=True)
+    return redirect('pronouns')
+
 @app.route('/pronouns', methods=['GET', 'POST'])
 def pronouns():
+    print(f'female = {session["female_pronouns"]}')
+    print(f'male = {session["male_pronouns"]}')
+    print(f'pronoun matches = {session["pronoun_matches"]}')
     def abbreviate(pronoun):
         if pronoun.lower() == 'non-binary':
             return 'nb'
@@ -287,21 +295,14 @@ def unknown_names():
             else:
                 return redirect('/pronouns')
         #If user clicked submit button
-        lower_dict = {(key.lower(), value.lower())
+        user_matches = {(key.lower(), value.lower())
                       for (key, value) in session['unknown_matches'].items()}
-        title_dict = {(key.title(), value.title())
-                      for (key, value) in session['unknown_matches'].items()}
-        upper_dict = {(key.upper(), value.upper())
-                      for (key, value) in session['unknown_matches'].items()}
-        user_matches = {}
-        user_matches.update(lower_dict)
-        user_matches.update(title_dict)
-        user_matches.update(upper_dict)
         update_matches(user_matches=user_matches) #Updating session['all_matches'] with final values 
         parameters = {
             'male' : session['male_pronouns'],
             'female': session['female_pronouns'],
             'all matches': session['all_matches'],
+            'modifying': False
             }
         try:
             if session['text']: #If we got here via text box input
