@@ -9,16 +9,5 @@
   <p>Classic literature is full of love stories. And like all classic love stories, they feature a man and a woman, playing their traditional roles. But no more! Now, you can bring today's more complex and nuanced vision of gender to classic books by making all characters non-binary, or by inverting male and female roles. You can play around with sexuality by making any literary relationship lesbian or gay. You choose the pronouns, you choose the names... make the story yours!</p>
   <p>Okay, let's be honest, changing names and pronouns isn't enough to really change a character's gender. They'll still be the same underneath. But it does conjure up different images! It's fun to read Brokeback Mountain with cowgirls, even if the sex scenes don't make much sense. The Handmaid's Tale feels different when men are the breeders. And Romeo and Juliet are as much in love as Payton and Sawyer.</p>
   <p>If you're looking for classic books to de/regender, you can find many of them on <a href="https://www.gutenberg.org/" target="_blank">Project Gutenberg</a>, a free online library with over 60,000 ebooks. Our <a href={{ url_for('search') }}>search tool</a> redirects you there. We can't process copy-protected eBooks, but you can still have fun de/regendering excerpts in our <a href={{ url_for('text_upload') }}>text converter.</a></p>
-  <div class="footer" style="position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: #550A35; /* Background color */
-    color: #fff; /* Text color */
-    padding: 10px; /* Padding for better visibility */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow for depth */
-    z-index: 10;
-    margin-left: auto; /* Push to the right */
-    margin-right: 10px; /* Margin from the rest of the content */
-    transition: background-color 0.3s ease; /* Smooth color transition */">{{ books_processed }} books and articles liberated from the strictures of gender</div>
+  <div class="footer">{{ books_processed }} books and articles liberated from the strictures of gender</div>
 {% endblock %}

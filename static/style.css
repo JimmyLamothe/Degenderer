@@ -1,3 +1,19 @@
+body {
+    background-color: #ECE0F8;
+    color: #3B0B39;
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 10px auto;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+	font-size: 1.2rem; /* Larger font size for better readability */
+	max-width: 90%;
+	padding: 20px;
+    }
+}
+
 .logo {
     display: flex;
     margin-right: 20px;
@@ -32,26 +48,37 @@ li a:hover {
   background-color: #E3CEF6;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 768px) {
     li a {
 	padding: 20px; /* Larger padding for easier touch navigation */
 	font-size: 1.2rem; /* Larger font size for better readability */
     }
 }
 
-body {
-    background-color: #ECE0F8;
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 2em;
     color: #3B0B39;
     font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 10px auto;
+    margin: 0; /* Remove any default margin */
+    padding: 0; /* Remove any default padding */
+    width: 100%;
+    cursor: pointer;
 }
 
-@media screen and (max-width: 1024px) {
-    body {
-	font-size: 1.2rem; /* Larger font size for better readability */
-	max-width: 90%;
-	padding: 20px;
+@media screen and (max-width: 768px) {
+    .menu {
+        display: none;
+        width: 100%;
+    }
+    .menu-toggle {
+        display: block; /* Show the toggle button on small screens */
+    }
+    .menu li {
+        display: block; /* Stack menu items vertically */
     }
 }
 
@@ -62,6 +89,12 @@ form {
     padding: 20px;
     background-color: #ECE0F8;
     border-radius: 10px;
+}
+
+@media screen and (max-width: 768px) {
+    form {
+	font-size: 2rem; /* Larger font size for better readability */
+    }
 }
 
 textarea, input[type="submit"] {
@@ -80,23 +113,7 @@ input[type="submit"] {
     cursor: pointer; /* Pointer cursor on hover */
 }
 
-@media screen and (max-width: 1024px) {
-    form {
-	font-size: 2rem; /* Larger font size for better readability */
-    }
-}
-
-
-input[type=file] {
-    border: none;
-    background-color: #E3CEF6;
-    padding: 10px;
-    border-radius: 5px;
-    color: #3B0B39;
-    width: 100%;
-}
-
-input[type=submit] {
+input[type="submit"] {
     border: none;
     background-color: #E3CEF6;
     color: #3B0B39;
@@ -106,10 +123,95 @@ input[type=submit] {
     cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type="submit"]:hover {
     background-color: #666;
 }
-/* Styles for the toggle button */
+
+@media screen and (max-width: 768px) {
+    textarea {
+	font-size: 0.6em;
+    }
+    input[type="submit"] {
+        font-size: 0.8em;
+    }
+    input[type="text"] {
+	font-size: 0.7em;
+    }
+}
+
+input[type="file"] {
+    border: none;
+    background-color: #E3CEF6;
+    padding: 10px;
+    border-radius: 5px;
+    color: #3B0B39;
+    width: 100%;
+}
+
+/* Styles for desktop and mobile visibility */
+.desktop-table {
+    display: table; /* default display for table */
+}
+
+.mobile-table {
+    display: none; /* hidden by default */
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+    .desktop-table {
+        display: none; /* hide desktop table on mobile */
+    }
+    .mobile-table {
+        display: block; /* show mobile layout on mobile */
+    }
+    .mobile-row {
+        margin-bottom: 20px; /* space between entries */
+    }
+    .name-pair, .button-group {
+        margin-bottom: 0px; /* space within an entry */
+    }
+    .name-pair {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px 0;
+    }
+    .name-pair span {
+	font-size:0.8em;
+	flex: 1;
+	margin-right: 10px;
+    }
+    .name-pair input[type="text"] {
+	flex:2;
+	max-width:60%;
+    }
+    .button-group button {
+        width: 18%; /* adjust based on preference */
+        margin-right: 5px; /* space between buttons */
+    }
+}
+
+/* Styling for mobile layout */
+.mobile-row {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.mobile-row.button-row {
+    display: flex;
+    justify-content: space-around;  /* This centers the buttons and spaces them nicely */
+    padding: 20px;
+}
+
+.mobile-row.button-row button {
+    flex-grow: 1;  /* Each button expands to fill the space */
+    margin: 0 10px;  /* Add some horizontal space between buttons */
+    padding: 10px 0;  /* Vertical padding for easier tapping */
+    font-size: 0.6em;  /* Larger font size for readability */
+}
+
+
 .toggle {
   background-color: transparent;
   border: none;
@@ -124,7 +226,6 @@ input[type=submit]:hover {
 }
 
 
-/* Styles for the active toggle button */
 .toggle.active i {
     transform: rotate(90deg);
 }
@@ -143,6 +244,7 @@ input[type=submit]:hover {
 
 .material-icons {
     vertical-align: bottom; /* Align vertically to the middle */
+}
 
 .footer {
     position: fixed;
@@ -157,4 +259,10 @@ input[type=submit]:hover {
     margin-left: auto; /* Push to the right */
     margin-right: 10px; /* Margin from the rest of the content */
     transition: background-color 0.3s ease; /* Smooth color transition */
+}
+ 
+@media screen and (max-width: 768px) {
+    .footer {
+	position: static;
+    }
 }

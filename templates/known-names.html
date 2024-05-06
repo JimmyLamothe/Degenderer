@@ -13,7 +13,7 @@
   <p>These are all the names we are pretty sure are characters in the book. You can get a suggestion
   by clicking on the appropriate button for male, female or non-binary names.</p>
   <form method="POST">
-    <table>
+    <table class="desktop-table">
       <thead>
         <tr>
           <th>Existing Name</th>
@@ -89,6 +89,27 @@
         </tr>
       </tbody>
     </table>
+    <!-- Mobile Version -->
+    <div class="mobile-table">
+        {% for name in session['known_name_list'] %}
+        <div class="mobile-row">
+            <div class="name-pair">
+                <span>{{ name }}</span>
+                <input type="text" name="new_names[]" value="{{ session['known_matches'].get(name, '') }}">
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="suggestRow(suggestNb, this.parentNode.parentNode)">NB</button>
+                <button type="button" onclick="suggestRow(suggestFemale, this.parentNode.parentNode)">F</button>
+                <button type="button" onclick="suggestRow(suggestMale, this.parentNode.parentNode)">M</button>
+                <button type="button" onclick="clearRow(this.parentNode.parentNode)">Clear</button>
+            </div>
+        </div>
+        {% endfor %}
+	<div class="mobile-row button-row">
+        <button type="submit" onclick="submitForm('submit')">Submit</button>
+        <button type="button" onclick="submitForm('back')">Back</button>
+	</div>
+    </div>
   </form>
 {% endblock %}
   
