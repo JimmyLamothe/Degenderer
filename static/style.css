@@ -149,23 +149,23 @@ input[type="file"] {
 }
 
 /* Styles for desktop and mobile visibility */
-.desktop-table {
-    display: table; /* default display for table */
+#desktop-form {
+    display: block; /* default display for table */
 }
 
-.mobile-table {
+#mobile-form {
     display: none; /* hidden by default */
 }
 
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
-    .desktop-table {
+    #desktop-form {
         display: none; /* hide desktop table on mobile */
     }
-    .mobile-table {
+    #mobile-form {
         display: block; /* show mobile layout on mobile */
     }
-    .mobile-row {
+    #mobile-row {
         margin-bottom: 20px; /* space between entries */
     }
     .name-pair, .button-group {
@@ -193,9 +193,7 @@ input[type="file"] {
 
 /* Styling for mobile layout */
 .mobile-row {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 5px;
 }
 
 .mobile-row.button-row {
@@ -237,9 +235,14 @@ input[type="file"] {
 }
 
 .read-excerpt-text {
-    font-size: 18px; /* Adjust the size as needed */
+    font-size: 1.3em; /* Adjust the size as needed */
     font-weight: bold; /* Optionally make it bold */
-    vertical-align: middle; /* Align vertically to the middle */
+}
+
+@media screen and (max-width: 768px) {
+    .read-excerpt-text {
+	font-size: 1.7em;
+    }
 }
 
 .material-icons {

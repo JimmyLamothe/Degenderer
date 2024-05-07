@@ -7,6 +7,7 @@
 {% block head_scripts %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src={{ url_for('static', filename='suggest.js') }}> </script>
+  <script src={{ url_for('static', filename='submit.js') }}> </script>
 {% endblock %}
 
 {% block content %}
@@ -15,8 +16,8 @@
     right. If you are a right-wing troll-child, you can probably use this to amuse your easily-amused
     troll-friends by creating racist or sexist trash. We do not care and are not impressed.
   </div>
-  <form method="POST" id="name-selection-form">
-    <table>
+  <form id="desktop-form" method="POST">
+    <table class="desktop-table">
       <thead>
         <tr>
           <th>Existing Word</th>
@@ -77,13 +78,36 @@
             </td>
 	</tr>
 	<tr>
-	  <input type="hidden" name="submit_type" id="action" value="submit">
+	  <input type="hidden" name="submit_type" id="desktop-action" value="submit">
 	  <td colspan="2"></td>
 	  <td colspan="3"><button type="submit" onclick="submitForm('submit')">Submit</button></td>
           <td><button type="button" onclick="submitForm('back')">Back</button></td>
         </tr>
       </tbody>
     </table>
+  </form>
+  <form id="mobile-form" method="POST">
+    <!-- Mobile Version -->
+    <div class="mobile-table">
+      {% set total_rows = [10, session['unknown_matches']|length] | max %}
+      {% for i in range(total_rows) %}
+      {% set keys = session['unknown_matches'].keys()|list %}
+      {% set name = keys[i] if keys[i] is defined else '' %}
+      <div class="mobile-row">
+        <div class="name-pair">
+          <input type="text" name="existing_names[]" placeholder="Existing Name" value="{{ name }}">
+          <input type="text" name="new_names[]" placeholder="New Name" value="{{ session['unknown_matches'].get(name, '') }}">
+        </div>
+      </div>
+      {% endfor %}
+      <div id="additionalRows"></div>
+      <div class="mobile-row button-row">
+	<button type="button" id="addMoreButton" onclick="addMoreRows()">More</button>
+	<input type="hidden" name="submit_type" id="mobile-action" value="submit">
+	<button type="submit" onclick="submitForm('submit')">Submit</button></td>
+        <button type="button" onclick="submitForm('back')">Back</button>
+      </div>
+    </div>
   </form>
   <div id="processing-message" style="display: none;">
     Your book is being degendered/regendered!<br>
@@ -99,6 +123,7 @@
 		     onclick="return confirm('Start over? You will lose all your changes.');"> here</a>.</p>
   </div>
   <script>
+    // For desktop version
     function addMoreEntries() {
         // Get the table body
         var tbody = document.getElementById('name-entries');
@@ -129,31 +154,60 @@
             document.querySelector('button[onclick="addMoreEntries()"]').style.display = 'none';
         }
     }
-    // Intercept the form submission
-    document.getElementById('name-selection-form').addEventListener('submit', function () {
+    // For mobile version
+    function addMoreRows() {
+	var totalRows = {{ session['unknown_name_list']|length }};  // Start with the current number of rows
+	var container = document.getElementById('additionalRows');
+	var rowsToAdd = 10;  // Number of rows to add each time
+
+	// Calculate how many rows can actually be added without exceeding the limit
+	var allowableRows = (totalRows + rowsToAdd <= 200) ? rowsToAdd : 200 - totalRows;
+
+	for (var i = 0; i < allowableRows; i++) {
+            var newDiv = document.createElement('div');
+            newDiv.className = 'mobile-row';
+            newDiv.innerHTML = `
+            <div class="name-pair">
+                <input type="text" name="existing_names[]" placeholder="Existing Name">
+                <input type="text" name="new_names[]" placeholder="New Name">
+            </div>`;
+            container.appendChild(newDiv);
+	}
+
+	totalRows += allowableRows;  // Update the total number of rows
+
+	// Optionally disable the button if the maximum number of rows is reached
+	if (totalRows >= 200) {
+            document.getElementById('addMoreButton').disabled = true;
+	}
+    }
+
+    // Intercept the desktop form submission
+    document.getElementById('desktop-form').addEventListener('submit', function () {
 	showProcessingMessage(); // Show the processing message
     });
+    // Intercept the mobile form submission
+    document.getElementById('mobile-form').addEventListener('submit', function () {
+	showProcessingMessage(); // Show the processing message
+    });
+    
 
     // Function to show the processing message
 	function showProcessingMessage() {
 	console.log('showProcessingMessage called');
-	// Hide the form
-	document.getElementById('name-selection-form').style.display = 'none';
+	// Hide the desktop form
+	document.getElementById('desktop-form').style.display = 'none';
 
+	// Hide the mobile form
+	document.getElementById('mobile-form').style.display = 'none';
+
+	    
 	// Hide the text
 	document.getElementById('explanation').style.display = 'none';
 	
 	// Show the processing message
 	document.getElementById('processing-message').style.display = 'block';
     }
-    function submitForm(action) {
-        // Set the value of the hidden input field based on the button clicked
-        document.getElementById('action').value = action;
-
-        // Submit the form
-        document.forms[0].submit();
-    }
-
   </script>
 
 {% endblock %}

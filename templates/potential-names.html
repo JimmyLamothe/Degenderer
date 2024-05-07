@@ -7,13 +7,14 @@
 {% block head_scripts %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src={{ url_for('static', filename='suggest.js') }}> </script>
+  <script src={{ url_for('static', filename='submit.js') }}> </script>
 {% endblock %}
 
 {% block content %}
 <p>We think these names might be character names, but we're not sure. It's probably best to only
   change those that you know are characters in the book. </p>
-  <form method="POST">
-    <table>
+  <form id="desktop-form" method="POST">
+    <table class="desktop-table">
       <thead>
         <tr>
           <th>Existing Name</th>
@@ -52,7 +53,7 @@
           </tr>
         {% endfor %}
         <tr>
-	  <input type="hidden" name="submit_type" id="action" value="submit">
+	  <input type="hidden" name="submit_type" id="desktop-action" value="submit">
 	  <td colspan="2"></td>
 	  <td colspan="3"><button type="button" onclick="submitForm('submit')">Submit</button></td>
           <td><button type="button" onclick="submitForm('back')">Back</button></td>
@@ -60,16 +61,28 @@
       </tbody>
     </table>
   </form>
-{% endblock %}
-
-{% block body_scripts %}
-  <script>
-  function submitForm(action) {
-        // Set the value of the hidden input field based on the button clicked
-        document.getElementById('action').value = action;
-
-        // Submit the form
-        document.forms[0].submit();
-  }
-  </script>
+  <form id="mobile-form" method="POST">
+    <!-- Mobile Version -->
+    <div class="mobile-table">
+        {% for name in session['potential_name_list'] %}
+        <div class="mobile-row">
+            <div class="name-pair">
+                <span>{{ name }}</span>
+                <input type="text" name="new_names[]" value="{{ session['potential_matches'].get(name, '') }}">
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="suggestRow(suggestNb, this.parentNode.parentNode)">NB</button>
+                <button type="button" onclick="suggestRow(suggestFemale, this.parentNode.parentNode)">F</button>
+                <button type="button" onclick="suggestRow(suggestMale, this.parentNode.parentNode)">M</button>
+                <button type="button" onclick="clearRow(this.parentNode.parentNode)">Clear</button>
+            </div>
+        </div>
+        {% endfor %}
+	<div class="mobile-row button-row">
+	  <input type="hidden" name="submit_type" id="mobile-action" value="submit">
+          <button type="button" onclick="submitForm('submit')">Submit</button>
+          <button type="button" onclick="submitForm('back')">Back</button>
+	</div>
+    </div>
+  </form>
 {% endblock %}
