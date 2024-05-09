@@ -90,23 +90,24 @@
     
   </form>
   <p>We'll attempt to change all words that refer to males or to females to your selection.
-    Unfortunately, we're just doing simple search and replace, so we can't only change the
-    gender of a specific character. Changing a character's gender affects all others
-    who share the same gender in the original book.</p>
+    Unfortunately, we're just doing simple search and replace, so we can't change the
+    gender of a specific character only. Changing a character's gender affects all others
+    who share the same gender in the original text.</p>
   <p>If you would like to use specific pronouns for non-binary characters, a selection menu
     will pop up once you select non-binary. The default pronouns we use for non-binary
     are they/them/their, but you can change them to whatever you wish.</p>
   <p>A known issue is that "her" should become "their" in "her friend", but "them" in "it's her!".
-    By default we use the more common usage "their", but you can use "their/them" if you want to
+    By default we use the more common "their", but you can use "their/them" if you want to
     address both possible meanings.</p>
   <p>A similar issue is that "his" should become "their" in "his friend", but "theirs" in "Whose book
     is that? It's his". We again use the more common "their", but you can use "their/s" as well.</p>
   <p>Both of these issues also affect going from male to female and from female to male, where we
-    made the same choice to prioritize the possessive form. If you want to make a different choice,
-    simply assign a value to "her" and "his" later, in the final form which lets you submit your own
-    word changes. For example, you can set "her" to "his/him" and "his" to "her/s".</p> 
-  <p>If you have Natural Language Processing skills, feel free to contact us on github and help us
-    make the De/Regenderer better!</p>
+    made the same choice. If you want to make a different choice,
+    there will be a form later that lets you freely submit word changes. You can assign a value to
+    "her" and "his" there. For example, you can set "her" to "his/him" and "his" to "her/s".</p> 
+  <p>If you have Natural Language Processing skills, feel free to
+    <a href="https://github.com/JimmyLamothe/Degenderer/discussions/1" target="_blank">join us on Github</a>
+    and help make the De/Regenderer better!</p>
 
 {% endblock %}
 

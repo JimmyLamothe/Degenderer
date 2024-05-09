@@ -14,10 +14,12 @@
   </div>
   <div id="processing-message" style="display: block;">
     <p>Here is your de/regendered text.</p>
-    <p>If you would like it to be included in our samples page,
-      <a href="/submission-form">click here</a>.</p>
-    <p>If you want to change the names of some characters or degender words that we missed,
-    click <a href="/pronouns"> here.</p>
+    <p><a href="/submission-form">Submit your text</a> if you like the result and want to share it.</p>
+    <p><a href="/pronouns">Modify your choices</a> if you want to change the names of some characters
+      or degender words that we missed.</p>
+    <p><a href="/start-over"
+	  onclick="return confirm('Start over? You will lose all your changes.');">Start from scratch</a> if modifying
+      does not work properly. Modifying is a lot faster, but can occasionally cause bugs.</p>
   </div>
 
 {% endblock %}

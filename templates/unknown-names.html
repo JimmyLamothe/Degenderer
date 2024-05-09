@@ -12,9 +12,8 @@
 
 {% block content %}
   <div id="explanation">You can use this form to change any gendered word that we forgot or that is specific to your
-    book. Just type the word you want to change on the left, and the replacement you'd like to use on the
-    right. If you are a right-wing troll-child, you can probably use this to amuse your easily-amused
-    troll-friends by creating racist or sexist trash. We do not care and are not impressed.
+    text. Just type the word you want to change on the left, and the replacement you'd like to use on the
+    right.
   </div>
   <form id="desktop-form" method="POST">
     <table class="desktop-table">
@@ -95,8 +94,8 @@
       {% set name = keys[i] if keys[i] is defined else '' %}
       <div class="mobile-row">
         <div class="name-pair">
-          <input type="text" name="existing_names[]" placeholder="Existing Name" value="{{ name }}">
-          <input type="text" name="new_names[]" placeholder="New Name" value="{{ session['unknown_matches'].get(name, '') }}">
+          <input type="text" name="existing_names[]" placeholder="Existing word" value="{{ name }}">
+          <input type="text" name="new_names[]" placeholder="New word" value="{{ session['unknown_matches'].get(name, '') }}">
         </div>
       </div>
       {% endfor %}
@@ -110,17 +109,14 @@
     </div>
   </form>
   <div id="processing-message" style="display: none;">
-    Your book is being degendered/regendered!<br>
-    Keep this page open until it's ready.<br>
-    You can keep browsing in a different tab in the meantime.<br>
+    Your book is being degendered/regendered! Keep this page open until it's ready.
     A file save dialogue will pop up when it's done.
-    <p>If you like the result and would like it to be included in our samples page, click
-      <a href="/submission-form"> here</a>.</p>
-    <p>If you want to change the names of some characters or degender words that we missed,
-    click <a href="/pronouns"> here</a>.</p>
-    <p>Modifying a book is a lot faster but can occasionally cause bugs. You can start from scratch
-      by clicking <a href="/start-over"
-		     onclick="return confirm('Start over? You will lose all your changes.');"> here</a>.</p>
+    <p><a href="/submission-form">Submit your book</a> if you like the result and want to share it.</p>
+    <p><a href="/pronouns">Modify your choices</a> if you want to change the names of some characters
+      or degender words that we missed.</p>
+    <p><a href="/start-over"
+	  onclick="return confirm('Start over? You will lose all your changes.');">Start from scratch</a> if modifying
+      does not work properly. Modifying is a lot faster, but can occasionally cause bugs.</p>
   </div>
   <script>
     // For desktop version
