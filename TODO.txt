@@ -20,14 +20,13 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 HTML / CSS
 
-IN PROGRESS - Make site mobile-friendly
+
 
 
 CLEANUP
 Remove debugging print calls and console.logs
-Document code (with ChatGPT?)
-Remove before_request cookie size checker
-Remove old methods like create_pronoun_dict_json
+Document code
+
 
 DEGENDERING FEATURES
 
@@ -50,6 +49,7 @@ Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
+DONE - Make site mobile-friendly
 DONE - Add back button to done page
 DONE - Add start over button to done page
 DONE - Have pronouns pre-filled when modifying

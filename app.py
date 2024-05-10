@@ -1,6 +1,11 @@
-# -*- coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
-import sys
-import random
+"""
+Main module for the web app.
+
+Functions:
+    clear_session: Clear session memory when needed
+    
+
+"""
 from pathlib import Path
 import requests
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
@@ -8,7 +13,7 @@ from flask_session import Session
 from markupsafe import escape
 import config
 from degenderer import suggest_name
-from utilities import remove_dupes, url_to_epub, compare_dicts
+from utilities import url_to_epub, compare_dicts
 from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_sample_ids
 from samples import increment_download_count
 import process_book
@@ -26,14 +31,13 @@ SAMPLE_DIR = Path('sample_books') #eBooks submitted by users and downloaded at l
 WORKING_DIR = Path('temp') #Used to temporarily store downloaded eBooks - Currently not cleared
 UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combine with WORKING_DIR?
 
-EMPTY_PARAMETERS = 'empty_dict.json'
-
 PER_PAGE = 5 #Samples to load per page
 
 def clear_session(clear_samples=False, same_book=False):
+    """ Clear user session info when needed. """
     session['text'] = '' #Text input by user for degendering
     session['new_text'] = '' #Text output
-    if not same_book:
+    if not same_book: #If working on a new book (versus modifying)
         session['filepath'] = '' #Filepath of book uploaded by user
         session['known_name_list'] = [] #Known names detected in user submission
         session['potential_name_list'] = [] #Potential names detected in user submission
@@ -49,7 +53,7 @@ def clear_session(clear_samples=False, same_book=False):
     session['latest_female_pronouns'] = '' #Female pronouns for latest user-modified book version
     session['latest_male_pronouns'] = '' #Male pronouns for latest user-modified book version
     try:
-        if clear_samples: #Reset to default values
+        if clear_samples: #Reset samples to be displayed
             session['sample_ids'] = get_sample_ids()
             session['sample_index'] = 0
         else: #Leave as is, but check if they have been initialized
@@ -60,8 +64,8 @@ def clear_session(clear_samples=False, same_book=False):
         session['sample_index'] = 0
     session.modified=True
 
-#Update all matches with current user choices
 def update_matches(user_matches=None):
+    """ Update all matches with current user choices """
     session['all_matches'] = {}
     session['all_matches'].update(session['pronoun_matches'])
     session['all_matches'].update(session['known_matches'])
@@ -71,16 +75,18 @@ def update_matches(user_matches=None):
     else: #Just for safety, normally this updates with an empty dict
         session['all_matches'].update(session['unknown_matches'])
     session.modified=True
-    
+
 @app.route('/')
 @app.route('/home')
 @app.route('/welcome')
 def welcome():
+    """ Route to web app home page """
     clear_session(clear_samples=True)
     return render_template('welcome.html', books_processed=get_book_count())
-  
+
 @app.route('/samples')
 def samples():
+    """ Route to samples page with book examples """
     clear_session()
     sample_ids = session['sample_ids']
     start = session['sample_index']
@@ -91,10 +97,7 @@ def samples():
         end = len(sample_ids)
         more = False
     selected_ids = sample_ids[start:end]
-    if start - PER_PAGE >= 0:
-        previous = True
-    else:
-        previous = False
+    previous = bool(start - PER_PAGE >= 0)
     session.modified=True #For safety only in case of future code changes
     selection = []
     for sample_id in selected_ids:
@@ -103,24 +106,34 @@ def samples():
 
 @app.route('/samples/more')
 def more_samples():
+    """ Route to load more book examples """
     session['sample_index'] = session['sample_index'] + PER_PAGE
     return redirect('/samples')
 
 @app.route('/samples/previous')
 def previous_samples():
+    """ Route to navigate to previous page of book examples """
     session['sample_index'] = session['sample_index'] - PER_PAGE
     return redirect('/samples')
 
 @app.route('/download-sample/<sample_id>')
 def download_sample(sample_id):
+    """ Route to download the eBook related to a sample """
     sample = get_sample_by_id(sample_id)
     url = sample['webpage']
     book_filename = url_to_epub(url)
     degendered_filepath = SAMPLE_DIR / book_filename
     if not degendered_filepath.exists():
         temp_filepath = WORKING_DIR / book_filename
-        # Download the book using requests if it doesn't exist
-        response = requests.get(url)
+        # Download the book using requests if it hasn't been saved
+        try:
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+        except requests.Timeout:
+            return render_template('504.html')
+        except requests.RequestException as e:
+            app.logger.error(e)
+            return render_template('504.html')
         with open(temp_filepath, 'wb') as f:
             f.write(response.content)
         parameters = {
@@ -136,34 +149,32 @@ def download_sample(sample_id):
 
 @app.route('/upload-book')
 def upload_book():
+    """ Route to upload a book for de/regendering - GET """
     clear_session()
     return render_template('upload-book.html')
 
 @app.route('/upload', methods=['GET','POST'])
 def upload():
+    """ Route to upload a book for de/regendering - POST """
     if request.method == 'POST':
         file = request.files['file']
         filepath = UPLOAD_DIR.joinpath(file.filename)
         file.save(filepath)
         session['filepath'] = str(filepath)
         all_names = process_book.get_all_names(filepath)
-        known_names = all_names[0]
-        potential_names = all_names[1]
-        session['known_name_list'] = known_names
-        session['potential_name_list'] = potential_names[:50] #Top 50 potential names
+        session['known_name_list'] = all_names[0] #All known names
+        session['potential_name_list'] = all_names[1][:50] #Top 50 potential names
         return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
 
 @app.route('/text-upload', methods=['GET', 'POST'])
 def text_upload():
+    """ Route to submit text for de/regendering """
     if request.method == 'POST':
         session['text'] = escape(request.form.get('text'))
         all_names = process_text.get_all_names(session['text'])
-        #print(f'all_names: {all_names}')
-        known_names = all_names[0]
-        potential_names = all_names[1]
-        session['known_name_list'] = known_names
-        session['potential_name_list'] = potential_names[:30]
+        session['known_name_list'] = all_names[0] #All known names
+        session['potential_name_list'] = all_names[1][:30] #Top 30 potential names
         return redirect('/pronouns')
     #If GET
     clear_session()
@@ -171,28 +182,27 @@ def text_upload():
 
 @app.route('/search')
 def search():
+    """ Route to search for a book on Project Gutenberg """
     clear_session()
     return render_template('search.html')
 
-@app.route('/start-over') #Used to keep working on the same book but starting from scratch
+@app.route('/start-over')
 def start_over():
+    """ Route to keep working on the same book but starting from scratch """
     clear_session(same_book=True)
     return redirect('pronouns')
 
 @app.route('/pronouns', methods=['GET', 'POST'])
 def pronouns():
-    print(f'female = {session["female_pronouns"]}')
-    print(f'male = {session["male_pronouns"]}')
-    print(f'pronoun matches = {session["pronoun_matches"]}')
+    """ Route to define pronouns matches for the book or text """
     def abbreviate(pronoun):
         if pronoun.lower() == 'non-binary':
             return 'nb'
-        elif pronoun.lower() == 'female':
+        if pronoun.lower() == 'female':
             return 'f'
-        elif pronoun.lower() == 'male':
+        if pronoun.lower() == 'male':
             return 'm'
-        else:
-            raise ValueError
+        raise ValueError
     if request.method == 'POST':
         session['male_pronouns'] = abbreviate(request.form['male'])
         session['female_pronouns'] = abbreviate(request.form['female'])
@@ -213,14 +223,13 @@ def pronouns():
         return render_template('pronouns.html')
     if session['text']: #If text input
         return render_template('pronouns.html')
-    else: #If URL accessed improperly
-        return redirect('/')
+    return redirect('/') #If URL accessed improperly
 
 @app.route('/known-names', methods=['GET', 'POST'])
 def known_names():
+    """ Route to define matches for names in our list of common names """
     if request.method == 'POST':
         submit_type = request.form.get('submit_type', 'submit')
-        #print(submit_type)
         new_name_list = request.form.getlist('new_names[]')
         for item in zip(session['known_name_list'], new_name_list):
             if item[1]: #If user gave a match for a name, add it to dict
@@ -240,11 +249,11 @@ def known_names():
         return redirect('/')
     if session['known_name_list']:
         return render_template('known-names.html')
-    else:
-        return redirect('/potential-names')
-        
+    return redirect('/potential-names')
+
 @app.route('/potential-names', methods=['GET', 'POST'])
 def potential_names():
+    """ Route to define matches for common capital words that could be names """
     if request.method == 'POST':
         submit_type = request.form.get('submit_type', 'submit')
         new_name_list = request.form.getlist('new_names[]')
@@ -260,8 +269,7 @@ def potential_names():
         if submit_type == 'back': #If user clicked back button
             if session['known_name_list']:
                 return redirect('/known-names')
-            else:
-                return redirect('/pronouns')
+            return redirect('/pronouns')
         #If user clicked submit button
         return redirect('/unknown-names')
     else:
@@ -269,11 +277,11 @@ def potential_names():
             return redirect('/')
         if session['potential_name_list']:
             return render_template('potential-names.html')
-        else:
-            return redirect('/unknown-names')
+        return redirect('/unknown-names')
 
 @app.route('/unknown-names', methods=['GET', 'POST'])
 def unknown_names():
+    """ Route to define matches for user submitted words """
     if request.method == 'POST':
         submit_type = request.form.get('submit_type', 'submit')
         unknown_name_list = request.form.getlist('existing_names[]')
@@ -290,14 +298,13 @@ def unknown_names():
         if submit_type == 'back': #If user clicked back button
             if session['potential_name_list']:
                 return redirect('/potential-names')
-            elif session['known_name_list']:
+            if session['known_name_list']:
                 return redirect('/known-names')
-            else:
-                return redirect('/pronouns')
+            return redirect('/pronouns')
         #If user clicked submit button
         user_matches = {(key.lower(), value.lower())
                       for (key, value) in session['unknown_matches'].items()}
-        update_matches(user_matches=user_matches) #Updating session['all_matches'] with final values 
+        update_matches(user_matches=user_matches) #Updating session['all_matches'] with final values
         parameters = {
             'male' : session['male_pronouns'],
             'female': session['female_pronouns'],
@@ -315,39 +322,27 @@ def unknown_names():
         try:
             filepath = session['filepath']
             if session['latest_all_matches']: #If user is modifying a previous submission
-                print('modifying')
                 if (session['latest_female_pronouns'] == session['female_pronouns'] and
                     session['latest_male_pronouns'] == session['male_pronouns']):
-                    print('matching pronouns')
                     comparison = compare_dicts(session['latest_all_matches'], session['all_matches'])
                     matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
-                    print(f'matching_keys: {matching_keys}')
-                    print(f'modified_keys_old: {modified_keys_old}')
-                    print(f'modified_keys_new: {modified_keys_new}')
-                    print(f'new_keys: {new_keys}')
-                    print(f'removed_keys: {removed_keys}')
                     changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
                     unchanged_values = len(matching_keys)
                     if changed_values < unchanged_values: #If few modifications
-                        print('few modifications')
-                        parameters['modifying'] = True #So process_book knows not to change pronouns again
+                        parameters['modifying'] = True #To not change pronouns again
                         filepath = session['latest_filepath'] #Start from latest version
                         all_matches = {}
                         for key, value in new_keys.items():
-                            print(f'adding: {key} = {value}')
-                        all_matches.update(new_keys) #Add new matches
+                            all_matches.update(new_keys) #Add new matches
                         for key, value in removed_keys.items():
-                            print(f'removing: {key} = {value}')
                             all_matches[value] = key #Revert removed matches
                         for key, value in modified_keys_old.items(): #Adapt modified matches
-                            print(f'modifying: {modified_keys_old[key]} = {modified_keys_new[key]}')
-                            all_matches[modified_keys_old[key]] = modified_keys_new[key] 
+                            all_matches[modified_keys_old[key]] = modified_keys_new[key]
                         parameters['all matches'] = all_matches #Use latest changes only
-                        print(f'parameters: {all_matches}')
             epub_filepath = process_book.process_epub(filepath, parameters)
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             app.logger.error(e)
-            raise e #Uncomment to diagnose exception
+            #raise e #Uncomment to diagnose exception
             return redirect('/processing-error')
         #Add filename / IP combination to processed books database
         try:
@@ -359,23 +354,22 @@ def unknown_names():
             address = request.remote_addr
             add_book(filename, address)
         #Not important if it fails, so simply log the exception
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             app.logger.error(e)
         return send_file(epub_filepath, as_attachment=True)
     else:
-        #print(session['unknown_matches'])
         num_entries = (max(10, len(session['unknown_matches'])))
         #To make sure user didn't get here by typing the url directly
         try:
             if session['male_pronouns'] and session['female_pronouns']:
                 return render_template('unknown-names.html', num_entries=num_entries)
-            else:
-                return redirect('/')
+            return redirect('/')
         except KeyError:
             return redirect('/')
 
 @app.route('/submission-form', methods=['GET', 'POST'])
 def submission_form():
+    """ Route for user to submit a sample """
     if request.method == 'POST':
         title = request.form['title']
         author = request.form['author']
@@ -396,23 +390,23 @@ def submission_form():
             'approved': False
         }
         add_sample(submitted_book)
-        #print(get_samples(reviewed=False, approved=False))
         return redirect('/thank-you')
     return render_template('submission-form.html')
 
 @app.route('/thank-you')
 def thank_you():
+    """ Route to thank a user for their submission """
     return render_template('thank-you.html')
-        
+
 @app.route('/text-display', methods=['GET'])
 def text_display():
+    """ Route to display de/regendered text """
     if session['new_text']:
         return render_template('text-display.html')
-    else:
-        return redirect('/') #If we don't have text to display, go to home page
+    return redirect('/') #If we don't have text to display, go to home page
 
 def get_suggestion(gender):
-    #print(f'Working on row {request.json.get("row")}')
+    """ Route to get a name suggestion for a given gender """
     page_suggestions = request.json.get('pageSuggestions')
     saved_suggestions = list(session['all_matches'].values())
     names_used = list(set(page_suggestions + saved_suggestions))
@@ -421,46 +415,66 @@ def get_suggestion(gender):
 
 @app.route('/suggest-nb', methods=['POST'])
 def suggest_nb():
+    """ Route to suggest a non-binary name """
     return get_suggestion('nb')
 
 @app.route('/suggest-female', methods=['POST'])
 def suggest_female():
+    """ Route to suggest a female name """
     return get_suggestion('f')
 
 @app.route('/suggest-male', methods=['POST'])
 def suggest_male():
+    """ Route to suggest a male name """
     return get_suggestion('m')
 
 @app.route('/processing-error')
 def processing_error():
+    """ Route to let the user know book processing failed """
     return render_template('processing-error.html')
 
 @app.errorhandler(400)
-def bad_request(e):
+def bad_request(_e):
+    """ Route for 400 bad request errors """
     return render_template('400.html'), 400
 
 @app.errorhandler(401)
-def unauthorized(e):
+def unauthorized(_e):
+    """ Route for 401 unauthorized errors """
     return render_template('401.html'), 401
 
 @app.errorhandler(403)
-def forbidden(e):
+def forbidden(_e):
+    """ Route for 403 forbidden errors """
     return render_template('403.html'), 403
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(_e):
+    """ Route for 404 page not found errors """
     return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def server_error(e):
+    """ Route for 500 server error errors """
+    app.logger.error(e)
     return render_template('500.html'), 500
 
 @app.errorhandler(503)
 def unavailable(e):
+    """ Route for 503 unavailable errors """
+    app.logger.error(e)
     return render_template('503.html'), 503
+
+@app.errorhandler(504)
+def unavailable(e):
+    """ Route for 504 gateway timeout errors """
+    app.logger.error(e)
+    return render_template('504.html'), 503
+
 
 @app.route('/test-error/<error>')
 def test_error(error):
+    """ Route to test display of specific error pages """
     return render_template(f'{error}.html')
 
 if __name__ == '__main__':

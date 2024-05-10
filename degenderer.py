@@ -1,68 +1,45 @@
 """
-This is where the degendering takes place.
+This is where the de/regendering takes place.
 """
-import regex
-import sys
 import random
 import json
-from timeit import default_timer as timer
+#from timeit import default_timer as timer #Uncomment for optimization testing
+import regex
 from librarian import get_book_text, is_string
 from reference_library import MALE_PRONOUNS, FEMALE_PRONOUNS #DataFrames
 from reference_library import NB_NAMES, GIRL_NAMES, BOY_NAMES, ALL_NAMES, ALL_PRONOUNS #Lists
 from reference_library import COMMON_WORDS, WARNING_WORDS #Lists
-from utilities import lazy_shuffle, sorted_by_values, get_min_diff, lazy_shuffle_keys, drop_low
 
-DEFAULT_PARAMETERS = {
-    'male' : 'nb',
-    'female' : 'nb',
-    'year' : 1960,
-    'name matches' : {},
-    'name choices' : 20,
-    'modifying': False
-    }
-
-#Temporary values used to debug an optimization issue
-book_timer = 0
-soup_timer = 0
-
-def get_pronoun_list():
-    male_pronouns = [key for key in MALE_PRONOUN_DICT]
-    female_pronouns = [key for key in FEMALE_PRONOUN_DICT]
-    pronoun_list = male_pronouns + female_pronouns
-    return pronoun_list
+#book_timer = 0 #Uncomment for optimization testing
+#soup_timer = 0 #Uncomment for optimization testing
 
 def get_suggestion(name_list, names_used):
-    #print(f'Used names: {names_used}')
+    """ Suggests a name from a list if it's not already in use """
     available_names = [name for name in name_list if not name in names_used]
-    #print(f'Available names: {available_names}')
     if available_names:
         selection = random.choice(available_names)
-        #print(f'Selected name: {selection}')
         return selection
-    else:
-        selection = random.choice(name_list)
-        #print(f'Selected name: {selection}')
-        return selection
-    
+    selection = random.choice(name_list)
+    return selection
+
 def suggest_name(gender, names_used):
+    """ Suggests a name from the requested gender """
     if gender == 'nb':
         return get_suggestion(NB_NAMES, names_used)
-    elif gender == 'f':
+    if gender == 'f':
         return get_suggestion(GIRL_NAMES, names_used)
-    elif gender == 'm':
+    if gender == 'm':
         return get_suggestion(BOY_NAMES, names_used)
-    else:
-        return ''
-    
-def fill_defaults(parameters):
-    for key in DEFAULT_PARAMETERS:
-        if key not in parameters:
-            parameters[key] = DEFAULT_PARAMETERS[key]
-    return parameters
+    return ''
 
 def fix_text(text):
-    """ Various substitutions to fix problems created by the fact
-    we check pronouns one at a time """
+    """ Various fixes needed due to search and replace ordering issues
+
+    Since we check pronouns one at a time, we need to temporarily add a marker (àéà)
+    to each changed pronouns to avoid it being changed back later. We also have a few
+    fixes for old default choices that caused other problems, since the user might
+    ask for the same substitution we used to use ourselves.
+    """
     text = regex.sub(r'àéà', '', text)
     text = regex.sub(r'His/Him/Hers', 'Her/Hers', text)
     text = regex.sub(r'Their/Them/Hers', 'Her/Hers', text)
@@ -71,24 +48,24 @@ def fix_text(text):
     text = regex.sub(r'his/him/hers', 'her/hers', text)
     text = regex.sub(r'their/them/hers', 'her/hers', text)
     return text
-        
+
 def degender_text(text, parameters):
-    start = timer()
-    original_text = text
+    """ De/regender a string according to the given parameters """
+    #start = timer() #Uncomment for optimization testing
     match_dict = parameters['match dict']
     for key in match_dict:
         key_dict = match_dict[key]
         text = regex.sub(key_dict['pattern'], key_dict['replacement'], text)
-    end = timer()
-    global book_timer
-    book_timer += (end-start)
-    global soup_timer
-    soup_timer += (end-start)
+    #end = timer() #Uncomment for optimization testing
+    #global book_timer #Uncomment for optimization testing
+    #book_timer += (end-start) #Uncomment for optimization testing
+    #global soup_timer #Uncomment for optimization testing
+    #soup_timer += (end-start) #Uncomment for optimization testing
     return fix_text(text)
 
 
 def degender_text_box(text, parameters):
-    parameters = fill_defaults(parameters)
+    """ De/regender a string from the text box submission page """
     pronoun_dict = create_pronoun_dict(parameters)
     name_dict = create_name_dict(parameters)
     match_dict = {**pronoun_dict, **name_dict}
@@ -96,53 +73,20 @@ def degender_text_box(text, parameters):
     return degender_text(text, parameters)
 
 def degender_all(item, parameters):
+    """ De/regender a soup from Beautiful Soup """
     if is_string(item):
         new_string = degender_text(item, parameters)
         if new_string:
             item.replace_with(new_string)
-    else:        
+    else:
         try:
             for child in item.contents:
                 degender_all(child, parameters)
         except AttributeError:
             pass
 
-#Backup method - old JSON data - DO NOT USE - WILL BE REMOVED
-def create_pronoun_dict_json(parameters):
-    pronoun_dict = {}
-    if parameters['male'] == 'nb':
-        male_index = 0
-    elif parameters['male'] == 'f':
-        male_index = 1
-    else:
-        male_index = -1 #No change - same gender as original
-    if parameters['female'] == 'nb':
-        female_index = 0
-    elif parameters['female'] == 'm':
-        female_index = 1
-    else:
-        female_index = -1 #No change - same gender as original
-    for tup in [(MALE_PRONOUN_DICT,male_index),(FEMALE_PRONOUN_DICT,female_index)]:
-      index = tup[1]
-      reference_dict = tup[0]
-      if index >= 0:
-        for pronoun in reference_dict:
-            match = reference_dict[pronoun][index]
-            pronoun_dict[pronoun] = {'match':match,
-                                  'pattern':regex.compile(r'\b' + pronoun + r'\b'),
-                                  'replacement': match + 'àéà'}
-            pronoun_dict[pronoun.title()] = {'match':match.title(),
-                                             'pattern':regex.compile(r'\b' + pronoun.title()
-                                                                     + r'\b'),
-                                             'replacement': match.title() + 'àéà'}
-            pronoun_dict[pronoun.upper()] = {'match':match.upper(),
-                                          'pattern':regex.compile(r'\b' + pronoun.upper()
-                                                                  + r'\b'),
-                                          'replacement': match.upper() + 'àéà'}
-    return pronoun_dict
-
-#New method - Data from Excel file
 def create_pronoun_dict(parameters):
+    """ Creates a dictionary of pronouns and gendered words to replace """
     if parameters['modifying']: #If pronouns have already been modified
         return {} #We return an empty dict to skip pronoun processing
     pronoun_dict = {}
@@ -160,7 +104,7 @@ def create_pronoun_dict(parameters):
         male_match = None #No change - same gender as original
     def process_df(gender_match, df):
         if gender_match:
-            for index, row in df.iterrows():
+            for _index, row in df.iterrows():
                 original = row['Original']
                 match = row[gender_match]
                 match_case = row['Match case']
@@ -169,18 +113,21 @@ def create_pronoun_dict(parameters):
                                           'replacement': match + 'àéà'}
                 if match_case:
                     pronoun_dict[original.title()] = {'match':match.title(),
-                                                      'pattern':regex.compile(r'\b' + original.title()
+                                                      'pattern':regex.compile(r'\b'
+                                                                              + original.title()
                                                                               + r'\b'),
                                                       'replacement': match.title() + 'àéà'}
                     pronoun_dict[original.upper()] = {'match':match.upper(),
-                                                      'pattern':regex.compile(r'\b' + original.upper()
+                                                      'pattern':regex.compile(r'\b'
+                                                                              + original.upper()
                                                                               + r'\b'),
                                                       'replacement': match.upper() + 'àéà'}
     process_df(female_match, FEMALE_PRONOUNS)
     process_df(male_match, MALE_PRONOUNS)
     return pronoun_dict
-    
+
 def create_name_dict(parameters):
+    """ Creates a dictionary of replacements for user-submitted names and words """
     all_matches = parameters['all matches']
     name_dict = {}
     for word in all_matches:
@@ -195,29 +142,31 @@ def create_name_dict(parameters):
                                    'pattern':regex.compile(r'\b' + word.upper() + r'\b'),
                                    'replacement': match.upper() + 'àéà'}
     return name_dict
-        
-def degender_book(book_soup, parameters = DEFAULT_PARAMETERS):
-    parameters = fill_defaults(parameters)
+
+def degender_book(book_soup, parameters):
+    """ De/regenders the Beautiful Soup version of an ePub book """
     pronoun_dict = create_pronoun_dict(parameters)
     name_dict = create_name_dict(parameters)
     match_dict = {**pronoun_dict, **name_dict}
-    #print(f'match_dict: {match_dict}')
     parameters['match dict'] = match_dict
-    with open('reference/test_match_dict.json', 'w') as json_file:
-        global book_timer
-        book_timer = 0
-        json_dict = {}
-        for key in match_dict:
-            json_dict[key] = match_dict[key]['match']
-        json.dump(json_dict, json_file)
+    def save_match_dict():
+        with open('reference/test_match_dict.json', 'w') as json_file:
+            json_dict = {}
+            for key in match_dict:
+                json_dict[key] = match_dict[key]['match']
+            json.dump(json_dict, json_file)
+    #save_match_dict() #Uncomment for testing
+    #global book_timer #Uncomment for optimization testing
+    #book_timer = 0 #Uncomment for optimization testing
     for soup in book_soup:
-        global soup_timer
+        #global soup_timer #Uncomment for optimization testing
         degender_all(soup, parameters)
-        print(f'Degendering times for soup: {soup_timer} seconds')
-        soup_timer = 0
-    print(f'Degendering times for book {book_timer} seconds:')
+        #print(f'Degendering times for soup: {soup_timer} seconds') #Uncomment for optimization testing
+        #soup_timer = 0 #Uncomment for optimization testing
+    #print(f'Degendering times for book {book_timer} seconds:') #Uncomment for optimization testing
 
 def get_known_names(text):
+    """ Gets list of names in book that are in our list of common names """
     word_list = regex.sub(r'[^\p{Latin}]', ' ', text).split()
     name_list = [word for word in word_list if word in ALL_NAMES]
     #print(WARNING_WORDS + COMMON_WORDS)
@@ -229,12 +178,9 @@ def get_known_names(text):
         else:
             name_dict[name] = 1
     return name_dict
-    name_tuple_list = []
-    for key, value in sorted(name_dict.items(), key = lambda x: x[1], reverse=True):
-        name_tuple_list.append((key,value))
-    return name_tuple_list
 
 def get_potential_names(text, min_occurrences=5):
+    """ Get list of capital words in text that occur more than min_ocurrences """
     pattern = r'(?<!^|[.?!]\s)\b[A-Z][a-z]*\b'
     matches = regex.findall(pattern, text)
     names = []
@@ -249,12 +195,9 @@ def get_potential_names(text, min_occurrences=5):
             name_dict[name] = 1
     short_name_dict = {key: value for key, value in name_dict.items() if value >= min_occurrences}
     return short_name_dict
-    name_tuple_list = []
-    for key, value in sorted(short_name_dict.items(), key = lambda x: x[1], reverse=True):
-        name_tuple_list.append((key,value))
-    return name_tuple_list
 
 def split_clean_warning_dict(count_dict):
+    """ Splits off names that could also be words from a name count dict """
     warning_dict = {}
     clean_dict = {}
     for key, count in count_dict.items():
@@ -265,6 +208,7 @@ def split_clean_warning_dict(count_dict):
     return (clean_dict, warning_dict)
 
 def combine_dicts(count_dicts):
+    """ Combine two count dictionaries where key = name and value = count """
     combined_dict = {}
     for count_dict in count_dicts:
         for key, count in count_dict.items():
@@ -272,6 +216,7 @@ def combine_dicts(count_dicts):
     return combined_dict
 
 def get_names(text, min_occurrences=5):
+    """ Gets all known names and potential names in a text """
     known_name_dict = get_known_names(text)
     potential_name_dict = get_potential_names(text, min_occurrences=min_occurrences)
     temp_tuple = split_clean_warning_dict(known_name_dict)
@@ -290,6 +235,7 @@ def get_names(text, min_occurrences=5):
     return (known_names, potential_names)
 
 def get_book_names(book_soup):
+    """ Gets all known and potential names in a Beautiful Soup of an ePub """
     book_text = get_book_text(book_soup)
     name_tuple = get_names(book_text)
     return name_tuple

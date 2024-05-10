@@ -1,6 +1,8 @@
-import json
+"""
+This module creates dataframes from all our reference files of pronouns and names
+"""
+
 import pandas as pd
-from collections import OrderedDict
 
 FEMALE_PRONOUNS = pd.read_excel('reference/reference.xlsx', sheet_name='Female pronouns')
 MALE_PRONOUNS = pd.read_excel('reference/reference.xlsx', sheet_name='Male pronouns')

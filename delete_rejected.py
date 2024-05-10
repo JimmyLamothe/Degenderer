@@ -1,7 +1,17 @@
+"""
+This script is used to delete user-submitted samples rejected by the team.
+
+Possible improvements:
+
+If trolls prove to be a problem, add a reject_all kwarg to allow for easier
+batch deletion.
+"""
+
+
 import sqlite3
 
 def delete_rejected_entries():
-    # Connect to the SQLite database
+    """ Ask reviewer to confirm deletion of rejected submissions """
     connection = sqlite3.connect('sample_library.db')
     cursor = connection.cursor()
 
@@ -14,19 +24,19 @@ def delete_rejected_entries():
         if not rejected_entries:
             print("No rejected entries found.")
             return
-        
+
         # Print out the rejected entries
         print("Rejected Entries:")
         for entry in rejected_entries:
             print(entry)
-        
+
         # Ask for confirmation to delete
         confirmation = input("Do you want to delete these entries? (y/n): ").lower()
 
         if confirmation == 'y':
             # Delete the rejected entries
             cursor.execute("DELETE FROM sample_library WHERE reviewed = 1 AND approved = 0")
-            
+
             print("Rejected entries deleted successfully.")
 
             # Commit the changes
