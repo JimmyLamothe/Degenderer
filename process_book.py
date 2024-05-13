@@ -1,14 +1,14 @@
 """
 This module processes an ePub book for de/regendering
 """
-
+import os
 from pathlib import Path
 
 from librarian import create_soup, read_epub, soup_to_book, write_epub
 
 from degenderer import degender_book, get_book_names
 
-WORKING_DIR = Path('temp')
+WORKING_DIR = Path(os.environ.get('WORKING_DIR', 'temp'))
 
 def get_all_names(book_file):
     """ Get a tuple of the known names and potential names in the book """

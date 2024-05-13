@@ -9,8 +9,8 @@ primary_region = "yyz"
 [build]
 
 [mounts]
-  source="permanent"
-  destination="/permanent"
+  source="databases"
+  destination="/databases"
 
 [http_service]
   internal_port = 8080
@@ -21,8 +21,8 @@ primary_region = "yyz"
   processes = ["app"]
 
 [env]
-  DATABASE_PATH = '/permanent/databases'
-  WORKING_DIR = '/permanent/temp'
+  DATABASE_PATH = '/databases/databases'
+  WORKING_DIR = '/databases/temp'
 
 [[vm]]
   cpu_kind = "shared"
