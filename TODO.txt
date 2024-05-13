@@ -1,8 +1,18 @@
 FLY.IO
 Use environment variables - secrets to configure local vs online environments
 Check if SECRET_KEY is needed in config.py and if it's safe
-Monitor pricing of Redis - Move to a local non-persistent DB file if needed
-Make sure the permanent database on volume storage is actually being used
+IN PROGRESS - Check if permanent database on volume storage is actually being used
+IN PRGRESS - Check if Upstash Redis is actually being used
+   CURRENT STATUS: Redis is being run as a local session. This means that as soon as the machine is stopped,
+   the session data disappears. This might happen while the user is trying to modify a book. Uploaded books
+   are on permanent storage, but in a working directory that is emptied on app startup.
+   OPTION 1: Keep as is. This will require modifying idle status to either keep the VM running longer after
+   the site last gets traffic, or so that the VM never stops at all (about 5$/month).
+   OPTION 2: Move Redis to Upstash and only delete files in working directory that are older than an hour.
+   This would allow the machine to go idle as necessary without losing data, but might cost more because
+   of Redis Upstash fees.
+   CURRENT CHOICE: Option 1 should be cheaper, though this has not been tested. But if more machines are added,
+   it might be cheaper to implement Option 2.
 
 
 BUGS
@@ -25,7 +35,7 @@ HTML / CSS
 
 CLEANUP
 Remove debugging print calls and console.logs
-Document code
+
 
 
 DEGENDERING FEATURES
@@ -49,6 +59,7 @@ Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
 
+DONE - Document code
 DONE - Make site mobile-friendly
 DONE - Add back button to done page
 DONE - Add start over button to done page

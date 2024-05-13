@@ -6,6 +6,7 @@ Functions:
     
 
 """
+import os
 from pathlib import Path
 import requests
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
@@ -27,9 +28,10 @@ app.config['SESSION_USE_SIGNER'] = config.SESSION_USE_SIGNER
 app.config['SESSION_REDIS'] = config.SESSION_REDIS
 Session(app)
 
-SAMPLE_DIR = Path('sample_books') #eBooks submitted by users and downloaded at least once
-WORKING_DIR = Path('temp') #Used to temporarily store downloaded eBooks - Currently not cleared
-UPLOAD_DIR = Path('uploads') #Used to temporarily store uploaded eBooks - Combine with WORKING_DIR?
+SAMPLE_DIR = Path(os.environ.get('SAMPLE_DIR', 'sample_books'))
+WORKING_DIR = Path(os.environ.get('WORKING_DIR', 'temp'))
+for item in WORKING_DIR.iterdir():
+    item.unlink()
 
 PER_PAGE = 5 #Samples to load per page
 
@@ -158,7 +160,7 @@ def upload():
     """ Route to upload a book for de/regendering - POST """
     if request.method == 'POST':
         file = request.files['file']
-        filepath = UPLOAD_DIR.joinpath(file.filename)
+        filepath = WORKING_DIR.joinpath(file.filename)
         file.save(filepath)
         session['filepath'] = str(filepath)
         all_names = process_book.get_all_names(filepath)

@@ -8,8 +8,6 @@ import bs4
 from ebooklib import epub
 from bs4 import BeautifulSoup
 
-BOOK_PATH = '../books/'
-
 def read_epub(filepath):
     """ Reads an ePub file using ebooklib """
     book = epub.read_epub(filepath)
@@ -86,7 +84,3 @@ def soup_to_book(book_soup, book):
     for soup, item in zip(book_soup, book_items):
         if soup.find('p') or soup.find('div'):
             item.set_content(str(soup.body))
-
-def create_epub(book, filename):
-    """ Create ePub file from ebooklib book """
-    epub.write_epub(BOOK_PATH + filename, book)
