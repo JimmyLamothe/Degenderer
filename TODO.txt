@@ -17,7 +17,7 @@ IN PRGRESS - Check if Upstash Redis is actually being used
 
 BUGS
 
-
+Sample count updates for every modification, not just every book
 
 NAMES & PRONOUNS
 

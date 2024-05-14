@@ -1,0 +1,56 @@
+CRIB NOTES FOR FLY.IO DEPLOYMENT
+
+Fly builds a dockerimage and deploys it using a configuration file.
+
+DOCKER FILES
+
+Dockerfile - This file installs Python 3.11 and our app, then starts
+	     gunicorn to serve it.
+
+docker-compose.yml - This file installs the other services we need for
+		     our webapp, nginx and redis. Nginx is used for our
+		     server and redis for our Flask session.
+
+.Dockerignore - This file is similar to .gitignore and tells Docker
+	      	what files and directories not to include in the build.
+
+FLY.IO FILES
+
+fly.toml - This file has all the configuration info needed for fly.io
+	   deployment.
+
+	   [mounts] installs the permanent storage.
+	   "source" is just a name, but it seems to be important because
+	   changing it to "permanent" didn't work.
+	   "/databases" is the folder where the volume is loaded
+	   on the VM hosting the webapp.
+
+	   [http_service] configures the machines
+	   auto_stop_machines can be set to False to avoid the machine
+	   shutting down when there is no traffic, which currently
+	   causes issues since the Flask session is not on permanent
+	   storage
+
+	   [env] used to set environment variables. Right now these
+	   point to our permanent storage set up in [mounts]
+
+	   [vm] configures our machines. We only have one small VM
+	   right now. Most of our costs will be here unless we set up
+	   Upstash Redis for user sessions
+
+FLY.IO COMMANDS
+
+fly launch - Only used once. This uses the docker files to create a
+    	     docker image and set up basic fly.io configuration
+	     with a new fly.toml file
+
+fly deploy - This is the most important command. Run it everytime
+    	     the app needs to be updated to the latest version.
+
+fly console - This starts an SSH session with the machine hosting
+    	      the app. The machine needs to be started, so it might
+	      be necessary to connect to the website first (or use
+	      the fly-cli)
+
+fly smpt shell - This is used to move files from the local computer
+    	       	 to the host machine.
