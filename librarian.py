@@ -8,8 +8,14 @@ import bs4
 from ebooklib import epub
 from bs4 import BeautifulSoup
 
-def read_epub(filepath):
-    """ Reads an ePub file using ebooklib """
+def read_epub(filepath, ignore_ncx=False):
+    """ Reads an ePub file using ebooklib
+
+    We set ignore_ncx to False because this was the default behavior, and it worked for our purposes.
+    ebooklib plans to change the default to True in the future, so maybe there is a good reason for that?
+    My knowledge is too limited on the subject, so I'm setting to False to make sure the behavior doesn't change
+    if ebooklib is updated as planned. This also keeps it from generating a  warning in the logs.
+    """
     book = epub.read_epub(filepath)
     return book
 
