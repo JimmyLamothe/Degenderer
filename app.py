@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 import gevent
 import requests
-from flask import Flask, jsonify, request, redirect, render_template, send_file, session
+from flask import Flask, jsonify, request, redirect, render_template, send_file, session, url_for
 from flask import copy_current_request_context
 from flask_session import Session
 from flask_sse import sse
@@ -134,11 +134,19 @@ def download_sample(sample_id):
     """ Route to download the eBook related to a sample """
     sample = get_sample_by_id(sample_id)
     url = sample['webpage']
+    parameters = {
+        'male' : sample['male pronouns'],
+        'female': sample['female pronouns'],
+        'all matches': sample['all matches'],
+    }
     book_filename = url_to_epub(url)
-    degendered_filepath = SAMPLE_DIR / book_filename
+    degendered_filepath = process_book.get_output_filepath(SAMPLE_DIR / book_filename,
+                                                            parameters,
+                                                            destination=SAMPLE_DIR)
+    print(f'degendered_filepath: {degendered_filepath}')
     if not degendered_filepath.exists():
         temp_filepath = WORKING_DIR / book_filename
-        # Download the book using requests if it hasn't been saved
+        session['output_filepath'] = degendered_filepath
         try:
             response = requests.get(url, timeout=30)
             response.raise_for_status()
@@ -149,14 +157,21 @@ def download_sample(sample_id):
             return render_template('504.html')
         with open(temp_filepath, 'wb') as f:
             f.write(response.content)
-        parameters = {
-            'male' : sample['male pronouns'],
-            'female': sample['female pronouns'],
-            'all matches': sample['all matches'],
-        }
-        epub_filepath = process_book.process_epub(temp_filepath, parameters, session_id=session.sid)
-        epub_filepath.rename(degendered_filepath)
-        temp_filepath.unlink()
+        @copy_current_request_context
+        def task(temp_filepath, parameters, session_id=None):
+            try:
+                epub_filepath = process_book.process_epub(temp_filepath, parameters, session_id=session_id)
+                epub_filepath.rename(degendered_filepath)
+                temp_filepath.unlink()
+            except Exception as e: # pylint: disable=broad-except
+                app.logger.error(e)
+                #raise e #Uncomment to diagnose exception
+                if session_id:
+                    sse.publish({'message':'processing error'}, type='processing_error', channel=session_id)
+            if session_id:
+                sse.publish({'message':'book_processed'}, type='book_processed', channel=session_id)
+        gevent.spawn(task, temp_filepath, parameters, session_id=session.sid)
+        return redirect(url_for('processing', is_sample=True))
     increment_download_count(sample_id)
     return send_file(degendered_filepath)
 
@@ -388,7 +403,8 @@ def unknown_names():
 @app.route('/processing')
 def processing():
     """ Route for communicating degendering progress to user """
-    return render_template('processing.html')
+    is_sample = request.args.get('is_sample', False)
+    return render_template('processing.html', is_sample=is_sample)
 
 @app.route('/send-book')
 def send_book():
@@ -397,11 +413,12 @@ def send_book():
         return redirect('/')
     if os.path.exists(session['output_filepath']):
         session['latest_filepath'] = session['output_filepath']
+        session['output_filepath'] = ''
         print(f'latest_filepath: {session["latest_filepath"]}')
         print(f'latest_all_matches: {session["latest_all_matches"]}')
         print(f'latest_male_pronouns: {session["latest_male_pronouns"]}')
         print(f'latest_female_pronouns: {session["latest_female_pronouns"]}')
-        return send_file(session['output_filepath'])
+        return send_file(session['latest_filepath'])
     return redirect('/500')
 
 @app.route('/submission-form', methods=['GET', 'POST'])
@@ -508,21 +525,10 @@ def unavailable(e):
     app.logger.error(e)
     return render_template('504.html'), 503
 
-
 @app.route('/test-error/<error>')
 def test_error(error):
     """ Route to test display of specific error pages """
     return render_template(f'{error}.html')
 
-@app.route('/test-sse')
-def test_sse():
-    return render_template('test-sse.html')
-
-@app.route('/emit-test-event')
-def emit_test_event():
-    session_id = request.args.get('session_id')
-    sse.publish({"message": "Test event from server!"}, type='test_event', channel=session_id)
-    return jsonify({"status": "event sent"})
-
 if __name__ == '__main__':
-    app.run(app, host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

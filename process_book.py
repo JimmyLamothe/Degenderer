@@ -15,11 +15,11 @@ def get_all_names(book_file):
     book_soup = create_soup(book)
     return get_book_names(book_soup)
 
-def get_output_filepath(filepath, parameters):
+def get_output_filepath(filepath, parameters, destination=WORKING_DIR):
     """ Get the output filepath for a book to be degendered """
     input_filepath = Path(filepath)
     output_filename = input_filepath.stem
-    if not parameters['modifying']:
+    if not parameters.get('modifying', None):
         output_filename += '_'
         output_filename += parameters['male']
         output_filename += parameters['female']

@@ -88,7 +88,7 @@ def degender_all(item, parameters):
 
 def create_pronoun_dict(parameters):
     """ Creates a dictionary of pronouns and gendered words to replace """
-    if parameters['modifying']: #If pronouns have already been modified
+    if parameters.get('modifying', False): #If pronouns have already been modified
         return {} #We return an empty dict to skip pronoun processing
     pronoun_dict = {}
     if parameters['female'] == 'nb':

@@ -18,12 +18,14 @@ Processing
       A file save dialogue will pop up when it's done. Processing might take up to a minute or two
       if the server is busy.</p>
     <p>Chapters processed: <span id="progress">0</span> of <span id="total">0</span></p>
+    {% if not is_sample %}
     <p><a href="/submission-form">Submit your book</a> if you like the result and want to share it.</p>
     <p><a href="/pronouns">Modify your choices</a> if you want to change the names of some characters
       or degender words that we missed.</p>
     <p><a href="/start-over"
 	  onclick="return confirm('Start over? You will lose all your changes.');">Start from scratch</a> if modifying
       does not work properly. Modifying is a lot faster, but can occasionally cause bugs.</p>
+    {% endif %}
   </div>
 {% endblock %}
 
