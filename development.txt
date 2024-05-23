@@ -1,0 +1,4 @@
+Notes for local development:
+
+Launch with: gunicorn -w 4 -k gevent -b :8080 --timeout 600 app:app (gunicorn server)
+         or: python app.py (Flask Development server)

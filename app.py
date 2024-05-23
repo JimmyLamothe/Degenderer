@@ -19,9 +19,10 @@ from flask_sse import sse
 from markupsafe import escape
 import config
 from degenderer import suggest_name
-from utilities import url_to_epub, compare_dicts
+from reference_library import get_number_of_pronouns
 from samples import add_book, add_sample, get_book_count, get_sample_by_id, get_sample_ids
 from samples import increment_download_count
+from utilities import url_to_epub, compare_dicts
 import process_book
 import process_text
 
@@ -351,11 +352,16 @@ def unknown_names():
         if session['latest_filepath']: #If user is modifying a previous submission
             if (session['latest_female_pronouns'] == session['female_pronouns'] and
                 session['latest_male_pronouns'] == session['male_pronouns']):
+                #NOTE: There are so many more standard gendered words to replace than user matches
+                #that modifying should always be faster. We are just keeping it here in case
+                #we later choose to offer a turbo conversion process with a reduced pronoun list
                 comparison = compare_dicts(session['latest_all_matches'], session['all_matches'])
                 matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
                 changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
                 unchanged_values = len(matching_keys)
-                if changed_values < unchanged_values: #If few modifications
+                number_of_pronouns = get_number_of_pronouns(session['male_pronouns'],
+                                                            session['female_pronouns'])
+                if changed_values < unchanged_values + number_of_pronouns: #If few modifications
                     parameters['modifying'] = True #To not change pronouns again
                     filepath = session['latest_filepath'] #Start from latest version
                     all_matches = {}
@@ -372,6 +378,7 @@ def unknown_names():
         session['latest_male_pronouns'] = session['male_pronouns']
         @copy_current_request_context
         def task(filepath, parameters, session_id=None):
+            print(f'parameters["modifying"] = {parameters.get("modifying", "Key absent")}')
             try:
                 epub_filepath = process_book.process_epub(filepath, parameters, session_id=session_id)
             except Exception as e: # pylint: disable=broad-except
@@ -411,7 +418,7 @@ def send_book():
     """ Route to send degendered book to user """
     if not session['output_filepath']:
         return redirect('/')
-    if os.path.exists(session['output_filepath']):
+    if os.path.exists(str(session['output_filepath'])):
         session['latest_filepath'] = session['output_filepath']
         session['output_filepath'] = ''
         print(f'latest_filepath: {session["latest_filepath"]}')

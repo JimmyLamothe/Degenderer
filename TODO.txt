@@ -43,17 +43,12 @@ DEGENDERING FEATURES
 
 OTHER IMPROVEMENTS
 
-Add progress bar using soups degendered percentage - Too complex to be worth it
-    Turns out it is worth it online because wait times are longer
-    CURRENT STATUS - Websocket disconnects on POST request and can't reconnect because
-    it's waiting on process_book to finish
-    PLANNED SOLUTION - Change process_book to a thread so it doesn't block websocket connection
 Track book degendering time - this way we can track them and test if changes are worth it
 Create database with book size (by number of characters, words?) and degendering time for original filename
 
 
 DEGENDERING HTML CONTENT
-Add quick - thorough (synonym?) options for degendering with approximate times for each
+Add time estimate for degendering
 Base time on words in book / words in all_matches
 Base time on last five degender speed ratios 50-25-13-8-4
 
@@ -68,7 +63,21 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
-
+DONE - Check if first modification doesn't work properly
+     HYPOTHESIS - maybe latest_filepath isn't defined for some reason?
+     ACTUAL PROBLEM - This was never designed properly. We need to add the number of pronouns to our
+     	     	      all_matches comparison to get a comparison that makes sense
+NOT DONE - Add quick - thorough (synonym?) options for degendering with approximate times for each
+    NOT WORTH IT YET - If reference.xlsx were to get much longer, eventually this could be an option,
+    	      	       but for now a majority of words would be included even in the turbo version
+DONE - Check if start from scratch still works (yes it was still working)
+DONE - Samples now also uses new processing page
+DONE - Add progress bar using soups degendered percentage - Too complex to be worth it
+       	   Turns out it is worth it online because wait times are longer
+	   CURRENT STATUS - Websocket disconnects on POST request and can't reconnect because
+	   it's waiting on process_book to finish
+	   PLANNED SOLUTION - Change process_book to a thread so it doesn't block websocket connection
+	   ACTUAL SOLUTION - Ditched flask-socketio for flask-sse, use gevent for background task
 DONE - Document code
 DONE - Make site mobile-friendly
 DONE - Add back button to done page
