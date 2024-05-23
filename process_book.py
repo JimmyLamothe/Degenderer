@@ -3,7 +3,6 @@ This module processes an ePub book for de/regendering
 """
 import os
 from pathlib import Path
-
 from librarian import create_soup, read_epub, soup_to_book, write_epub
 
 from degenderer import degender_book, get_book_names
@@ -16,8 +15,8 @@ def get_all_names(book_file):
     book_soup = create_soup(book)
     return get_book_names(book_soup)
 
-def process_epub(filepath, parameters):
-    """ De/regenders an ePub book according to user-submitted parameters """
+def get_output_filepath(filepath, parameters):
+    """ Get the output filepath for a book to be degendered """
     input_filepath = Path(filepath)
     output_filename = input_filepath.stem
     if not parameters['modifying']:
@@ -26,9 +25,15 @@ def process_epub(filepath, parameters):
         output_filename += parameters['female']
     output_filename += input_filepath.suffix
     output_filepath = WORKING_DIR.joinpath(output_filename)
+    return output_filepath
+
+def process_epub(filepath, parameters, session_id=None):
+    """ De/regenders an ePub book according to user-submitted parameters """
+    input_filepath = Path(filepath)
+    output_filepath = get_output_filepath(filepath, parameters)
     book = read_epub(input_filepath)
     book_soup = create_soup(book)
-    degender_book(book_soup, parameters)
+    degender_book(book_soup, parameters, session_id=session_id)
     soup_to_book(book_soup, book)
     write_epub(book, output_filepath)
     print(output_filepath)

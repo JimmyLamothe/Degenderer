@@ -6,6 +6,7 @@
 
 {% block head_scripts %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src={{ url_for('static', filename='suggest.js') }}> </script>
   <script src={{ url_for('static', filename='submit.js') }}> </script>
 {% endblock %}
@@ -109,10 +110,11 @@
     </div>
   </form>
   <div id="processing-message" style="display: none;">
-    Your book is being degendered/regendered! Keep this page open until it's ready.
+    <p>Your book is being degendered/regendered! Keep this page open until it's ready.
     A file save dialogue will pop up when it's done. Processing might take up to a minute or two
-    if the server is busy.
-    <p><a href="/submission-form">Submit your book</a> if you like the result and want to share it.</p>
+    if the server is busy.</p>
+    <p>Chapters processed: <span id="progress">0</span> of <span id="total">0</span></p>
+    <P><a href="/submission-form">Submit your book</a> if you like the result and want to share it.</p>
     <p><a href="/pronouns">Modify your choices</a> if you want to change the names of some characters
       or degender words that we missed.</p>
     <p><a href="/start-over"
@@ -187,11 +189,9 @@
     document.getElementById('mobile-form').addEventListener('submit', function () {
 	showProcessingMessage(); // Show the processing message
     });
-    
-
+        
     // Function to show the processing message
-	function showProcessingMessage() {
-	console.log('showProcessingMessage called');
+    function showProcessingMessage() {
 	// Hide the desktop form
 	document.getElementById('desktop-form').style.display = 'none';
 
@@ -203,7 +203,7 @@
 	document.getElementById('explanation').style.display = 'none';
 	
 	// Show the processing message
-	document.getElementById('processing-message').style.display = 'block';
+	//document.getElementById('processing-message').style.display = 'block';
     }
   </script>
 

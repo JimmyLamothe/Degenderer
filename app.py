@@ -6,11 +6,16 @@ Functions:
     
 
 """
+import gevent.monkey
+gevent.monkey.patch_all()
 import os
 from pathlib import Path
+import gevent
 import requests
 from flask import Flask, jsonify, request, redirect, render_template, send_file, session
+from flask import copy_current_request_context
 from flask_session import Session
+from flask_sse import sse
 from markupsafe import escape
 import config
 from degenderer import suggest_name
@@ -21,12 +26,17 @@ import process_book
 import process_text
 
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = config.SECRET_KEY
 app.config['SESSION_TYPE'] = config.SESSION_TYPE
 app.config['SESSION_PERMANENT'] = config.SESSION_PERMANENT
 app.config['SESSION_USE_SIGNER'] = config.SESSION_USE_SIGNER
 app.config['SESSION_REDIS'] = config.SESSION_REDIS
+app.config["REDIS_URL"] = config.REDIS_URL
+
 Session(app)
+
+app.register_blueprint(sse, url_prefix='/stream')
 
 SAMPLE_DIR = Path(os.environ.get('SAMPLE_DIR', 'sample_books'))
 WORKING_DIR = Path(os.environ.get('WORKING_DIR', 'temp'))
@@ -41,6 +51,7 @@ def clear_session(clear_samples=False, same_book=False):
     session['new_text'] = '' #Text output
     if not same_book: #If working on a new book (versus modifying)
         session['filepath'] = '' #Filepath of book uploaded by user
+        session['output_filepath'] = '' #Filepath of degendered book
         session['known_name_list'] = [] #Known names detected in user submission
         session['potential_name_list'] = [] #Potential names detected in user submission
     session['pronoun_matches'] = {} #Current pronoun matches
@@ -143,7 +154,7 @@ def download_sample(sample_id):
             'female': sample['female pronouns'],
             'all matches': sample['all matches'],
         }
-        epub_filepath = process_book.process_epub(temp_filepath, parameters)
+        epub_filepath = process_book.process_epub(temp_filepath, parameters, session_id=session.sid)
         epub_filepath.rename(degendered_filepath)
         temp_filepath.unlink()
     increment_download_count(sample_id)
@@ -280,7 +291,7 @@ def potential_names():
         if session['potential_name_list']:
             return render_template('potential-names.html')
         return redirect('/unknown-names')
-
+    
 @app.route('/unknown-names', methods=['GET', 'POST'])
 def unknown_names():
     """ Route to define matches for user submitted words """
@@ -321,44 +332,49 @@ def unknown_names():
                 return redirect('/text-display')
         except KeyError: #If we got here via file upload
             pass
-        try:
-            filepath = session['filepath']
-            if session['latest_all_matches']: #If user is modifying a previous submission
-                if (session['latest_female_pronouns'] == session['female_pronouns'] and
-                    session['latest_male_pronouns'] == session['male_pronouns']):
-                    comparison = compare_dicts(session['latest_all_matches'], session['all_matches'])
-                    matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
-                    changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
-                    unchanged_values = len(matching_keys)
-                    if changed_values < unchanged_values: #If few modifications
-                        parameters['modifying'] = True #To not change pronouns again
-                        filepath = session['latest_filepath'] #Start from latest version
-                        all_matches = {}
-                        for key, value in new_keys.items():
-                            all_matches.update(new_keys) #Add new matches
-                        for key, value in removed_keys.items():
-                            all_matches[value] = key #Revert removed matches
-                        for key, value in modified_keys_old.items(): #Adapt modified matches
-                            all_matches[modified_keys_old[key]] = modified_keys_new[key]
-                        parameters['all matches'] = all_matches #Use latest changes only
-            epub_filepath = process_book.process_epub(filepath, parameters)
-        except Exception as e: # pylint: disable=broad-except
-            app.logger.error(e)
-            #raise e #Uncomment to diagnose exception
-            return redirect('/processing-error')
-        #Add filename / IP combination to processed books database
-        try:
-            session['latest_filepath'] = epub_filepath
-            session['latest_all_matches'] = dict(session['all_matches'])
-            session['latest_female_pronouns'] = session['female_pronouns']
-            session['latest_male_pronouns'] = session['male_pronouns']
-            filename = epub_filepath.name
-            address = request.remote_addr
-            add_book(filename, address)
-        #Not important if it fails, so simply log the exception
-        except Exception as e: # pylint: disable=broad-except
-            app.logger.error(e)
-        return send_file(epub_filepath, as_attachment=True)
+        filepath = session['filepath']
+        if session['latest_filepath']: #If user is modifying a previous submission
+            if (session['latest_female_pronouns'] == session['female_pronouns'] and
+                session['latest_male_pronouns'] == session['male_pronouns']):
+                comparison = compare_dicts(session['latest_all_matches'], session['all_matches'])
+                matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
+                changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
+                unchanged_values = len(matching_keys)
+                if changed_values < unchanged_values: #If few modifications
+                    parameters['modifying'] = True #To not change pronouns again
+                    filepath = session['latest_filepath'] #Start from latest version
+                    all_matches = {}
+                    for key, value in new_keys.items():
+                        all_matches.update(new_keys) #Add new matches
+                    for key, value in removed_keys.items():
+                        all_matches[value] = key #Revert removed matches
+                    for key, value in modified_keys_old.items(): #Adapt modified matches
+                        all_matches[modified_keys_old[key]] = modified_keys_new[key]
+                    parameters['all matches'] = all_matches #Use latest changes only
+        session['output_filepath'] = process_book.get_output_filepath(filepath, parameters)
+        session['latest_all_matches'] = dict(session['all_matches'])
+        session['latest_female_pronouns'] = session['female_pronouns']
+        session['latest_male_pronouns'] = session['male_pronouns']
+        @copy_current_request_context
+        def task(filepath, parameters, session_id=None):
+            try:
+                epub_filepath = process_book.process_epub(filepath, parameters, session_id=session_id)
+            except Exception as e: # pylint: disable=broad-except
+                app.logger.error(e)
+                #raise e #Uncomment to diagnose exception
+                if session_id:
+                    sse.publish({'message':'processing error'}, type='processing_error', channel=session_id)
+            try:
+                filename = epub_filepath.name
+                address = request.remote_addr
+                add_book(filepath, address) #Add filename / IP combination to processed books database
+                #Not important if it fails, so simply log the exception
+            except Exception as e: # pylint: disable=broad-except
+                app.logger.error(e)
+            if session_id:
+                sse.publish({'message':'book_processed'}, type='book_processed', channel=session_id)
+        gevent.spawn(task, filepath, parameters, session_id=session.sid)
+        return redirect('/processing')
     else:
         num_entries = (max(10, len(session['unknown_matches'])))
         #To make sure user didn't get here by typing the url directly
@@ -368,6 +384,25 @@ def unknown_names():
             return redirect('/')
         except KeyError:
             return redirect('/')
+
+@app.route('/processing')
+def processing():
+    """ Route for communicating degendering progress to user """
+    return render_template('processing.html')
+
+@app.route('/send-book')
+def send_book():
+    """ Route to send degendered book to user """
+    if not session['output_filepath']:
+        return redirect('/')
+    if os.path.exists(session['output_filepath']):
+        session['latest_filepath'] = session['output_filepath']
+        print(f'latest_filepath: {session["latest_filepath"]}')
+        print(f'latest_all_matches: {session["latest_all_matches"]}')
+        print(f'latest_male_pronouns: {session["latest_male_pronouns"]}')
+        print(f'latest_female_pronouns: {session["latest_female_pronouns"]}')
+        return send_file(session['output_filepath'])
+    return redirect('/500')
 
 @app.route('/submission-form', methods=['GET', 'POST'])
 def submission_form():
@@ -479,5 +514,15 @@ def test_error(error):
     """ Route to test display of specific error pages """
     return render_template(f'{error}.html')
 
+@app.route('/test-sse')
+def test_sse():
+    return render_template('test-sse.html')
+
+@app.route('/emit-test-event')
+def emit_test_event():
+    session_id = request.args.get('session_id')
+    sse.publish({"message": "Test event from server!"}, type='test_event', channel=session_id)
+    return jsonify({"status": "event sent"})
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(app, host='0.0.0.0', port=8080, debug=True)

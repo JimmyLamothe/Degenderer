@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}
+Processing
+{% endblock %}
+
+{% block extra_stylesheets %}
+
+{% endblock %}
+
+{% block head_scripts %}
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div id="processing-message">
+    <p>Your book is being degendered/regendered! Keep this page open until it's ready.
+      A file save dialogue will pop up when it's done. Processing might take up to a minute or two
+      if the server is busy.</p>
+    <p>Chapters processed: <span id="progress">0</span> of <span id="total">0</span></p>
+    <p><a href="/submission-form">Submit your book</a> if you like the result and want to share it.</p>
+    <p><a href="/pronouns">Modify your choices</a> if you want to change the names of some characters
+      or degender words that we missed.</p>
+    <p><a href="/start-over"
+	  onclick="return confirm('Start over? You will lose all your changes.');">Start from scratch</a> if modifying
+      does not work properly. Modifying is a lot faster, but can occasionally cause bugs.</p>
+  </div>
+{% endblock %}
+
+{% block body_scripts %}
+  <script>
+    const sessionId = '{{ session.sid }}';
+    const eventSource = new EventSource('/stream?channel=' + sessionId);
+
+    eventSource.addEventListener('progress', function(event) {
+	const data = JSON.parse(event.data);
+	document.getElementById('progress').textContent = data.current;
+	document.getElementById('total').textContent = data.total;
+    });
+
+    eventSource.addEventListener('book_processed', function(event) {
+	//const data = JSON.parse(event.data); //We don't do anything with the data right now
+	window.location.replace('/send-book');
+    });
+
+    eventSource.addEventListener('processing_error', function(event) {
+	window.location.replace('/500');
+    });
+    
+    eventSource.addEventListener('error', function(event) {
+	if (event.readyState === EventSource.CLOSED) {
+	    console.error('EventSource connection closed');
+	}
+    });
+  </script>
+{% endblock %}

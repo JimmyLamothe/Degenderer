@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block extra_stylesheets %}
+
+{% endblock %}
+
+{% block head_scripts %}
+
+{% endblock %}
+
+{% block content %}
+  <h1>SSE Test</h1>
+  <p>Messages from server:</p>
+  <ul id="messages"></ul>
+{% endblock %}
+
+{% block body_scripts %}
+  <script>
+      const sessionId = '{{ session.sid }}';
+      const eventSource = new EventSource('/stream?channel=' + sessionId);
+
+      eventSource.addEventListener('test_event', function(event) {
+	  const data = JSON.parse(event.data);
+	  const messageList = document.getElementById('messages');
+	  const newMessage = document.createElement('li');
+	  newMessage.textContent = data.message;
+	  messageList.appendChild(newMessage);
+      });
+
+      eventSource.addEventListener('error', function(event) {
+	  if (event.readyState === EventSource.CLOSED) {
+	      console.error('EventSource connection closed');
+	  }
+      });
+
+      // Emit test event every 5 seconds
+      setInterval(function() {
+	  fetch('/emit-test-event?session_id=' + sessionId)
+	      .then(response => response.json())
+	      .then(data => console.log(data));
+      }, 5000);
+  </script>
+{% endblock %}

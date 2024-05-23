@@ -3,14 +3,15 @@ This is where the de/regendering takes place.
 """
 import random
 import json
-#from timeit import default_timer as timer #Uncomment for optimization testing
+from timeit import default_timer as timer
 import regex
+from flask_sse import sse
 from librarian import get_book_text, is_string
 from reference_library import MALE_PRONOUNS, FEMALE_PRONOUNS #DataFrames
 from reference_library import NB_NAMES, GIRL_NAMES, BOY_NAMES, ALL_NAMES, ALL_PRONOUNS #Lists
 from reference_library import COMMON_WORDS, WARNING_WORDS #Lists
 
-#book_timer = 0 #Uncomment for optimization testing
+book_timer = 0
 #soup_timer = 0 #Uncomment for optimization testing
 
 def get_suggestion(name_list, names_used):
@@ -51,14 +52,14 @@ def fix_text(text):
 
 def degender_text(text, parameters):
     """ De/regender a string according to the given parameters """
-    #start = timer() #Uncomment for optimization testing
+    start = timer()
     match_dict = parameters['match dict']
     for key in match_dict:
         key_dict = match_dict[key]
         text = regex.sub(key_dict['pattern'], key_dict['replacement'], text)
-    #end = timer() #Uncomment for optimization testing
-    #global book_timer #Uncomment for optimization testing
-    #book_timer += (end-start) #Uncomment for optimization testing
+    end = timer()
+    global book_timer
+    book_timer += (end-start)
     #global soup_timer #Uncomment for optimization testing
     #soup_timer += (end-start) #Uncomment for optimization testing
     return fix_text(text)
@@ -143,7 +144,7 @@ def create_name_dict(parameters):
                                    'replacement': match.upper() + 'àéà'}
     return name_dict
 
-def degender_book(book_soup, parameters):
+def degender_book(book_soup, parameters, session_id=None):
     """ De/regenders the Beautiful Soup version of an ePub book """
     pronoun_dict = create_pronoun_dict(parameters)
     name_dict = create_name_dict(parameters)
@@ -156,20 +157,25 @@ def degender_book(book_soup, parameters):
                 json_dict[key] = match_dict[key]['match']
             json.dump(json_dict, json_file)
     #save_match_dict() #Uncomment for testing
-    #global book_timer #Uncomment for optimization testing
-    #book_timer = 0 #Uncomment for optimization testing
-    for soup in book_soup:
+    global book_timer
+    book_timer = 0
+    chapters = len(book_soup)
+    for index, soup in enumerate(book_soup):
         #global soup_timer #Uncomment for optimization testing
+        if session_id:
+            print(f'session.sid = {session_id}')
+            sse.publish({"current": index + 1, "total": chapters}, type='progress', channel=session_id)
         degender_all(soup, parameters)
+        print(f'Processed chapter {index + 1} of {chapters}') #Uncomment for testing
         #print(f'Degendering times for soup: {soup_timer} seconds') #Uncomment for optimization testing
         #soup_timer = 0 #Uncomment for optimization testing
     #print(f'Degendering times for book {book_timer} seconds:') #Uncomment for optimization testing
 
+    
 def get_known_names(text):
     """ Gets list of names in book that are in our list of common names """
     word_list = regex.sub(r'[^\p{Latin}]', ' ', text).split()
     name_list = [word for word in word_list if word in ALL_NAMES]
-    #print(WARNING_WORDS + COMMON_WORDS)
     name_list = [word for word in name_list if not word in WARNING_WORDS + COMMON_WORDS]
     name_dict = {}
     for name in name_list:

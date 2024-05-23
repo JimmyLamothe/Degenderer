@@ -14,6 +14,9 @@ docker-compose.yml - This file installs the other services we need for
 .Dockerignore - This file is similar to .gitignore and tells Docker
 	      	what files and directories not to include in the build.
 
+requirements.txt - This file is used in the Dockerfile to install all
+		   required packages using pip
+
 FLY.IO FILES
 
 fly.toml - This file has all the configuration info needed for fly.io

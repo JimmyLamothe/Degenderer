@@ -2,11 +2,11 @@ FLY.IO
 Use environment variables - secrets to configure local vs online environments
 Check if SECRET_KEY is needed in config.py and if it's safe
 IN PROGRESS - Check if permanent database on volume storage is actually being used
-IN PRGRESS - Check if Upstash Redis is actually being used
+IN PROGRESS - Check if Upstash Redis is actually being used
    CURRENT STATUS: Redis is being run as a local session. This means that as soon as the machine is stopped,
    the session data disappears. This might happen while the user is trying to modify a book. Uploaded books
    are on permanent storage, but in a working directory that is emptied on app startup.
-   OPTION 1: Keep as is. This will require modifying idle status to either keep the VM running longer after
+   OPTION 1 - DONE: Keep as is. This will require modifying idle status to either keep the VM running longer after
    the site last gets traffic, or so that the VM never stops at all (about 5$/month).
    OPTION 2: Move Redis to Upstash and only delete files in working directory that are older than an hour.
    This would allow the machine to go idle as necessary without losing data, but might cost more because
@@ -17,10 +17,10 @@ IN PRGRESS - Check if Upstash Redis is actually being used
 
 BUGS
 
-Sample count updates for every modification, not just every book
+Degendering count update take place for every modification instead of every book / user combination
 
 NAMES & PRONOUNS
-
+Explain why they stays singular for verbs
 
 SECURITY
 https://flask.palletsprojects.com/en/3.0.x/security/
@@ -29,8 +29,8 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-
-
+Change Female Pronouns / Male Pronouns to Female Characters / Male Characters (for books at least)
+Prepopulate known-names with appropriate suggestions
 
 
 CLEANUP
@@ -43,9 +43,19 @@ DEGENDERING FEATURES
 
 OTHER IMPROVEMENTS
 
+Add progress bar using soups degendered percentage - Too complex to be worth it
+    Turns out it is worth it online because wait times are longer
+    CURRENT STATUS - Websocket disconnects on POST request and can't reconnect because
+    it's waiting on process_book to finish
+    PLANNED SOLUTION - Change process_book to a thread so it doesn't block websocket connection
+Track book degendering time - this way we can track them and test if changes are worth it
+Create database with book size (by number of characters, words?) and degendering time for original filename
+
 
 DEGENDERING HTML CONTENT
-
+Add quick - thorough (synonym?) options for degendering with approximate times for each
+Base time on words in book / words in all_matches
+Base time on last five degender speed ratios 50-25-13-8-4
 
 
 
@@ -176,7 +186,7 @@ BETTER SOLUTION FOUND - Add <td> tag to conversion
 BETTER SOLUTION FOUND - Add <i> tag to conversion
 
 CANCELLED - Add PDF - Too complicated to do correctly
-CANCELLED - Add progress bar using soups degendered percentage - Too complex to be worth it
+
 
 Names to non-binarize:
 

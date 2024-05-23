@@ -9,6 +9,8 @@ EbookLib==0.18
 et-xmlfile==1.1.0
 Flask==2.3.3
 Flask-Session==0.5.0
+flask-sse==1.0.0
+gevent==24.2.1
 gunicorn==21.2.0
 idna==3.6
 itsdangerous==2.1.2
@@ -29,3 +31,4 @@ soupsieve==2.5
 tzdata==2023.3
 urllib3==2.1.0
 Werkzeug==2.3.7
+
