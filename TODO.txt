@@ -13,14 +13,12 @@ IN PROGRESS - Check if Upstash Redis is actually being used
    of Redis Upstash fees.
    CURRENT CHOICE: Option 1 should be cheaper, though this has not been tested. But if more machines are added,
    it might be cheaper to implement Option 2.
-
+Update with latest changes if needed
 
 BUGS
 
-Degendering count update take place for every modification instead of every book / user combination
-
 NAMES & PRONOUNS
-Explain why they stays singular for verbs
+
 
 SECURITY
 https://flask.palletsprojects.com/en/3.0.x/security/
@@ -29,7 +27,6 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-Change Female Pronouns / Male Pronouns to Female Characters / Male Characters (for books at least)
 Prepopulate known-names with appropriate suggestions
 
 
@@ -42,9 +39,6 @@ DEGENDERING FEATURES
 
 
 OTHER IMPROVEMENTS
-
-Track book degendering time - this way we can track them and test if changes are worth it
-Create database with book size (by number of characters, words?) and degendering time for original filename
 
 
 DEGENDERING HTML CONTENT
@@ -63,6 +57,17 @@ EXTRAS
 Validate the process_epub function - replace first part with epub validation
 	     		  	  	 	 pip install epubcheck
 
+
+
+
+IMPLEMENTED CHANGES
+
+DONE - Explain why they stays singular for verbs
+DONE - Change Female Pronouns / Male Pronouns to Female Characters / Male Characters (for books at least)
+DONE - Track book degendering time - this way we can track them and test if changes are worth it
+DONE - Create database with book size (by number of characters, words?) and degendering time for original filename
+       METHOD: Added info to processed_books.db
+DONE - Degendering count update take place for every modification instead of every book / user combination
 DONE - Check if first modification doesn't work properly
      HYPOTHESIS - maybe latest_filepath isn't defined for some reason?
      ACTUAL PROBLEM - This was never designed properly. We need to add the number of pronouns to our

@@ -4,16 +4,17 @@ This module processes an ePub book for de/regendering
 import os
 from pathlib import Path
 from librarian import create_soup, read_epub, soup_to_book, write_epub
-
-from degenderer import degender_book, get_book_names
+from degenderer import degender_book, get_book_names, get_total_words
 
 WORKING_DIR = Path(os.environ.get('WORKING_DIR', 'temp'))
 
-def get_all_names(book_file):
-    """ Get a tuple of the known names and potential names in the book """
+def analyze_book(book_file):
+    """ Get a tuple of the known names, potential names and total words in the book """
     book = read_epub(book_file)
     book_soup = create_soup(book)
-    return get_book_names(book_soup)
+    known_names, potential_names = get_book_names(book_soup)
+    total_words = get_total_words(book_soup)
+    return known_names, potential_names, total_words
 
 def get_output_filepath(filepath, parameters, destination=WORKING_DIR):
     """ Get the output filepath for a book to be degendered """

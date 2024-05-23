@@ -9,6 +9,7 @@ Functions:
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
+import time
 from pathlib import Path
 import gevent
 import requests
@@ -55,6 +56,7 @@ def clear_session(clear_samples=False, same_book=False):
         session['output_filepath'] = '' #Filepath of degendered book
         session['known_name_list'] = [] #Known names detected in user submission
         session['potential_name_list'] = [] #Potential names detected in user submission
+        session['total_words'] = 0 #Number of words in user submission
     session['pronoun_matches'] = {} #Current pronoun matches
     session['known_matches'] = {} #Current known name matches
     session['potential_matches'] = {} #Current potential name matches
@@ -190,9 +192,10 @@ def upload():
         filepath = WORKING_DIR.joinpath(file.filename)
         file.save(filepath)
         session['filepath'] = str(filepath)
-        all_names = process_book.get_all_names(filepath)
-        session['known_name_list'] = all_names[0] #All known names
-        session['potential_name_list'] = all_names[1][:50] #Top 50 potential names
+        known_names, potential_names, total_words = process_book.analyze_book(filepath)
+        session['known_name_list'] = known_names #All known names
+        session['potential_name_list'] = potential_names[:50] #Top 50 potential names
+        session['total_words'] = total_words
         return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
 
@@ -349,6 +352,10 @@ def unknown_names():
         except KeyError: #If we got here via file upload
             pass
         filepath = session['filepath']
+        pronouns_to_degender = get_number_of_pronouns(session['male_pronouns'], session['female_pronouns'])
+        matches_to_degender = len(session['all_matches'])
+        match_length = pronouns_to_degender + matches_to_degender
+        total_words = session['total_words']
         if session['latest_filepath']: #If user is modifying a previous submission
             if (session['latest_female_pronouns'] == session['female_pronouns'] and
                 session['latest_male_pronouns'] == session['male_pronouns']):
@@ -359,9 +366,8 @@ def unknown_names():
                 matching_keys, modified_keys_old, modified_keys_new, new_keys, removed_keys = comparison
                 changed_values = len(modified_keys_old) + len(new_keys) + len(removed_keys)
                 unchanged_values = len(matching_keys)
-                number_of_pronouns = get_number_of_pronouns(session['male_pronouns'],
-                                                            session['female_pronouns'])
-                if changed_values < unchanged_values + number_of_pronouns: #If few modifications
+                if changed_values < unchanged_values + pronouns_to_degender: #If few modifications
+                    match_length = changed_values
                     parameters['modifying'] = True #To not change pronouns again
                     filepath = session['latest_filepath'] #Start from latest version
                     all_matches = {}
@@ -380,7 +386,10 @@ def unknown_names():
         def task(filepath, parameters, session_id=None):
             print(f'parameters["modifying"] = {parameters.get("modifying", "Key absent")}')
             try:
+                start = time.time()
                 epub_filepath = process_book.process_epub(filepath, parameters, session_id=session_id)
+                end = time.time()
+                degendering_time = int(end-start)
             except Exception as e: # pylint: disable=broad-except
                 app.logger.error(e)
                 #raise e #Uncomment to diagnose exception
@@ -389,8 +398,8 @@ def unknown_names():
             try:
                 filename = epub_filepath.name
                 address = request.remote_addr
-                add_book(filepath, address) #Add filename / IP combination to processed books database
-                #Not important if it fails, so simply log the exception
+                add_book(filename, address, total_words, match_length, degendering_time)
+                #Not important if adding book to processed_books.db fails, so simply log the exception
             except Exception as e: # pylint: disable=broad-except
                 app.logger.error(e)
             if session_id:
@@ -418,7 +427,7 @@ def send_book():
     """ Route to send degendered book to user """
     if not session['output_filepath']:
         return redirect('/')
-    if os.path.exists(str(session['output_filepath'])):
+    if session['output_filepath'].exists():
         session['latest_filepath'] = session['output_filepath']
         session['output_filepath'] = ''
         print(f'latest_filepath: {session["latest_filepath"]}')

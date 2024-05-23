@@ -6,7 +6,7 @@
 
 {% block content %}
   <form method="POST">
-    <h3>Female Pronouns:</h3>
+    <h3>Female Characters:</h3>
     <label><input type="radio"
 		  name="female"
 		  value="non-binary"
@@ -22,7 +22,7 @@
 		  value="male"
 		  onchange="showNonBinaryForm()"
 		  {% if session.get('female_pronouns', '') == 'm' %}checked{% endif %}>Male</label><br>
-    <h3>Male Pronouns:</h3>
+    <h3>Male Characters:</h3>
     <label><input type="radio"
 		  name="male"
 		  value="non-binary"
@@ -104,7 +104,8 @@
   <p>Both of these issues also affect going from male to female and from female to male, where we
     made the same choice. If you want to make a different choice,
     there will be a form later that lets you freely submit word changes. You can assign a value to
-    "her" and "his" there. For example, you can set "her" to "his/him" and "his" to "her/s".</p> 
+    "her" and "his" there. For example, you can set "her" to "his/him" and "his" to "her/s".</p>
+  <p>Also, we don't change verbs, so non-binary pronouns like "they" will still have singular verb forms.</p> 
   <p>If you have Natural Language Processing skills, feel free to
     <a href="https://github.com/JimmyLamothe/Degenderer/discussions/1" target="_blank">join us on Github</a>
     and help make the De/Regenderer better!</p>

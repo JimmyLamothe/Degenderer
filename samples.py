@@ -25,13 +25,20 @@ from pathlib import Path
 DB_FOLDER = Path(os.environ.get('DATABASE_PATH', 'databases'))
 
 def get_db_conn(db_name):
-    """ Connect to the sample database """
+    """ Connect to a database """
     db_path = DB_FOLDER / db_name
     conn = sqlite3.connect(db_path)
     return conn
 
 def initialize_books_database():
-    """ Used once to initialize the database of processed books """
+    """ Used once to initialize the database of processed books
+    
+    filename is the degendered filename, including pronoun extension
+    address is the user ip address
+    words is the total number of words in the book
+    matches is the number of words to degender
+    time is the time it took to do the degendering
+    """
     conn = get_db_conn('processed_books.db')
     cursor = conn.cursor()
 
@@ -40,12 +47,19 @@ def initialize_books_database():
         CREATE TABLE IF NOT EXISTS processed_books (
             id INTEGER PRIMARY KEY,
             filename TEXT NOT NULL,
-            address TEXT NOT NULL
+            address TEXT NOT NULL,
+            words INTEGER NOT NULL,
+            matches INTEGER NOT NULL,
+            time INTEGER NOT NULL,
+            UNIQUE(filename, address)
         )
     ''')
 
     conn.commit()
     conn.close()
+
+if not (DB_FOLDER/'processed_books.db').exists():
+    initialize_books_database()
 
 def initialize_sample_database():
     """ Used once to initialize the database of book samples """
@@ -73,6 +87,9 @@ def initialize_sample_database():
     conn.commit()
     conn.close()
 
+if not (DB_FOLDER/'sample_library.db').exists():
+    initialize_books_database()
+    
 def add_sample(submission, reviewed=False, approved=False):
     """ Add a sample to the samples database """
     title = submission['title']
@@ -99,13 +116,13 @@ def add_sample(submission, reviewed=False, approved=False):
     conn.commit()
     conn.close()
 
-def add_book(filename, address):
+def add_book(filename, address, words, matches, time):
     """ Add a book - ip combination to the processed books database """
     conn = get_db_conn('processed_books.db')
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO processed_books (filename, address) VALUES (?, ?)",
-        (filename, address)
+        "INSERT INTO processed_books (filename, address, words, matches, time) VALUES (?, ?, ?, ?, ?)",
+        (filename, address, words, matches, time)
     )
     conn.commit()
     conn.close()

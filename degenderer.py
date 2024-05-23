@@ -245,3 +245,9 @@ def get_book_names(book_soup):
     book_text = get_book_text(book_soup)
     name_tuple = get_names(book_text)
     return name_tuple
+
+def get_total_words(book_soup):
+    """ Gets total number of words in a Beautiful Soup of an ePub """
+    book_text = get_book_text(book_soup)
+    total_words = len(book_text.split())
+    return total_words
