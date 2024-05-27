@@ -27,7 +27,6 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-Clear replacements for gendered known names when user changes target gender in pronouns.html
 
 
 CLEANUP
@@ -62,6 +61,7 @@ Validate the process_epub function - replace first part with epub validation
 
 IMPLEMENTED CHANGES
 
+DONE - Clear replacements for gendered known names when user changes target gender in pronouns.html
 DONE - Prepopulate known-names with appropriate suggestions
 DONE - Check if permanent database on volume storage is actually being used
 DONE - Explain why they stays singular for verbs

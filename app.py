@@ -208,7 +208,7 @@ def text_upload():
         known_names, known_name_genders, potential_names = process_text.get_all_names(session['text'])
         session['known_name_list'] = known_names
         session['known_name_genders'] = known_name_genders
-        session['potential_name_list'] = all_names[1][:30]
+        session['potential_name_list'] = potential_names[:30]
         return redirect('/pronouns')
     #If GET
     clear_session()
@@ -238,18 +238,30 @@ def pronouns():
             return 'm'
         raise ValueError
     if request.method == 'POST':
-        session['male_pronouns'] = abbreviate(request.form['male'])
-        session['female_pronouns'] = abbreviate(request.form['female'])
-        if session['male_pronouns'] == 'nb':
-            session['pronoun_matches']['he'] = request.form['he'].lower()
-            session['pronoun_matches']['him'] = request.form['him'].lower()
-            session['pronoun_matches']['his'] = request.form['his'].lower()
-            session['pronoun_matches']['himself'] = request.form['himself'].lower()
+        new_female_pronouns = abbreviate(request.form['female'])
+        new_male_pronouns = abbreviate(request.form['male'])
+        if not new_female_pronouns == session.get('female_pronouns', ''):
+            if new_female_pronouns == 'f':
+                session['clear_female'] = True
+            else:
+                session['suggest_female'] = True
+        if not new_male_pronouns == session.get('male_pronouns', ''):
+            if new_male_pronouns == 'm':
+                session['clear_male'] = True
+            else:
+                session['suggest_male'] = True
+        session['female_pronouns'] = new_female_pronouns
+        session['male_pronouns'] = new_male_pronouns
         if session['female_pronouns'] == 'nb':
             session['pronoun_matches']['she'] = request.form['she'].lower()
             session['pronoun_matches']['her'] = request.form['her'].lower()
             session['pronoun_matches']['hers'] = request.form['hers'].lower()
             session['pronoun_matches']['herself'] = request.form['herself'].lower()
+        if session['male_pronouns'] == 'nb':
+            session['pronoun_matches']['he'] = request.form['he'].lower()
+            session['pronoun_matches']['him'] = request.form['him'].lower()
+            session['pronoun_matches']['his'] = request.form['his'].lower()
+            session['pronoun_matches']['himself'] = request.form['himself'].lower()
         update_matches()
         return redirect('/known-names') #If file upload
     #If GET
@@ -283,22 +295,35 @@ def known_names():
         return redirect('/')
     if session.get('known_name_list', ''):
         suggestion_dict = {}
+        names_used = []
         if not session.get('known_matches', '') and not session.get('modifying',''):
-            print(f'known_name_list: {session.get("known_name_list","")}')
-            print(f'known_matches: {session.get("known_name_matches","")}')
-            print(f'modifying: {session.get("modifying", "")}')
-            names_used = []
-            for name, gender in zip(session['known_name_list'], session['known_name_genders']):
-                if gender == 'f':
+            session['suggest_female'] = True
+            session['suggest_male'] = True
+        for name, gender in zip(session['known_name_list'], session['known_name_genders']):
+            if gender == 'f':
+                if session.get('suggest_female', ''):
                     if not session['female_pronouns'] == 'f':
                         suggestion = suggest_name(session['female_pronouns'], names_used)
                         suggestion_dict[name] = suggestion
                         names_used.append(suggestion)
-                elif gender == 'm':
+                elif session.get('clear_female', ''):
+                    print(f'clear_female = {session.get("clear_female","")}')
+                    suggestion_dict[name] = ''
+                    print(f'{name} = {suggestion_dict[name]}')
+            elif gender == 'm':
+                if session['suggest_male']:
                     if not session['male_pronouns'] == 'm':
                         suggestion = suggest_name(session['male_pronouns'], names_used)
                         suggestion_dict[name] = suggestion
                         names_used.append(suggestion)
+                elif session.get('clear_male', ''):
+                    print(f'clear_male = {session.get("clear_male","")}')
+                    suggestion_dict[name] = ''
+                    print(f'{name} = {suggestion_dict[name]}')
+        session['suggest_female'] = False
+        session['suggest_male'] = False
+        session['clear_female'] = False
+        session['clear_male'] = False
         return render_template('known-names.html', suggestion_dict=suggestion_dict)
     return redirect('/potential-names')
 
