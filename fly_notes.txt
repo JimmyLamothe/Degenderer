@@ -55,5 +55,5 @@ fly console - This starts an SSH session with the machine hosting
 	      be necessary to connect to the website first (or use
 	      the fly-cli)
 
-fly smpt shell - This is used to move files from the local computer
+fly sftp shell - This is used to move files from the local computer
     	       	 to the host machine.

@@ -12,9 +12,9 @@ def analyze_book(book_file):
     """ Get a tuple of the known names, potential names and total words in the book """
     book = read_epub(book_file)
     book_soup = create_soup(book)
-    known_names, potential_names = get_book_names(book_soup)
+    known_names, known_name_genders, potential_names = get_book_names(book_soup)
     total_words = get_total_words(book_soup)
-    return known_names, potential_names, total_words
+    return known_names, known_name_genders, potential_names, total_words
 
 def get_output_filepath(filepath, parameters, destination=WORKING_DIR):
     """ Get the output filepath for a book to be degendered """

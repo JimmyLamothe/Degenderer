@@ -192,9 +192,10 @@ def upload():
         filepath = WORKING_DIR.joinpath(file.filename)
         file.save(filepath)
         session['filepath'] = str(filepath)
-        known_names, potential_names, total_words = process_book.analyze_book(filepath)
-        session['known_name_list'] = known_names #All known names
-        session['potential_name_list'] = potential_names[:50] #Top 50 potential names
+        known_names, known_name_genders, potential_names, total_words = process_book.analyze_book(filepath)
+        session['known_name_list'] = known_names
+        session['known_name_genders'] = known_name_genders
+        session['potential_name_list'] = potential_names[:50]
         session['total_words'] = total_words
         return redirect('/pronouns')
     return redirect('/') #To reroute if someone enters the address directly
@@ -204,9 +205,10 @@ def text_upload():
     """ Route to submit text for de/regendering """
     if request.method == 'POST':
         session['text'] = escape(request.form.get('text'))
-        all_names = process_text.get_all_names(session['text'])
-        session['known_name_list'] = all_names[0] #All known names
-        session['potential_name_list'] = all_names[1][:30] #Top 30 potential names
+        known_names, known_name_genders, potential_names = process_text.get_all_names(session['text'])
+        session['known_name_list'] = known_names
+        session['known_name_genders'] = known_name_genders
+        session['potential_name_list'] = all_names[1][:30]
         return redirect('/pronouns')
     #If GET
     clear_session()
@@ -279,8 +281,25 @@ def known_names():
     #If GET
     if not session['male_pronouns'] and session['female_pronouns']: #If user typed url directly
         return redirect('/')
-    if session['known_name_list']:
-        return render_template('known-names.html')
+    if session.get('known_name_list', ''):
+        suggestion_dict = {}
+        if not session.get('known_matches', '') and not session.get('modifying',''):
+            print(f'known_name_list: {session.get("known_name_list","")}')
+            print(f'known_matches: {session.get("known_name_matches","")}')
+            print(f'modifying: {session.get("modifying", "")}')
+            names_used = []
+            for name, gender in zip(session['known_name_list'], session['known_name_genders']):
+                if gender == 'f':
+                    if not session['female_pronouns'] == 'f':
+                        suggestion = suggest_name(session['female_pronouns'], names_used)
+                        suggestion_dict[name] = suggestion
+                        names_used.append(suggestion)
+                elif gender == 'm':
+                    if not session['male_pronouns'] == 'm':
+                        suggestion = suggest_name(session['male_pronouns'], names_used)
+                        suggestion_dict[name] = suggestion
+                        names_used.append(suggestion)
+        return render_template('known-names.html', suggestion_dict=suggestion_dict)
     return redirect('/potential-names')
 
 @app.route('/potential-names', methods=['GET', 'POST'])

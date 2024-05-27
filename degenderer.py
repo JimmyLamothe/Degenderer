@@ -221,6 +221,16 @@ def combine_dicts(count_dicts):
             combined_dict[key] = combined_dict.get(key, 0) + count
     return combined_dict
 
+def get_gender(name):
+    """ Returns typical gender of known name """
+    if name in GIRL_NAMES:
+        return 'f'
+    if name in BOY_NAMES:
+        return 'm'
+    if name in NB_NAMES:
+        return 'nb'
+    return None
+
 def get_names(text, min_occurrences=5):
     """ Gets all known names and potential names in a text """
     known_name_dict = get_known_names(text)
@@ -238,7 +248,8 @@ def get_names(text, min_occurrences=5):
     potential_names = []
     for key, value in sorted(potential_name_dict.items(), key = lambda x: x[1], reverse=True):
         potential_names.append(key)
-    return (known_names, potential_names)
+    known_name_genders = [get_gender(name) for name in known_names]
+    return (known_names, known_name_genders, potential_names)
 
 def get_book_names(book_soup):
     """ Gets all known and potential names in a Beautiful Soup of an ePub """

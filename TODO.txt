@@ -1,7 +1,7 @@
 FLY.IO
 Use environment variables - secrets to configure local vs online environments
 Check if SECRET_KEY is needed in config.py and if it's safe
-IN PROGRESS - Check if permanent database on volume storage is actually being used
+
 IN PROGRESS - Check if Upstash Redis is actually being used
    CURRENT STATUS: Redis is being run as a local session. This means that as soon as the machine is stopped,
    the session data disappears. This might happen while the user is trying to modify a book. Uploaded books
@@ -27,7 +27,7 @@ https://flask-seasurf.readthedocs.io/en/latest/
 
 
 HTML / CSS
-Prepopulate known-names with appropriate suggestions
+Clear replacements for gendered known names when user changes target gender in pronouns.html
 
 
 CLEANUP
@@ -62,6 +62,8 @@ Validate the process_epub function - replace first part with epub validation
 
 IMPLEMENTED CHANGES
 
+DONE - Prepopulate known-names with appropriate suggestions
+DONE - Check if permanent database on volume storage is actually being used
 DONE - Explain why they stays singular for verbs
 DONE - Change Female Pronouns / Male Pronouns to Female Characters / Male Characters (for books at least)
 DONE - Track book degendering time - this way we can track them and test if changes are worth it

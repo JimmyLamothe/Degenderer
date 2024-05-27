@@ -53,7 +53,7 @@
             <td class="existing-name">{{ name }}</td>
             <td><input type="text"
 		       name="new_names[]"
-		       value="{{ session['known_matches'].get(name, '') }}">
+		       value="{{ suggestion_dict.get(name, session['known_matches'].get(name, '')) }}">
 	    </td>
             <td>
               <button
@@ -99,7 +99,9 @@
         <div class="mobile-row">
             <div class="name-pair">
                 <span>{{ name }}</span>
-                <input type="text" name="new_names[]" value="{{ session['known_matches'].get(name, '') }}">
+                <input type="text"
+		       name="new_names[]"
+		       value="{{ suggestion_dict.get(name, session['known_matches'].get(name, '')) }}">
             </div>
             <div class="button-group">
                 <button type="button" onclick="suggestRow(suggestNb, this.parentNode.parentNode)">NB</button>
