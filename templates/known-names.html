@@ -14,7 +14,7 @@
   <p>These words look like character names. You can choose a new name yourself
     or get a suggestion by clicking on the appropriate button. Leave a name blank
     to keep it unchanged. Press submit at the bottom of the page when you are done.</p>
-  <form id="desktop-form" method="POST">
+  <form id="desktop-form" method="POST" autocomplete="off">
     <table class="desktop-table">
       <thead>
         <tr>
@@ -92,7 +92,7 @@
       </tbody>
     </table>
   </form>
-  <form id="mobile-form" method="POST">
+  <form id="mobile-form" method="POST" autocomplete="off">
     <!-- Mobile Version -->
     <div class="mobile-table">
         {% for name in session['known_name_list'] %}

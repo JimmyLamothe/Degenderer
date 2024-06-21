@@ -97,6 +97,20 @@ form {
     }
 }
 
+.video-container {
+    text-align: center;
+}
+
+.desktop-video, .mobile-video {
+    display: none;
+}
+
+@media screen and (min-width: 769px) {
+    .desktop-video {
+        display: block;
+    }
+}
+
 textarea, input[type="submit"] {
     width: calc(100% - 40px); /* Full width minus padding */
     max-width: 360px; /* Maximum width */
@@ -188,6 +202,9 @@ input[type="file"] {
     .button-group button {
         width: 18%; /* adjust based on preference */
         margin-right: 5px; /* space between buttons */
+    }
+    .mobile-video {
+        display: block;
     }
 }
 

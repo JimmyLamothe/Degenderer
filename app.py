@@ -146,7 +146,6 @@ def download_sample(sample_id):
     degendered_filepath = process_book.get_output_filepath(SAMPLE_DIR / book_filename,
                                                             parameters,
                                                             destination=SAMPLE_DIR)
-    print(f'degendered_filepath: {degendered_filepath}')
     if not degendered_filepath.exists():
         temp_filepath = WORKING_DIR / book_filename
         session['output_filepath'] = degendered_filepath
@@ -307,9 +306,7 @@ def known_names():
                         suggestion_dict[name] = suggestion
                         names_used.append(suggestion)
                 elif session.get('clear_female', ''):
-                    print(f'clear_female = {session.get("clear_female","")}')
                     suggestion_dict[name] = ''
-                    print(f'{name} = {suggestion_dict[name]}')
             elif gender == 'm':
                 if session['suggest_male']:
                     if not session['male_pronouns'] == 'm':
@@ -317,9 +314,7 @@ def known_names():
                         suggestion_dict[name] = suggestion
                         names_used.append(suggestion)
                 elif session.get('clear_male', ''):
-                    print(f'clear_male = {session.get("clear_male","")}')
                     suggestion_dict[name] = ''
-                    print(f'{name} = {suggestion_dict[name]}')
         session['suggest_female'] = False
         session['suggest_male'] = False
         session['clear_female'] = False
@@ -428,7 +423,6 @@ def unknown_names():
         session['latest_male_pronouns'] = session['male_pronouns']
         @copy_current_request_context
         def task(filepath, parameters, session_id=None):
-            print(f'parameters["modifying"] = {parameters.get("modifying", "Key absent")}')
             try:
                 start = time.time()
                 epub_filepath = process_book.process_epub(filepath, parameters, session_id=session_id)
@@ -474,10 +468,6 @@ def send_book():
     if session['output_filepath'].exists():
         session['latest_filepath'] = session['output_filepath']
         session['output_filepath'] = ''
-        print(f'latest_filepath: {session["latest_filepath"]}')
-        print(f'latest_all_matches: {session["latest_all_matches"]}')
-        print(f'latest_male_pronouns: {session["latest_male_pronouns"]}')
-        print(f'latest_female_pronouns: {session["latest_female_pronouns"]}')
         return send_file(session['latest_filepath'])
     return redirect('/500')
 

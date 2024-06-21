@@ -163,10 +163,9 @@ def degender_book(book_soup, parameters, session_id=None):
     for index, soup in enumerate(book_soup):
         #global soup_timer #Uncomment for optimization testing
         if session_id:
-            print(f'session.sid = {session_id}')
             sse.publish({"current": index + 1, "total": chapters}, type='progress', channel=session_id)
         degender_all(soup, parameters)
-        print(f'Processed chapter {index + 1} of {chapters}') #Uncomment for testing
+        #print(f'Processed chapter {index + 1} of {chapters}') #Uncomment for testing
         #print(f'Degendering times for soup: {soup_timer} seconds') #Uncomment for optimization testing
         #soup_timer = 0 #Uncomment for optimization testing
     #print(f'Degendering times for book {book_timer} seconds:') #Uncomment for optimization testing

@@ -16,7 +16,7 @@
     text. Just type the word you want to change on the left, and the replacement you'd like to use on the
     right.
   </div>
-  <form id="desktop-form" method="POST">
+  <form id="desktop-form" method="POST" autocomplete="off">
     <table class="desktop-table">
       <thead>
         <tr>
@@ -86,7 +86,7 @@
       </tbody>
     </table>
   </form>
-  <form id="mobile-form" method="POST">
+  <form id="mobile-form" method="POST" autocomplete="off">
     <!-- Mobile Version -->
     <div class="mobile-table">
       {% set total_rows = [10, session['unknown_matches']|length] | max %}

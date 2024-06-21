@@ -1,5 +1,4 @@
 FLY.IO
-Use environment variables - secrets to configure local vs online environments
 Check if SECRET_KEY is needed in config.py and if it's safe
 
 IN PROGRESS - Check if Upstash Redis is actually being used
@@ -13,7 +12,7 @@ IN PROGRESS - Check if Upstash Redis is actually being used
    of Redis Upstash fees.
    CURRENT CHOICE: Option 1 should be cheaper, though this has not been tested. But if more machines are added,
    it might be cheaper to implement Option 2.
-Update with latest changes if needed
+
 
 BUGS
 
@@ -30,7 +29,7 @@ HTML / CSS
 
 
 CLEANUP
-Remove debugging print calls and console.logs
+ALWAYS CHECK BEFORE DEPLOY - Remove debugging print calls and console.logs
 
 
 
@@ -40,27 +39,32 @@ DEGENDERING FEATURES
 OTHER IMPROVEMENTS
 
 
-DEGENDERING HTML CONTENT
-Add time estimate for degendering
-Base time on words in book / words in all_matches
-Base time on last five degender speed ratios 50-25-13-8-4
 
+DEGENDERING HTML CONTENT
 
 
 DEGENDERING IMPROVEMENTS
 
-
-
 		 
 EXTRAS
-Validate the process_epub function - replace first part with epub validation
-	     		  	  	 	 pip install epubcheck
-
-
+Add LICENSE (Maximum freedom except for trolls?)
 
 
 IMPLEMENTED CHANGES
 
+DONE - Make tutorial video
+DONE - Use environment variables - secrets to configure local vs online environments
+DONE - Add clearer instructions on main page
+DONE - Validate the process_epub function
+       Add alert if not epub uploaded
+       Suggest text conversion for PDF files and other eBook formats
+DONE - Add clearer instructions on upload page
+DONE - Add Project Gutenberg to words that don't show up in potential words
+NOT DONE - Add time estimate for degendering
+    	   Base time on words in book / words in all_matches
+	   Base time on last five degender speed ratios 50-25-13-8-4
+	   NOT WORTH IT - Chapter count seems sufficient
+DONE - Change 500 Error message
 DONE - Clear replacements for gendered known names when user changes target gender in pronouns.html
 DONE - Prepopulate known-names with appropriate suggestions
 DONE - Check if permanent database on volume storage is actually being used

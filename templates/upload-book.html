@@ -6,8 +6,33 @@
 
 {% block content %}
   <h2>Upload a Book</h2>
-  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
+  <p>Please upload a book in ePub format. We're not currently able to de/regender PDFs or other eBook formats.</br>
+    If your book is copy protected, we can't process it. You can still de/regender a sample
+    with our <a href={{ url_for('text_upload') }}>text converter.</a></p>
+  <p>The De/Regenderer currently only works in English, but we'd love to add other languages in the future.</p>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" onsubmit="return validateFile()">
+    <input type="file" name="file" id="fileInput" required>
     <input type="submit" value="Upload">
   </form>
 {% endblock %}
+
+{% block body_scripts %}
+  <script>
+  function validateFile() {
+      const fileInput = document.getElementById('fileInput');
+      const filePath = fileInput.value;
+      const allowedExtensions = /(\.epub)$/i;
+
+      if (!allowedExtensions.exec(filePath)) {
+	  alert('Sorry, we are only able to de/regender eBooks in ePub format.\n' +
+		'Please make sure your book has a .epub extension.\n' +
+		'If your book is in another format, you can de/regender ' +
+		'a sample with our text converter. Select De/Regender Text ' +
+		'in our menu.');
+	  fileInput.value = '';
+	  return false;
+      }
+      return true;
+  }
+  </script>
+{% endblock %}  

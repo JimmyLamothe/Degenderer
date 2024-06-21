@@ -37,5 +37,4 @@ def process_epub(filepath, parameters, session_id=None):
     degender_book(book_soup, parameters, session_id=session_id)
     soup_to_book(book_soup, book)
     write_epub(book, output_filepath)
-    print(output_filepath)
     return output_filepath
